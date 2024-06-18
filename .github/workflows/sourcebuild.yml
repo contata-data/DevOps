@@ -17,7 +17,7 @@ jobs:
       uses: 'google-github-actions/auth@v2'
       with:
         project_id: 'relevate-dev-403605'
-        workload_identity_provider: 'iam.googleapis.com/projects/580005102993/locations/global/workloadIdentityPools/git-action-test/subject/SUBJECT_ATTRIBUTE_VALUE'
+        workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/git-action-test/subject/SUBJECT_ATTRIBUTE_VALUE'
 
     - id: 'deploy'
       uses: 'google-github-actions/deploy-cloud-functions@v3'
