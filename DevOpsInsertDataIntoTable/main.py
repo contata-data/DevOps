@@ -57,10 +57,10 @@ def Insert_Data_Test_Poc(request):
     except Exception as e:
         return json.dumps({
             "status": "Failed",
-            "message": f"Unable to load data for OrderId, Version: {id_}, {Name_}. Error: {str(e)}"
+            "message": f"Unable to load data for Id, Name: {id_}, {Name_}. Error: {str(e)}"
         }), 404, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization'}
 
     return json.dumps({
         "status": "Success",
-        "message": f"Successfully loaded data for OrderId, Version: {id_}, {Name_}"
+        "message": f"Successfully loaded data for Id, Name: {id_}, {Name_}"
     }), 200, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization'}
