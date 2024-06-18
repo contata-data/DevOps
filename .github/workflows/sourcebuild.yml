@@ -7,6 +7,9 @@ on:
 jobs:
   deploy_job:
     runs-on: 'ubuntu-latest'
+  permissions:
+    contents: 'read'
+    id-token: 'write'
 
     steps:
       - name: Checkout code
@@ -30,10 +33,3 @@ jobs:
           entry_point: 'function.Insert_Data_Test_Poc'
           timeout: '10m' 
 
-      - name: Make the URL authenticated
-        run: |
-          gcloud functions add-iam-policy-binding Insert_Data_Test_Poc --member="allUsers" --role="roles/cloudfunctions.invoker"
-
-      - name: Test deployed function
-        run: |
-          curl "${{ steps.deploy.outputs.url }}"
