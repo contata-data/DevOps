@@ -1,37 +1,49 @@
-name: Deploy Cloud Function
+name: CI/CD and Issue Management
+
 on:
   push:
-    branches: [ main ]
-env:
-  PROJECT: relevate-dev-403605
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  deploy_job:
+    runs-on: 'ubuntu-latest'
+    permissions: 
+      contents: 'read'
+      id-token: 'write'
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
-
-      - name: Setup GCP Service Account
-        uses: google-github-actions/setup-gcloud@master
+      - name: Authenticate with Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
         with:
-          project_id: ${{env.PROJECT}}
-          service_account_key: ${{ secrets.GCP_SA }}
-          export_default_credentials: true
+          project_id: 'relevate-dev-403605'
+          workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
+          service_account: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
 
-      - name: deploy cloud function
+      - name: Deploy Cloud Function
         id: deploy
-        uses: google-github-actions/deploy-cloud-functions@main
+        uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: Insert_Data_Test_Poc
-          runtime: python 3.12
-          project_id: relevate-dev-403605
-          entry_point: functions.Insert_Data_Test_Poc
+          name: 'Insert_Data_Test_Poc'
+          runtime: 'python3.12'  
+          project_id: 'relevate-dev-403605'
+          entry_point: 'function.Insert_Data_Test_Poc'
+          timeout: '10m'
 
-      - name: make the url aunthenticated
-        run: |
-          gcloud functions add-iam-policy-binding Insert_Data_Test_Poc --member="allUsers" --role="roles/cloudfunctions.invoker"
-
-      - name: test the url
-        run: curl "${{ steps.deploy.outputs.url }}"
-
+  open_issue:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - run: |
+          gh issue --repo ${{ github.repository }} \
+            create --title "Issue title" --body "Issue body"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
