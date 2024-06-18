@@ -26,6 +26,12 @@ jobs:
       with:
         name: 'Insert_Data_Test_Poc'
         runtime: 'python 3.12'
+        project_id: 'relevate-dev-403605'
+        entry_point: 'function.Insert_Data_Test_Poc'
+        
+    -name:  make the url aunthenticated
+     run: |          
+        gcloud functions add-iam-policy-binding ILoveMkdev --member="allUsers" --role="roles/cloudfunctions.invoker"
 
     # Example of using the output
     - id: 'test'
