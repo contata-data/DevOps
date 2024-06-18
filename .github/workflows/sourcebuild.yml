@@ -31,7 +31,7 @@ jobs:
         
     -name:  make the url aunthenticated
      run: | 
-     gcloud functions add-iam-policy-binding Insert_Data_Test_Poc --member="allUsers" --role="roles/cloudfunctions.invoker"
+        gcloud functions add-iam-policy-binding Insert_Data_Test_Poc --member="allUsers" --role="roles/cloudfunctions.invoker"
 
     # Example of using the output
     - id: 'test'
