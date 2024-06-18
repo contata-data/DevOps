@@ -7,17 +7,11 @@ on:
 jobs:
   deploy_job:
     runs-on: 'ubuntu-latest'
-    permissions:
+    permissions:  # This should be aligned with 'runs-on' and 'steps'
       contents: 'read'
       id-token: 'write'
-    steps:
-      - name: Create GitHub Issue
-        run: |
-          gh issue --repo ${{ github.repository }} \
-            create --title "Issue title" --body "Issue body"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -34,7 +28,7 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: 'Insert_Data_Test_Poc'
-          runtime: 'python3.12'
+          runtime: 'python3.12'  
           project_id: 'relevate-dev-403605'
           entry_point: 'function.Insert_Data_Test_Poc'
           timeout: '10m'
