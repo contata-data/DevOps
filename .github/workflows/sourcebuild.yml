@@ -1,0 +1,31 @@
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  job_id:
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - uses: 'actions/checkout@v4'
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        project_id: 'relevate-dev-403605'
+        workload_identity_provider: 'iam.googleapis.com/projects/580005102993/locations/global/workloadIdentityPools/git-action-test/subject/SUBJECT_ATTRIBUTE_VALUE'
+
+    - id: 'deploy'
+      uses: 'google-github-actions/deploy-cloud-functions@v3'
+      timeout-minutes: 9
+      with:
+        name: 'def Insert_Data_Test_Poc'
+        runtime: 'python 3.12'
+
+    # Example of using the output
+    - id: 'test'
+      run: 'curl "${{ steps.deploy.outputs.url }}"'
