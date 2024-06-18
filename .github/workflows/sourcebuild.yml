@@ -42,5 +42,8 @@ jobs:
       contents: read
       issues: write
     steps:
+      - run: |
+          gh issue --repo ${{ github.repository }} \
+            create --title "Deployment Failure on Main Branch" --body ""The deployment to the main branch failed during the CI/CD pipeline. Triggered by ${{ github.actor }} with commit message: ${{ github.event.head_commit.message }}.""
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
