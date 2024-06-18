@@ -3,39 +3,36 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
 jobs:
-  deploy_job:
+  job_id:
     runs-on: 'ubuntu-latest'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - uses: 'actions/checkout@v4'
 
-      - name: Authenticate with Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v2
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        project_id: 'relevate-dev-403605'
+        workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
+        service_account: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
+
+    - id: 'deploy'
+      uses: 'google-github-actions/deploy-cloud-functions@v3'
+      timeout-minutes: 10
+      with:
+        name: 'Insert_Data_Test_Poc'
+        runtime: 'python 3.12'
+        project_id: 'relevate-dev-403605'
+        entry_point: 'function.Insert_Data_Test_Poc'
         
-      - name: Setup GCP Service Account
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: 'relevate-dev-403605'
-          workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
-          service_account: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
+    -name:  make the url aunthenticated
+     run: | 
+     gcloud functions add-iam-policy-binding Insert_Data_Test_Poc --member="allUsers" --role="roles/cloudfunctions.invoker"
 
-      - name: Deploy Cloud Function
-        id: deploy
-        uses: google-github-actions/deploy-cloud-functions@v3
-        with:
-          name: 'Insert_Data_Test_Poc'
-          runtime: 'python37'
-          project_id: 'relevate-dev-403605'
-          entry_point: 'function.Insert_Data_Test_Poc'
-
-      - name: Add IAM policy binding
-        run: |
-          gcloud functions add-iam-policy-binding Insert_Data_Test_Poc --member="allUsers" --role="roles/cloudfunctions.invoker"
-
-      - name: Test deployed function
-        run: |
-          curl "${{ steps.deploy.outputs.url }}"
+    # Example of using the output
+    - id: 'test'
+      run: 'curl "${{ steps.deploy.outputs.url }}"'
