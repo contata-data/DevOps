@@ -18,6 +18,7 @@ jobs:
       with:
         project_id: 'relevate-dev-403605'
         workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
+        service_account: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
 
     - id: 'deploy'
       uses: 'google-github-actions/deploy-cloud-functions@v3'
