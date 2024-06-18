@@ -23,7 +23,7 @@ jobs:
       uses: 'google-github-actions/deploy-cloud-functions@v3'
       timeout-minutes: 10
       with:
-        name: 'def Insert_Data_Test_Poc'
+        name: 'Insert_Data_Test_Poc'
         runtime: 'python 3.12'
 
     # Example of using the output
