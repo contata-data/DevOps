@@ -37,6 +37,10 @@ jobs:
           timeout: '10m'
           service_account_email: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
           source_dir: 'DevOpsInsertDataIntoTable'
+          
+      - name: make the url aunthenticated
+        run: |
+          gcloud functions add-iam-policy-binding Insert_Data_Test_Poc --member="allUsers" --role="roles/cloudfunctions.invoker"
 
   open_issue:
     runs-on: ubuntu-latest
