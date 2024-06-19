@@ -9,41 +9,42 @@ on:
 
 jobs:
   deploy_job:
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
     permissions: 
-      contents: 'read'
-      id-token: 'write'
+      contents: read
+      id-token: write
 
     steps:
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - id: 'auth'
-         uses: 'google-github-actions/auth@v2'
-         with:
-           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
-           service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
+          service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
 
       - name: Deploy Cloud Function
         id: deploy
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: 'Insert_Data_Test_Poc'
-          runtime: 'python312'  
+          runtime: 'python312'
           project_id: 'relevate-dev-403605'
           entry_point: 'function.Insert_Data_Test_Poc'
           timeout: '10m'
           service_account_email: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
           source_dir: 'DevOpsInsertDataIntoTable'
           
-      
   open_issue:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       issues: write
+
     steps:
       - run: |
-          gh issue --repo ${{ github.repository }} \
-            create --title "Deployment Failure on Main Branch" --body "The deployment to the main branch failed during the CI/CD pipeline. Triggered by ${{ github.actor }} with commit message: ${{ github.event.head_commit.message }}."
+          gh issue create --repo ${{ github.repository }} \
+            --title "Deployment Failure on Main Branch" \
+            --body "The deployment to the main branch failed during the CI/CD pipeline. Triggered by ${{ github.actor }} with commit message: ${{ github.event.head_commit.message }}."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
