@@ -30,7 +30,7 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloud-functions@v2
         with:
-          name: 'Insert_Data_Test_Poc_CF'
+          name: 'Insert_Data_Test_Poc'
           runtime: 'python312'  
           project_id: 'relevate-dev-403605'
           entry_point: 'function.Insert_Data_Test_Poc'
