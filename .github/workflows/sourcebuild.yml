@@ -23,7 +23,7 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           project_id: 'relevate-dev-403605'
-          workload_identity_provider: 'https://iam.googleapis.com/projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
+          workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
           service_account: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
 
       - name: Deploy Cloud Function
