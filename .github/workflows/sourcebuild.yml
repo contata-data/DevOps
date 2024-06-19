@@ -18,11 +18,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Authenticate with Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v2
+      - name: Setup GCP Service Account
+        uses: google-github-actions/setup-gcloud@master
         with:
-          project_id: 'relevate-dev-403605'
+          project_id: ${{env.PROJECT}}
           service_account_key: ${{ secrets.GCP_SA }}
           export_default_credentials: true
 
