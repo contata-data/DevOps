@@ -35,7 +35,7 @@ jobs:
           project_id: 'relevate-dev-403605'
           entry_point: 'function.Insert_Data_Test_Poc'
           timeout: '10m'
-          service_account_email: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
+          service_account_email: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
           source_dir: 'DevOpsInsertDataIntoTable'
           
       
