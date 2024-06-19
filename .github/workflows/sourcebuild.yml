@@ -23,8 +23,7 @@ jobs:
         with:
           project_id: 'relevate-dev-403605'
           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
-          service_account_key: ${{ secrets.GCP_SA }}
-          export_default_credentials: true
+          service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
 
       - name: Deploy Cloud Function
         id: deploy
