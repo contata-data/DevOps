@@ -1,35 +1,50 @@
-name: Deployment
+name: CI/CD and Issue Management
 
-# on commit push, run job
-on: [ push ]
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  run:
-    # worker runs on latest ubuntu
-    runs-on: ubuntu-latest
+  deploy_job:
+    runs-on: 'ubuntu-latest'
+    permissions: 
+      contents: 'read'
+      id-token: 'write'
 
     steps:
-      # checkout to our repository so we have access to the source code
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - id: 'auth'
+         uses: 'google-github-actions/auth@v2'
+         with:
+           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
+           service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
 
-      # the actual deployment to google
-      - name: Cloud Functions Deploy
-        uses: google-github-actions/deploy-cloud-functions@v2
+      - name: Deploy Cloud Function
+        id: deploy
+        uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          credentials: ${{ secrets.GCP_SA_KEY }}
-          name: Insert_Data_Test_Poc_CF
-          description: Test python cloud function # nullable
+          name: 'Insert_Data_Test_Poc'
+          runtime: 'python312'  
           project_id: 'relevate-dev-403605'
-          region: us-central1
-          source_dir: DevOpsInsertDataIntoTable
-          # name of our function in our main.py file, defaults to the resource name suffix 
-          entry_point: Insert_Data_Test_Poc
-          # runtime to use for the function
-          runtime: python3.12
-          # the function execution timeout
-          timeout: 60
-          # the maximum number of instances for the function.
-          max_instances: 1
-          # optional configs, see google-cloud-actions/deploy-cloud-functions for full reference
-          # list of key-value pairs to set as environment variables in the form KEY1=VALUE1,KEY2=VALUE2.
-#       env_vars: # optional
+          entry_point: 'function.Insert_Data_Test_Poc'
+          timeout: '10m'
+          service_account_email: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
+          source_dir: 'DevOpsInsertDataIntoTable'
+          
+      
+  open_issue:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - run: |
+          gh issue --repo ${{ github.repository }} \
+            create --title "Deployment Failure on Main Branch" --body "The deployment to the main branch failed during the CI/CD pipeline. Triggered by ${{ github.actor }} with commit message: ${{ github.event.head_commit.message }}."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
