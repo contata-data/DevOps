@@ -26,7 +26,7 @@ jobs:
           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
           service_account: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
 
-      - name: Deploy Cloud Function1
+      - name: Deploy Cloud Function
         id: deploy
         uses: google-github-actions/deploy-cloud-functions@v2
         with:
@@ -35,6 +35,7 @@ jobs:
           project_id: 'relevate-dev-403605'
           entry_point: 'function.Insert_Data_Test_Poc'
           timeout: '10m'
+          service_account_email: 'developer@relevate-dev-403605.iam.gserviceaccount.com'
 
   open_issue:
     runs-on: ubuntu-latest
