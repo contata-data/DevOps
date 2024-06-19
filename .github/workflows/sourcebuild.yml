@@ -21,7 +21,7 @@ jobs:
       - name: Setup GCP Service Account
         uses: google-github-actions/auth@v2
         with:
-          project_id: ${{env.PROJECT}}
+          project_id: 'relevate-dev-403605'
           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
           service_account_key: ${{ secrets.GCP_SA }}
           export_default_credentials: true
