@@ -25,10 +25,10 @@ jobs:
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@main
         with:
-          name: 'Insert_Data_DevOps_git_push'
+          name: 'Insert_Data_test_GP'
           runtime: 'python312'
           project_id: 'relevate-dev-403605'
-          entry_point: 'Insert_Data_Test_Poc'
+          entry_point: 'Insert_Data_test'
           timeout: '10m'
-          source_dir: 'DevOpsInsertDataIntoTable'
+          source_dir: 'DevOpsInsert_test'
  
