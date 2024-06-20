@@ -32,7 +32,7 @@ jobs:
           timeout: '10m'
           source_dir: 'DevOpsInsert_test'
 
-      - id: deploy
+      - id: deploys
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           name: 'Insert_Data_DevOps_git_push'
