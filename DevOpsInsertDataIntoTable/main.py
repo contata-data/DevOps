@@ -19,13 +19,13 @@ def Insert_Data_Test_Poc(request):
 
     request_json = request.get_json(silent=True)
     print("request_json:", request_json)
-        ##ip_address = request.headers["x-forwarded-for"]
-    ##current_timestamp = datetime.now()
-    ##publisher = pubsub_v1.PublisherClient()
-    ##request_logging_topic = "projects/relevate-dev-403605/topics/relevate-ai-request-logging"
-    ##request_logging_data = json.dumps({"cloudfunction":"relevate-ai-decile-report-data-insert","ipaddress":f"{ip_address}","payload":request_json,"createdon":f"{current_timestamp}"})
-    ##data_bytes = request_logging_data.encode("utf-8")
-    ##publisher.publish(request_logging_topic,data_bytes)
+    ip_address = request.headers["x-forwarded-for"]
+    current_timestamp = datetime.now()
+    publisher = pubsub_v1.PublisherClient()
+    request_logging_topic = "projects/relevate-dev-403605/topics/relevate-ai-request-logging"
+    request_logging_data = json.dumps({"cloudfunction":"relevate-ai-decile-report-data-insert","ipaddress":f"{ip_address}","payload":request_json,"createdon":f"{current_timestamp}"})
+    data_bytes = request_logging_data.encode("utf-8")
+    publisher.publish(request_logging_topic,data_bytes)
     bqclient = bigquery.Client()
     
     if "Id" in request_json:
