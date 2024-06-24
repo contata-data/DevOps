@@ -3,7 +3,7 @@ on:
   push:
     branches: [ "stag","main" ]
   pull_request:
-    branches: [ ""stag,"main" ]
+    branches: [ "stag","main" ]
   workflow_dispatch:
 
 jobs:
