@@ -11,7 +11,7 @@ jobs:
   dev:
     name: deploy cloudrun to dev environment
     if: ${{ github.ref == 'refs/heads/stag' || github.base_ref == 'stag' }}
-    uses: DevOps/.github/workflows/sourcebuild.yaml@main
+    uses: ./DevOps/.github/workflows/sourcebuild.yaml
     permissions: 
       id-token: write
       contents: read
@@ -20,7 +20,7 @@ jobs:
 
   prod:
     if: ${{ github.ref == 'refs/heads/main' || github.base_ref == 'main' }}
-    uses: DevOps/.github/workflows/sourcebuild.yaml@main
+    uses: ./DevOps/.github/workflows/sourcebuild.yaml
     permissions: 
       id-token: write
       contents: read
