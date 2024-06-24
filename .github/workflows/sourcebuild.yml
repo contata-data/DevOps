@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy-staging:
-    if:  github.event.inputs.environment == 'Dev'
+    if:  github.event.inputs.environment == 'dev'
     runs-on: ubuntu-latest
     permissions: 
       contents: read
