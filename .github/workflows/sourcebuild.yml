@@ -2,34 +2,59 @@ name: CI/CD
 
 on:
   push:
-    branches: 
-      - main
+    branches: [ "main"]
   pull_request:
-    branches: 
-      - main
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  deploy_job_staging:
-    runs-on: ubuntu-latest
+  dev:
+    name: deploy cloudrun to dev environment
+    if: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with: 
+      environment: dev
+      ref: ${{ github.sha }}
+    secrets: inherit
 
-    permissions:
+  stage:
+    if: ${{ github.ref == 'refs/heads/stage' || github.base_ref == 'stage' }}
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with: 
+      environment: Dev
+    secrets: inherit
+
+  prod:
+    if: ${{ github.ref == 'refs/heads/main' || github.base_ref == 'main' }}
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with:
+      environment: prod
+    secrets: inherit
+
+  job_id:
+    runs-on: ubuntu-latest
+    permissions: 
       contents: read
       id-token: write
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Authenticate with Google Cloud
-        id: auth
+      - id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
           service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
 
-      - name: Deploy to Staging
-        id: deploy_staging
+      - id: deploy
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           name: 'Insert_Data_test_GP'
@@ -38,18 +63,3 @@ jobs:
           entry_point: 'Insert_Data_test'
           timeout: '10m'
           source_dir: 'DevOpsInsert_test'
-          environment:
-            Name: 'Dev'
-
-      - name: Deploy to Production
-        id: deploy_production
-        uses: google-github-actions/deploy-cloud-functions@main
-        with:
-          name: 'Insert_Data_test_GP_1'
-          runtime: 'python312'
-          project_id: 'relevate-349919'
-          entry_point: 'Insert_Data_test'
-          timeout: '10m'
-          source_dir: 'DevOpsInsert_test'
-          environment:
-            Name: 'prod'
