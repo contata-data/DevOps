@@ -22,7 +22,7 @@ jobs:
           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
           service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
 
-      - id: deploy
+      - id: deploy Stag
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           name: 'Insert_Data_test_GP'
@@ -33,3 +33,15 @@ jobs:
           source_dir: 'DevOpsInsert_test'
           environment: 
                  Name: 'Dev'
+                 
+       - id: deploy Prod
+        uses: google-github-actions/deploy-cloud-functions@main
+        with:
+          name: 'Insert_Data_test_GP_1'
+          runtime: 'python312'
+          project_id: 'relevate-349919'
+          entry_point: 'Insert_Data_test'
+          timeout: '10m'
+          source_dir: 'DevOpsInsert_test'
+          environment: 
+                 Name: 'prod'
