@@ -1,15 +1,19 @@
 name: CI/CD
 on:
   push:
-    branches: [ "stag", "main" ]
+    branches: 
+      - stag
+      - main
   pull_request:
-    branches: [ "stag", "main" ]
+    branches: 
+      - stag
+      - main
   workflow_dispatch:
     inputs:
       environment:
         description: 'Deployment environment'
         required: true
-        default: 'Dev' # Default value if none is provided
+        default: 'Dev'
 
 jobs:
   deploy-staging:
