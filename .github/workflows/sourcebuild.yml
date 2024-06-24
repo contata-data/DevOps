@@ -31,4 +31,5 @@ jobs:
           entry_point: 'Insert_Data_test'
           timeout: '10m'
           source_dir: 'DevOpsInsert_test'
-          env: Dev
+          environment: 
+                 Name: 'Dev'
