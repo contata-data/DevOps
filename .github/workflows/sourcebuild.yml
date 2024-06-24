@@ -16,7 +16,7 @@ jobs:
       id-token: write
       contents: read
     with: 
-      environment: dev
+      environment: Dev
 
   prod:
     if: ${{ github.ref == 'refs/heads/main' || github.base_ref == 'main' }}
