@@ -12,7 +12,7 @@ on:
 jobs:
   deploy_dev:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'  # Only run on pushes to main branch
+   # if: github.ref == 'refs/heads/main'  # Only run on pushes to main branch
 
     steps:
       - name: Checkout code
