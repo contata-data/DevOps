@@ -10,7 +10,7 @@ on:
 jobs:
   dev:
     name: deploy cloudrun to dev environment
-    if: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'stag' }}
+    if: ${{ github.ref == 'refs/heads/main/stag' || github.base_ref == 'stag' }}
     uses: ./.github/workflows/_deployment.yaml
     permissions: 
       id-token: write
