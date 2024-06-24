@@ -1,23 +1,14 @@
 name: CI/CD
 on:
   push:
-    branches: 
-      - stag
-      - main
+    branches: [ "stag","main" ]
   pull_request:
-    branches: 
-      - stag
-      - main
+    branches: [ "stag","main" ]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment environment'
-        required: true
-        default: 'Dev'
 
 jobs:
   deploy-staging:
-    if: github.event.inputs.environment == 'Dev'
+    if:  github.event.inputs.environment == 'Dev'
     runs-on: ubuntu-latest
     permissions: 
       contents: read
@@ -25,9 +16,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Log environment
-        run: echo "Environment: ${{ github.event.inputs.environment }}"
 
       - id: auth
         uses: google-github-actions/auth@v2
@@ -46,7 +34,7 @@ jobs:
           source_dir: 'DevOpsInsert_test'
 
   deploy-production:
-    if: github.event.inputs.environment == 'prod'
+    if:  github.event.inputs.environment == 'prod'
     runs-on: ubuntu-latest
     permissions: 
       contents: read
@@ -54,9 +42,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Log environment
-        run: echo "Environment: ${{ github.event.inputs.environment }}"
 
       - id: auth
         uses: google-github-actions/auth@v2
