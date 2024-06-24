@@ -17,7 +17,6 @@ jobs:
       contents: read
     with: 
       environment: dev
-    secrets: inherit
 
   prod:
     if: ${{ github.ref == 'refs/heads/main' || github.base_ref == 'main' }}
@@ -27,7 +26,6 @@ jobs:
       contents: read
     with:
       environment: prod
-    secrets: inherit
 
   job_id:
     runs-on: ubuntu-latest
