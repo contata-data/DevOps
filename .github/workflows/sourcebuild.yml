@@ -1,9 +1,9 @@
 name: CI/CD
 on:
   push:
-    branches: [ "stag","main" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "stag","main" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
