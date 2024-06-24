@@ -1,18 +1,39 @@
 name: CI/CD
+
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "stag" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
+  dev:
+    name: deploy cloudrun to dev environment
+    if: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'stag' }}
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with: 
+      environment: dev
+    secrets: inherit
+
+  prod:
+    if: ${{ github.ref == 'refs/heads/main' || github.base_ref == 'main' }}
+    uses: ./.github/workflows/_deployment.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with:
+      environment: prod
+    secrets: inherit
+
   job_id:
     runs-on: ubuntu-latest
     permissions: 
       contents: read
       id-token: write
-
     steps:
       - uses: actions/checkout@v4
 
@@ -31,14 +52,3 @@ jobs:
           entry_point: 'Insert_Data_test'
           timeout: '10m'
           source_dir: 'DevOpsInsert_test'
-
-      - id: deploys
-        uses: google-github-actions/deploy-cloud-functions@main
-        with:
-          name: 'Insert_Data_DevOps_git_push'
-          runtime: 'python312'
-          project_id: 'relevate-dev-403605'
-          entry_point: 'Insert_Data_Test_Poc'
-          timeout: '10m'
-          source_dir: 'DevOpsInsertDataIntoTable'
- 
