@@ -1,28 +1,35 @@
 name: CI/CD
+
 on:
   push:
-    branches: [ "main" ]
+    branches: 
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches: 
+      - main
   workflow_dispatch:
 
 jobs:
-  job_id:
+  deploy_job_staging:
     runs-on: ubuntu-latest
-    permissions: 
+
+    permissions:
       contents: read
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - id: auth
+      - name: Authenticate with Google Cloud
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
           service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
 
-      - id: deploy Stag
+      - name: Deploy to Staging
+        id: deploy_staging
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           name: 'Insert_Data_test_GP'
@@ -31,10 +38,11 @@ jobs:
           entry_point: 'Insert_Data_test'
           timeout: '10m'
           source_dir: 'DevOpsInsert_test'
-          environment: 
-                 Name: 'Dev'
+          environment:
+            Name: 'Dev'
 
-      - id: deploy Prod
+      - name: Deploy to Production
+        id: deploy_production
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           name: 'Insert_Data_test_GP_1'
@@ -43,5 +51,5 @@ jobs:
           entry_point: 'Insert_Data_test'
           timeout: '10m'
           source_dir: 'DevOpsInsert_test'
-          environment: 
-                 Name: 'prod'
+          environment:
+            Name: 'prod'
