@@ -1,28 +1,32 @@
 name: CI/CD
+
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  job_id:
+  deploy_dev:
     runs-on: ubuntu-latest
-    permissions: 
-      contents: read
-      id-token: write
+    if: github.ref == 'refs/heads/main'  # Only run on pushes to main branch
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - id: auth
+      - name: Authenticate with Google Cloud
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
           service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
 
-      - id: deploy
+      - name: Deploy to Development (dev) environment
+        id: deploy_dev
         uses: google-github-actions/deploy-cloud-functions@main
         with:
           name: 'Insert_Data_test_GP'
@@ -31,4 +35,5 @@ jobs:
           entry_point: 'Insert_Data_test'
           timeout: '10m'
           source_dir: 'DevOpsInsert_test'
-          env: Dev
+        env:
+          ENV_VAR_NAME: ${{ secrets.DEV_ENV_VAR }}
