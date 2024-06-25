@@ -7,10 +7,35 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-staging:
+  detect-changes:
     runs-on: ubuntu-latest
-    environment: dev
-    permissions: 
+    outputs:
+      changed-functions: ${{ steps.detect.outputs.changed-functions }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: detect
+        run: |
+          CHANGED_FUNCTIONS=""
+          git fetch origin main
+          for DIR in DevOpsInsert_test/Function1 DevOpsInsert_test/Function2 DevOpsInsert_test/Function3 DevOpsInsert_test/Function4 DevOpsInsert_test/Function5; do
+            if git diff --name-only origin/main | grep -q "^$DIR/"; then
+              FUNCTION_NAME=$(basename $DIR)
+              CHANGED_FUNCTIONS="$CHANGED_FUNCTIONS,$FUNCTION_NAME"
+            fi
+          done
+          CHANGED_FUNCTIONS=${CHANGED_FUNCTIONS#,}  # Remove leading comma
+          echo "changed-functions=$CHANGED_FUNCTIONS" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.env }}
+    strategy:
+      matrix:
+        env: [dev, prod]
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
+    permissions:
       contents: read
       id-token: write
 
@@ -20,41 +45,15 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1'
-          service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
+          workload_identity_provider: ${{ matrix.env == 'dev' && 'projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1' || 'projects/265885005616/locations/global/workloadIdentityPools/gitactionprod2506/providers/gitproviderprod2506' }}
+          service_account: ${{ matrix.env == 'dev' && 'devops-git@relevate-dev-403605.iam.gserviceaccount.com' || 'devops-git-prod@relevate-349919.iam.gserviceaccount.com' }}
 
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@main
         with:
-          name: 'Insert_Data_test_GP_stag'
+          name: ${{ matrix.function }}
           runtime: 'python312'
-          project_id: 'relevate-dev-403605'
+          project_id: ${{ matrix.env == 'dev' && 'relevate-dev-403605' || 'relevate-349919' }}
           entry_point: 'Insert_Data_test'
           timeout: '10m'
-          source_dir: 'DevOpsInsert_test'
-
-  deploy-production:
-    runs-on: ubuntu-latest
-    environment: prod
-    permissions: 
-      contents: read
-      id-token: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: 'projects/265885005616/locations/global/workloadIdentityPools/gitactionprod2506/providers/gitproviderprod2506'
-          service_account: 'devops-git-prod@relevate-349919.iam.gserviceaccount.com'
-          
-      - id: deploy
-        uses: google-github-actions/deploy-cloud-functions@main
-        with:
-          name: 'Insert_Data_test_GP_prod'
-          runtime: 'python312'
-          project_id: 'relevate-349919'
-          entry_point: 'Insert_Data_test'
-          timeout: '10m'
-          source_dir: 'DevOpsInsert_test'
+          source_dir: 'DevOpsInsert_test/${{ matrix.function }}'
