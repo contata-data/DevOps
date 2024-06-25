@@ -37,7 +37,7 @@ jobs:
 
     strategy:
       matrix:
-        function: [ ${{ fromJson(needs.detect-changes.outputs.changed-functions) }} ]
+        function: [ ${{ fromJson(needs.detect-changes.outputs['changed-functions']) }} ]
 
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
 
     strategy:
       matrix:
-        function: [ ${{ fromJson(needs.detect-changes.outputs.changed-functions) }} ]
+        function: [ ${{ fromJson(needs.detect-changes.outputs['changed-functions']) }} ]
 
     steps:
       - uses: actions/checkout@v4
