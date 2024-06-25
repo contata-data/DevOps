@@ -1,13 +1,13 @@
 name: CI/CD
 on:
-    pull_request:
-     types: [closed]
+  pull_request:
+    types: [closed]
   workflow_dispatch:
 
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
-    github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     outputs:
       changed-functions: ${{ steps.detect.outputs.changed-functions }}
     steps:
@@ -30,7 +30,7 @@ jobs:
           else
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
-          fi
+
   deploy-staging:
     needs: detect-changes
     runs-on: ubuntu-latest
