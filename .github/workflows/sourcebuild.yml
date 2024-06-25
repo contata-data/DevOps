@@ -14,6 +14,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Detect changed functions
+        id: detect
         run: |
           CHANGED_FUNCTIONS=()
           git fetch origin main
@@ -25,26 +26,22 @@ jobs:
             fi
           done
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
-            echo "changed-functions=[]" >> $GITHUB_ENV
+            echo "::set-output name=changed-functions::[]"
           else
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
-            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_ENV
+            echo "::set-output name=changed-functions::$CHANGED_FUNCTIONS_JSON"
           fi
 
   deploy-staging:
     needs: detect-merge
     runs-on: ubuntu-latest
     environment: dev
-    permissions: 
+    permissions:
       contents: read
       id-token: write
 
-    strategy:
-      matrix:
-        function: ${{ fromJson(needs.detect-merge.outputs.changed-functions) }}
-
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -53,29 +50,28 @@ jobs:
           service_account: 'devops-git@relevate-dev-403605.iam.gserviceaccount.com'
 
       - name: Deploy to dev environment
-        uses: google-github-actions/deploy-cloud-functions@main
-        with:
-          name: ${{ matrix.function.name }}
-          runtime: 'python312'
-          project_id: 'relevate-dev-403605'
-          entry_point: ${{ matrix.function.entry_point }}
-          timeout: '10m'
-          source_dir: 'src/${{ matrix.function.name }}'
+        id: deploy
+        run: |
+          for FUNCTION in ${{ steps.detect-merge.outputs.changed-functions }}; do
+            NAME=$(echo $FUNCTION | jq -r '.name')
+            ENTRY_POINT=$(echo $FUNCTION | jq -r '.entry_point')
+            echo "Deploying function $NAME with entry point $ENTRY_POINT"
+            # Adjust deployment command as per your requirements
+            # Example: google-github-actions/deploy-cloud-functions@main
+            # Replace the following line with your deployment command
+            echo "Deployment command placeholder"
+          done
 
   deploy-production:
     needs: detect-merge
     runs-on: ubuntu-latest
     environment: prod
-    permissions: 
+    permissions:
       contents: read
       id-token: write
 
-    strategy:
-      matrix:
-        function: ${{ fromJson(needs.detect-merge.outputs.changed-functions) }}
-
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -84,11 +80,14 @@ jobs:
           service_account: 'devops-git-prod@relevate-349919.iam.gserviceaccount.com'
 
       - name: Deploy to production environment
-        uses: google-github-actions/deploy-cloud-functions@main
-        with:
-          name: ${{ matrix.function.name }}
-          runtime: 'python312'
-          project_id: 'relevate-349919'
-          entry_point: ${{ matrix.function.entry_point }}
-          timeout: '10m'
-          source_dir: 'src/${{ matrix.function.name }}'
+        id: deploy
+        run: |
+          for FUNCTION in ${{ steps.detect-merge.outputs.changed-functions }}; do
+            NAME=$(echo $FUNCTION | jq -r '.name')
+            ENTRY_POINT=$(echo $FUNCTION | jq -r '.entry_point')
+            echo "Deploying function $NAME with entry point $ENTRY_POINT"
+            # Adjust deployment command as per your requirements
+            # Example: google-github-actions/deploy-cloud-functions@main
+            # Replace the following line with your deployment command
+            echo "Deployment command placeholder"
+          done
