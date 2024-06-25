@@ -48,7 +48,7 @@ jobs:
         with:
           workload_identity_provider: 'projects/265885005616/locations/global/workloadIdentityPools/gitactionprod2506/providers/gitproviderprod2506'
           service_account: 'devops-git-prod@relevate-349919.iam.gserviceaccount.com'
-
+          
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@main
         with:
