@@ -6,7 +6,7 @@ import pandas as pd
 from google.cloud import pubsub_v1
 
 @functions_framework.http
-def Insert_Data_Test_Poc(request):
+def DevOpsInsertDataIntoTable(request):
     if request.method == "OPTIONS":
         headers = {
             "Access-Control-Allow-Origin": "*",
