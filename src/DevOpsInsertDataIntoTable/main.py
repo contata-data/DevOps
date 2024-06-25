@@ -6,7 +6,7 @@ import pandas as pd
 from google.cloud import pubsub_v1
 
 @functions_framework.http
-def Insert_Data_test(request):
+def DevOpsInsertDataIntoTable(request):
     if request.method == "OPTIONS":
         headers = {
             "Access-Control-Allow-Origin": "*",
@@ -35,7 +35,7 @@ def Insert_Data_test(request):
             print('Id is blank')
     else:
         print('Id is missing in payload')
-        return 'Id is missing in payload, please re-request with Id123456', 500
+        return 'Id is missing in payload, please re-request with ids12', 500
     
     if "Name" in request_json:
         Name_ = request_json.get("Name")
