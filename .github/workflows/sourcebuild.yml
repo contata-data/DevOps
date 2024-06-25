@@ -25,7 +25,12 @@ jobs:
             fi
           done
           CHANGED_FUNCTIONS=${CHANGED_FUNCTIONS#,}  # Remove leading comma
-          echo "changed-functions=$CHANGED_FUNCTIONS" >> $GITHUB_OUTPUT
+          if [ -z "$CHANGED_FUNCTIONS" ]; then
+            echo "changed-functions=[]" >> $GITHUB_OUTPUT
+          else
+            CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$CHANGED_FUNCTIONS" | sed 's/,/","/g')
+            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
+          fi
 
   deploy-staging:
     needs: detect-changes
@@ -37,7 +42,7 @@ jobs:
 
     strategy:
       matrix:
-        function: [ ${{ fromJson(needs.detect-changes.outputs['changed-functions']) }} ]
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
 
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +73,7 @@ jobs:
 
     strategy:
       matrix:
-        function: [ ${{ fromJson(needs.detect-changes.outputs['changed-functions']) }} ]
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
 
     steps:
       - uses: actions/checkout@v4
