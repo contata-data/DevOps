@@ -24,14 +24,14 @@ jobs:
             fi
           done
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
-            echo "changed-functions=[]" >> $GITHUB_OUTPUT
+            echo "changed-functions=[]" >> $GITHUB_ENV
           else
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
-            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
+            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_ENV
           fi
 
   deploy-staging:
-    needs: detect-changes
+    needs: detect-merge
     runs-on: ubuntu-latest
     environment: dev
     permissions: 
@@ -62,7 +62,7 @@ jobs:
           source_dir: 'src'
 
   deploy-production:
-    needs: detect-changes
+    needs: detect-merge
     runs-on: ubuntu-latest
     environment: prod
     permissions: 
@@ -79,7 +79,7 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: 'projects/265885005616/locations/global/workloadIdentityPools/gitactionprod2506/providers/gitproviderprod2506'
+          workload_identity_provider: 'projects/265885005616/locations/global/workloadIdentityPools/gitactiaonprod2506/providers/gitproviderprod2506'
           service_account: 'devops-git-prod@relevate-349919.iam.gserviceaccount.com'
           
       - id: deploy
