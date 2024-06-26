@@ -1,13 +1,12 @@
 name: CI/CD
 on:
-  pull_request:
-    types: [closed]
+  merge:
+        branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     outputs:
       changed-functions: ${{ steps.detect.outputs.changed-functions }}
     steps:
