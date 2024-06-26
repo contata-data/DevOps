@@ -14,38 +14,32 @@ jobs:
 
       - id: detect
         run: |
-          echo "Fetching the main branch..."
-          git fetch origin main
-
           CHANGED_FUNCTIONS=()
-          echo "Checking for changes in the 'src' directory..."
+          git fetch origin main
           for DIR in src/*; do
-            if [ -d "$DIR" ]; then
-              echo "Checking directory: $DIR"
-              if git diff --name-only origin/main | grep -q "^$DIR/"; then
-                FUNCTION_NAME=$(basename $DIR)
-                echo "Detected change in function: $FUNCTION_NAME"
-                # Assuming entry point can be derived from function name
-                ENTRY_POINT="${FUNCTION_NAME}"
-                CHANGED_FUNCTIONS+=("{\"name\": \"$FUNCTION_NAME\", \"entry_point\": \"$ENTRY_POINT\"}")
-              fi
+            if git diff --name-only origin/main | grep -q "^$DIR/"; then
+              FUNCTION_NAME=$(basename $DIR)
+              ENTRY_POINT="${FUNCTION_NAME}"
+              CHANGED_FUNCTIONS+=("{\"name\": \"$FUNCTION_NAME\", \"entry_point\": \"$ENTRY_POINT\"}")
             fi
           done
-
-          echo "Changed functions: ${CHANGED_FUNCTIONS[@]}"
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
-            echo "No functions changed."
+            echo "No changes detected."
             echo "changed-functions=[]" >> $GITHUB_OUTPUT
           else
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
+            echo "Changed functions: $CHANGED_FUNCTIONS_JSON"
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
-          fi
+        shell: bash
+
+      - name: Debug Changed Functions
+        run: echo "${{ steps.detect.outputs.changed-functions }}"
 
   deploy-staging:
     needs: detect-changes
     runs-on: ubuntu-latest
     environment: dev
-    permissions:
+    permissions: 
       contents: read
       id-token: write
 
@@ -76,7 +70,7 @@ jobs:
     needs: detect-changes
     runs-on: ubuntu-latest
     environment: prod
-    permissions:
+    permissions: 
       contents: read
       id-token: write
 
@@ -92,7 +86,7 @@ jobs:
         with:
           workload_identity_provider: 'projects/265885005616/locations/global/workloadIdentityPools/gitactionprod2506/providers/gitproviderprod2506'
           service_account: 'devops-git-prod@relevate-349919.iam.gserviceaccount.com'
-
+          
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@main
         with:
