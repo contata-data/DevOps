@@ -1,6 +1,7 @@
-on 
+on:
   pull_request:
-    tpyes: [closed]
+    types: [closed]
+
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
