@@ -36,11 +36,7 @@ def DevOpsInsert_test(request):
     else:
         print('Id is missing in payload')
 
-<<<<<<< HEAD
         return 'Id is missing in payload, please re-request with Id_main', 500
-=======
-        return 'Id is missing in payload, please re-request with Id15', 500
->>>>>>> f1c1a382c782c61a278a6fd533a540a360b1b00d
 
     if "Name" in request_json:
         Name_ = request_json.get("Name")
