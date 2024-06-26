@@ -1,8 +1,9 @@
 name: CI/CD
-
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
-    types: [closed]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -26,14 +27,11 @@ jobs:
             fi
           done
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
-            echo "changed-functions=[]" >> $GITHUB_ENV
+            echo "changed-functions=[]" >> $GITHUB_OUTPUT
           else
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
-            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_ENV
+            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
           fi
-      - name: Set outputs
-        run: echo "::set-output name=changed-functions::${CHANGED_FUNCTIONS_JSON}"
-
   deploy-staging:
     needs: detect-changes
     runs-on: ubuntu-latest
@@ -44,7 +42,7 @@ jobs:
 
     strategy:
       matrix:
-        function: ${{fromJson(needs.detect-changes.outputs.changed-functions)}}
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
 
     steps:
       - uses: actions/checkout@v4
@@ -75,7 +73,7 @@ jobs:
 
     strategy:
       matrix:
-        function: ${{fromJson(needs.detect-changes.outputs.changed-functions)}}
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
 
     steps:
       - uses: actions/checkout@v4
