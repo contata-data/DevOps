@@ -27,14 +27,13 @@ jobs:
             fi
           done
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
-            echo "changed-functions=[]" >> $GITHUB_ENV
+            echo "[]" > changed-functions.json
           else
-            CHANGED_FUNCTIONS_JSON=$(printf '%s\n' "${CHANGED_FUNCTIONS[@]}" | jq -c '.')
-            echo "changed-functions=${CHANGED_FUNCTIONS_JSON}" >> $GITHUB_ENV
+            echo "[${CHANGED_FUNCTIONS[*]}]" > changed-functions.json
           fi
 
       - name: Set outputs
-        run: echo "::set-output name=changed-functions::${CHANGED_FUNCTIONS_JSON}"
+        run: echo "::set-output name=changed-functions::$(cat changed-functions.json)"
 
   deploy-staging:
     needs: detect-changes
