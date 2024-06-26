@@ -7,7 +7,7 @@ on:
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == 'true'
     outputs:
       changed-functions: ${{ steps.detect.outputs.changed-functions }}
     steps:
@@ -36,7 +36,6 @@ jobs:
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
             echo "Changed functions: $CHANGED_FUNCTIONS_JSON"
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
-          fi
         shell: bash
 
       - name: Debug Changed Functions
@@ -52,7 +51,7 @@ jobs:
 
     strategy:
       matrix:
-        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
+        function: ${{ fromJson(needs['detect-changes'].outputs['changed-functions']) }}
 
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +82,7 @@ jobs:
 
     strategy:
       matrix:
-        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
+        function: ${{ fromJson(needs['detect-changes'].outputs['changed-functions']) }}
 
     steps:
       - uses: actions/checkout@v4
