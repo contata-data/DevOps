@@ -1,7 +1,8 @@
 name: CI/CD
+
 on:
   pull_request:
-   types: [ closed ]
+    types: [closed]
   workflow_dispatch:
 
 jobs:
@@ -15,8 +16,9 @@ jobs:
       - id: detect
         run: |
           CHANGED_FUNCTIONS=()
+          BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD^)
           for DIR in src/*; do
-            if git diff ORIG_HEAD HEAD --name-only | grep -q "^$DIR/"; then
+            if git diff $BASE_BRANCH HEAD --name-only | grep -q "^$DIR/"; then
               FUNCTION_NAME=$(basename $DIR)
               # Assuming entry point can be derived from function name
               ENTRY_POINT="${FUNCTION_NAME}"
@@ -34,7 +36,7 @@ jobs:
     needs: detect-changes
     runs-on: ubuntu-latest
     environment: dev
-    permissions: 
+    permissions:
       contents: read
       id-token: write
 
@@ -65,7 +67,7 @@ jobs:
     needs: detect-changes
     runs-on: ubuntu-latest
     environment: prod
-    permissions: 
+    permissions:
       contents: read
       id-token: write
 
@@ -81,7 +83,7 @@ jobs:
         with:
           workload_identity_provider: 'projects/265885005616/locations/global/workloadIdentityPools/gitactionprod2506/providers/gitproviderprod2506'
           service_account: 'devops-git-prod@relevate-349919.iam.gserviceaccount.com'
-          
+
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@main
         with:
