@@ -12,13 +12,15 @@ jobs:
       changed-functions: ${{ steps.detect.outputs.changed-functions }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure the full history is fetched for diffing
 
       - id: detect
         run: |
           CHANGED_FUNCTIONS=()
-          BASE_BRANCH=$(git rev-parse --abbrev-ref HEAD^)
+          BASE_BRANCH=${GITHUB_BASE_REF:-$(git rev-parse --abbrev-ref HEAD^)}
           for DIR in src/*; do
-            if git diff $BASE_BRANCH HEAD --name-only | grep -q "^$DIR/"; then
+            if git diff origin/$BASE_BRANCH HEAD --name-only | grep -q "^$DIR/"; then
               FUNCTION_NAME=$(basename $DIR)
               # Assuming entry point can be derived from function name
               ENTRY_POINT="${FUNCTION_NAME}"
@@ -30,7 +32,6 @@ jobs:
           else
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
-          fi
 
   deploy-staging:
     needs: detect-changes
