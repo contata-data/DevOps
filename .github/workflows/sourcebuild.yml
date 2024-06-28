@@ -143,4 +143,6 @@ jobs:
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
           echo "Last commit  hash: $LAST_COMMIT_WRITE"
+          git add .
+          git commit -m"test"
           git push origin main
