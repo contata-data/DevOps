@@ -28,12 +28,6 @@ jobs:
           echo "Previous merge commit: $PREV_MERGE"
           echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_ENV
 
-      - name: Verify Commits
-        run: |
-          echo "Verifying commit hashes..."
-          git cat-file -t ${{ steps.last_merge.outputs.LAST_MERGE }} || echo "Last merge commit does not exist!"
-          git cat-file -t ${{ steps.prev_merge.outputs.PREV_MERGE }} || echo "Previous merge commit does not exist!"
-
       - name: List Changed Files
         id: changed_files
         run: |
