@@ -36,6 +36,7 @@ jobs:
       - name: List Changed Files
         id: changed_files
         run: |
+          git fetch origin main
           CHANGED_FILES=$(git diff --name-only ${{ steps.prev_merge.outputs.commit }} ${{ steps.last_merge.outputs.commit }})
           echo "Changed files: $CHANGED_FILES"
           echo "::set-output name=files::$CHANGED_FILES"
