@@ -70,7 +70,7 @@ jobs:
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
           fi
 
-  last-commit-write:
+  commitwrite:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
