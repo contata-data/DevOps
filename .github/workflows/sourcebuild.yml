@@ -138,7 +138,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: get last commit details
-        id: last_commit
+        id: last_commit_write
         run: |
           LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
           echo "last commit: $LAST_COMMIT"
