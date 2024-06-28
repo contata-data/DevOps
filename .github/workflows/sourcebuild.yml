@@ -34,7 +34,7 @@ jobs:
         id: prev_merge
         run: |
           PREV_MERGE=$(git log main --merges -2 --format=%H | tail -n 1)
-          echo "Previous merge commit : $PREV_MERGE"
+          echo "Previous merge commit  : $PREV_MERGE"
           echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_OUTPUT
 
       - id: detect
