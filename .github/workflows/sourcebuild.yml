@@ -43,6 +43,9 @@ jobs:
           echo "Directories: $CHANGED_DIRS"
 
           for DIR in $CHANGED_DIRS; do
+              if [ "$DIR" = ".github" ] || [ "$dir_name" = ".github/workflows" ]; then
+                continue
+              fi
               echo "Directory name: $DIR"
               FUNCTION_NAME=$(basename $DIR)
               echo "function name: $FUNCTION_NAME"
@@ -50,13 +53,13 @@ jobs:
               ENTRY_POINT="${FUNCTION_NAME}"
               CHANGED_FUNCTIONS+=("{\"name\": \"$FUNCTION_NAME\", \"entry_point\": \"$ENTRY_POINT\"}")
           done
+
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
             echo "changed-functions=[]" >> $GITHUB_OUTPUT
           else
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
           fi
-          echo "changed function : $changed-functions"
 
   deploy-staging:
     needs: detect-changes
