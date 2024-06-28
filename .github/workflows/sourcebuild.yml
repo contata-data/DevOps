@@ -51,7 +51,6 @@ jobs:
           echo "${{ steps.extract_dirs.outputs.dirs }}"
           CHANGED_DIRS="${{ steps.extract_dirs.outputs.dirs }}"
           for DIR in CHANGED_DIRS; do
-              echo "Directories: $DIR"
               FUNCTION_NAME=$(basename $DIR)
               # Assuming entry point can be derived from function name
               ENTRY_POINT="${FUNCTION_NAME}"
