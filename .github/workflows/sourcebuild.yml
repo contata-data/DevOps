@@ -132,7 +132,7 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
-last-commit-write:
+  last-commit-write:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
