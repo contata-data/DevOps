@@ -48,7 +48,7 @@ jobs:
           CHANGED_FILES=CHANGED_FILES=$(git show --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }})
            
           #get changed dirs
-          CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | sort | uniq)
+          CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
           echo "Directories: $CHANGED_DIRS"
 
           for DIR in $CHANGED_DIRS; do
@@ -56,7 +56,7 @@ jobs:
                 continue
               fi
               echo "Directory name: $DIR"
-              FUNCTION_NAME=src/$(basename $DIR)
+              FUNCTION_NAME=$(basename $DIR)
               echo "function name: $FUNCTION_NAME"
               # Assuming entry point can be derived from function name
               ENTRY_POINT="${FUNCTION_NAME}"
