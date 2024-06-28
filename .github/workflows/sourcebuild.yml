@@ -27,7 +27,7 @@ jobs:
         id: last_merge
         run: |
           LAST_MERGE=$(git log main --merges -1 --format=%H)
-          echo "Last merge commit: $LAST_MERGE"
+          echo "Last merge commit : $LAST_MERGE"
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
 
       - name: Get Previous Merge Commit
