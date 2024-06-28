@@ -43,7 +43,7 @@ jobs:
           echo "Directories: $CHANGED_DIRS"
 
           for DIR in $CHANGED_DIRS; do
-              if [ "$DIR" = ".github" ] || [ "$dir_name" = ".github/workflows" ]; then
+              if [ "$DIR" = ".github" ] || [ "$DIR" = ".github/workflows" ]; then
                 continue
               fi
               echo "Directory name: $DIR"
