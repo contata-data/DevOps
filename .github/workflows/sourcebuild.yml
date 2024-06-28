@@ -135,17 +135,12 @@ jobs:
   commitwrite:
     runs-on: ubuntu-latest
     steps:
-      # ... steps to write the commit hash to Icf.txt
-
-  writefile:
-    needs: commitwrite  # This job depends on commitwrite finishing successfully
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/checkout@v4
-        # ... other steps
+
       - name: get last commit details
         id: last_commit
         run: |
           LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
           echo "last commit: $LAST_COMMIT"
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
+          git push origin main
