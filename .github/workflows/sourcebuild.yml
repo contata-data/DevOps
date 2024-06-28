@@ -135,19 +135,22 @@ jobs:
   commitwrite:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
-      -name: Set up git identity
-       run: | 
-        git config --global user.name "vikask@contata.in"
-        git config --globale user.name "vikas"
+      - name: Set up Git identity
+        run: |
+          git config --global user.email "vikask@contata.in"
+          git config --global user.name "Vikas Kumar"
 
-      - name: get last commit details
+      - name: Get last commit details
         id: last_commit_write
         run: |
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
-          echo "Last commit  hash: $LAST_COMMIT_WRITE"
+          echo "Last commit hash: $LAST_COMMIT_WRITE"
+
+      - name: Commit and push changes
+        run: |
           git add .
-          git commit -m"test"
+          git commit -m "Automated commit by CI/CD"
           git push origin main
