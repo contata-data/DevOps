@@ -140,7 +140,7 @@ jobs:
       - name: get last commit details
         id: last_commit_write
         run: |
-          LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
-          echo "last commit: $LAST_COMMIT"
-          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
+          LAST_COMMIT_WRITE=$(git rev-parse HEAD)
+          echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
+          echo "Last commit  hash: $LAST_COMMIT_WRITE"
           git push origin main
