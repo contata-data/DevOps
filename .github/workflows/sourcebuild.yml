@@ -36,7 +36,7 @@ jobs:
           # get changed files
           echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
-          CHANGED_FILES=$(git diff --name-only ${{ steps.prev_merge.outputs.PREV_MERGE }} ${{ steps.last_merge.outputs.LAST_MERGE }})
+          CHANGED_FILES=$(git diff --name-only HEAD^..HEAD)
            
           #get changed dirs
           CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | sort | uniq)
