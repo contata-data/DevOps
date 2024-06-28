@@ -56,7 +56,7 @@ jobs:
                 continue
               fi
               echo "Directory name: $DIR"
-              FUNCTION_NAME=$(basename $DIR)
+              FUNCTION_NAME=src/$(basename $DIR)
               echo "function name: $FUNCTION_NAME"
               # Assuming entry point can be derived from function name
               ENTRY_POINT="${FUNCTION_NAME}"
