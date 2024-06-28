@@ -37,6 +37,7 @@ jobs:
       - id: detect
         run: |
           CHANGED_FUNCTIONS=()
+          git fetch origin main
           CHANGED_DIRS="${{ steps.changed_dirs.outputs.dirs }}"
           for DIR in CHANGED_DIRS; do
               FUNCTION_NAME=$(basename $DIR)
