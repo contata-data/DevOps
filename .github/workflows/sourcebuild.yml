@@ -17,7 +17,7 @@ jobs:
       - name: get last commit details
         id: last_commit
         run: |
-           LAST_COMMIT=$(Get-Content icf.txt)
+           LAST_COMMIT=$(cat icf.txt)
            echo "last commit: $LAST_COMMIT"
 
       - name: Get Last Merge Commit
