@@ -16,7 +16,8 @@ jobs:
 
       - name: get last commit details
         id: last_commit
-        run: LAST_COMMIT=$(Get-Content ${{ github.workspace }}\Icf.txt)
+        run: |
+           LAST_COMMIT=$(Get-Content ${{ github.workspace }}\Icf.txt)
            echo "last commit: $LAST_COMMIT"
            echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
 
