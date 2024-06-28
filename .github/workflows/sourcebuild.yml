@@ -63,6 +63,7 @@ jobs:
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
           fi
+          echo "changed function : $changed-functions"
 
   deploy-staging:
     needs: detect-changes
