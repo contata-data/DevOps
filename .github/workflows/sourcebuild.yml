@@ -21,6 +21,7 @@ jobs:
         id: last_merge
         run: |
           LAST_MERGE=$(git log main --merges -1 --format=%H)
+          LAST_MERGE="ac4346a09d0e0be4cbafc4b2164d7f77e1498aa3"
           echo "Last merge commit: $LAST_MERGE"
           echo "::set-output name=commit::$LAST_MERGE"
 
