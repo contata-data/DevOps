@@ -137,6 +137,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      -name Set up git identity
+       run: | 
+        git config --global user.name "vikask@contata.in"
+        git config --globale user.name "vikas"
       - name: get last commit details
         id: last_commit_write
         run: |
