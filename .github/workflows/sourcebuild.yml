@@ -19,7 +19,7 @@ jobs:
       - name: get last commit details
         id: last_commit
         run: |
-           LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
+           LAST_COMMIT=$(cat ${{ github.workspace }}Icf.txt)
            echo "last commit: $LAST_COMMIT"
            echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
 
@@ -69,15 +69,6 @@ jobs:
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
           fi
-
-  commitwrite:
-    runs-on: ubuntu-latest
-
-        run: |
-         LAST_COMMIT_WRITE=$(git rev-parse HEAD)
-         echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
-         echo "Last commit hash: $LAST_COMMIT_WRITE"
-         git push orign main
 
   deploy-staging:
     needs: detect-changes
@@ -141,3 +132,20 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
+  commitwrite:
+    runs-on: ubuntu-latest
+    steps:
+      # ... steps to write the commit hash to Icf.txt
+
+  writefile:
+    needs: commitwrite  # This job depends on commitwrite finishing successfully
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        # ... other steps
+      - name: get last commit details
+        id: last_commit
+        run: |
+          LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
+          echo "last commit: $LAST_COMMIT"
+          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
