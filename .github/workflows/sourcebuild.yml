@@ -45,6 +45,7 @@ jobs:
           for DIR in $CHANGED_DIRS; do
               echo "Directory name: $DIR"
               FUNCTION_NAME=$(basename $DIR)
+              echo "function name: $FUNCTION_NAME"
               # Assuming entry point can be derived from function name
               ENTRY_POINT="${FUNCTION_NAME}"
               CHANGED_FUNCTIONS+=("{\"name\": \"$FUNCTION_NAME\", \"entry_point\": \"$ENTRY_POINT\"}")
