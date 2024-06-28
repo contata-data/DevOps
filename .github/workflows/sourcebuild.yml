@@ -72,9 +72,7 @@ jobs:
 
   commitwrite:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Write Last Commit to File
+
         run: |
          LAST_COMMIT_WRITE=$(git rev-parse HEAD)
          echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
