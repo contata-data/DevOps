@@ -4,7 +4,7 @@ on:
     branches:
       - main
     path: 
-      -'src/*'
+      - 'src/*'
 
 jobs:
   detect-changes:
@@ -19,7 +19,7 @@ jobs:
       - name: get last commit details
         id: last_commit
         run: |
-           LAST_COMMIT=$(Get-Content ${{ github.workspace }}/Icf.txt)
+           LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
            echo "last commit: $LAST_COMMIT"
            echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
 
@@ -80,7 +80,7 @@ jobs:
        LAST_COMMIT_WRITE=$(git rev-parse HEAD)
        echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
        echo "Last commit hash: $LAST_COMMIT_WRITE"
-       Last_Push=$(git push orign main)
+       git push orign main
 
   deploy-staging:
     needs: detect-changes
