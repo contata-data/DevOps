@@ -74,13 +74,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-    - name: Write Last Commit to File
-      run: |
-       LAST_COMMIT_WRITE=$(git rev-parse HEAD)
-       echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
-       echo "Last commit hash: $LAST_COMMIT_WRITE"
-       git push orign main
+      - name: Write Last Commit to File
+        run: |
+         LAST_COMMIT_WRITE=$(git rev-parse HEAD)
+         echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
+         echo "Last commit hash: $LAST_COMMIT_WRITE"
+         git push orign main
 
   deploy-staging:
     needs: detect-changes
