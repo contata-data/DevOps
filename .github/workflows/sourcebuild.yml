@@ -131,7 +131,8 @@ jobs:
           runtime: "python312"
           project_id: "relevate-349919"
           entry_point: ${{ matrix.function.entry_point }}
-          trigger-topic: "testPubSubTrigger"
+          event_trigger_type: "providers/cloud.pubsub/eventTypes/topic.publish"
+          event_trigger_resource: "projects/relevate-dev-403605/topics/testing"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
