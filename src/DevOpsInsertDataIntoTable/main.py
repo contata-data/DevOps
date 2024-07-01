@@ -45,7 +45,11 @@ def DevOpsInsertDataIntoTable(request):
             print("Id is blank")
     else:
         print("Id is missing in payload")
+<<<<<<< HEAD
         return "Id is missing in payload, please re-request with id 01072024 Stage4", 500
+=======
+        return "Id is missing in payload, please re-request with id 01072024 Stage3", 500
+>>>>>>> c3ee75aef7f296ac6ce7e647134c0ad6e534e0b0
 
     if "Name" in request_json:
         Name_ = request_json.get("Name")
