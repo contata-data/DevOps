@@ -134,6 +134,7 @@ jobs:
           source_dir: "src/${{ matrix.function.name }}"
 
   commitwrite:
+    needs: detect-changes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
