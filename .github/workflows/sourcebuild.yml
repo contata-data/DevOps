@@ -99,6 +99,7 @@ jobs:
           runtime: "python312"
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
+          trigger-topic: "testPubSubTrigger"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
@@ -130,6 +131,7 @@ jobs:
           runtime: "python312"
           project_id: "relevate-349919"
           entry_point: ${{ matrix.function.entry_point }}
+          trigger-topic: "testPubSubTrigger"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
