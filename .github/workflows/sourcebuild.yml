@@ -45,6 +45,7 @@ jobs:
           # get changed files
           echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
+          echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
           CHANGED_FILES=CHANGED_FILES=$(git show --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }})
            
           #get changed dirs
