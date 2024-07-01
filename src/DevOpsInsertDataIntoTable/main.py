@@ -47,7 +47,6 @@ def DevOpsInsertDataIntoTable(request):
         print("Id is missing in payload1")
         return "Id is missing in payload, please re-request with id 01072024 Commit 2", 500
 
-
     if "Name" in request_json:
         Name_ = request_json.get("Name")
         print(Name_)
