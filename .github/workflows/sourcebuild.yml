@@ -97,11 +97,14 @@ jobs:
         with:
           name: ${{ matrix.function.name }}
           runtime: "python312"
-          service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.pubsub.topic.publish"
           event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
+          event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/DevOpsTesting"
+          event_trigger_filters: |
+                                serviceName=compute.googleapis.com
+                                methodName=PATTERN:compute.instances.*
           event_trigger_service: "pubsub.googleapis.com"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
