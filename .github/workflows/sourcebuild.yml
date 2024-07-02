@@ -84,7 +84,7 @@ jobs:
         function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4s
 
       - id: auth
         uses: google-github-actions/auth@v2
@@ -100,7 +100,7 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.pubsub.topic.publish"
-          event_trigger_resource: "projects/relevate-dev-403605/topics/testing"
+          event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
@@ -133,7 +133,7 @@ jobs:
           project_id: "relevate-349919"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.pubsub.topic.publish"
-          event_trigger_resource: "projects/relevate-dev-403605/topics/testing"
+          event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
