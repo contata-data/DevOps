@@ -99,10 +99,8 @@ jobs:
           runtime: "python312"
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
-          event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
-          event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
-          event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/DevOpsTesting"
-          event_trigger_service: "pubsub.googleapis.com"
+          event_trigger_type: "google.cloud.storage.object.v1.finalized"
+          event_trigger_resource: "relevate-dev-403605/sample-files-schema"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
@@ -134,9 +132,8 @@ jobs:
           runtime: "python312"
           project_id: "relevate-349919"
           entry_point: ${{ matrix.function.entry_point }}
-          event_trigger_type: "google.pubsub.topic.publish"
-          event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
-          event_trigger_service: "pubsub.googleapis.com"
+          event_trigger_type: "google.cloud.storage.object.v1.finalized"
+          event_trigger_resource: "relevate-dev-403605/sample-files-schema"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
