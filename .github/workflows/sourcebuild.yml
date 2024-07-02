@@ -101,6 +101,7 @@ jobs:
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.pubsub.topic.publish"
           event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
+          event_trigger_service: "pubsub.googleapis.com"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
@@ -134,6 +135,7 @@ jobs:
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.pubsub.topic.publish"
           event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
+          event_trigger_service: "pubsub.googleapis.com"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
