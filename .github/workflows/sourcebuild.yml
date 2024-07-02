@@ -103,7 +103,7 @@ jobs:
           event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
           event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/DevOpsTesting"
           event_trigger_filters: |
-                                serviceName=compute.googleapis.com
+                                serviceName=pubsub.googleapis.com
                                 methodName=PATTERN:compute.instances.*
           event_trigger_service: "pubsub.googleapis.com"
           timeout: "10m"
