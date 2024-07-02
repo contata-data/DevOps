@@ -99,7 +99,7 @@ jobs:
           runtime: "python312"
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
-          event_trigger_type: "ggoogle.cloud.pubsub.topic.v1.messagePublished"
+          event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/relevate-dev-403605/topics/DevOpsTesting"
           event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/DevOpsTesting"
           event_trigger_filters: |
