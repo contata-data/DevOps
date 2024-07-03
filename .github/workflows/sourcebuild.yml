@@ -74,6 +74,39 @@ jobs:
   deploy-staging:
     needs: detect-changes
     runs-on: ubuntu-latest
+    environment: stag
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      matrix:
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
+          service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloud-functions@main
+        with:
+          name: ${{ matrix.function.name }}
+          runtime: "python312"
+          project_id: "relevate-dev-403605"
+          entry_point: ${{ matrix.function.entry_point }}
+          event_trigger_type: "google.cloud.storage.object.v1.finalized"
+          event_trigger_resource: "projects/_/buckets/relevate-dev-403605/sample-files-schema"
+          timeout: "10m"
+          source_dir: "src/${{ matrix.function.name }}"
+
+  deploy-dev:
+    needs: detect-changes
+    runs-on: ubuntu-latest
     environment: dev
     permissions:
       contents: read
@@ -100,7 +133,7 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/_/bucket/relevate-dev-403605/sample-files-schema"
+          event_trigger_resource: "projects/_/buckets/relevate-dev-403605/sample-files-schema"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
@@ -133,7 +166,7 @@ jobs:
           project_id: "relevate-349919"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "relevate-dev-403605/sample-files-schema"
+          event_trigger_resource: "projects/_/buckets/relevate-dev-403605/sample-files-schema"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
