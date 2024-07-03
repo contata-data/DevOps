@@ -103,6 +103,9 @@ jobs:
           event_trigger_resource: "projects/_/buckets/relevate-dev-403605/sample-files-schema"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
+          event_filters: |
+            - attribute: "bucket"
+              value: "relevate-dev-403605/sample-files-schema"
 
   deploy-dev:
     needs: detect-changes
