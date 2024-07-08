@@ -104,6 +104,8 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
           event_filters: |
+            - attribute: "type"
+              value: "google.cloud.storage.object.v1.finalized"
             - attribute: "bucket"
               value: "relevate-dev-403605/sample-files-schema"
 
