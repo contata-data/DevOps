@@ -165,7 +165,7 @@ jobs:
           runtime: "python312"
           project_id: "relevate-349919"
           entry_point: ${{ matrix.function.entry_point }}
-          event_trigger_type: "google.cloud.storage.object.v1.finalized"
+          event_trigger_type: "google.cloud.storage.object.v2.finalized"
           event_trigger_resource: "projects/_/buckets/relevate-dev-403605/sample-files-schema"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
