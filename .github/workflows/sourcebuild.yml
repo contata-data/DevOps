@@ -105,7 +105,6 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
           event_trigger_filters: |
-            eventName=google.cloud.storage.object.v1.finalized
             resource=buckets/relevate-dev-403605/devops_poc
             bucket=buckets/relevate-dev-403605/devops_poc
 
