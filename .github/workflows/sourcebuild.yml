@@ -93,7 +93,7 @@ jobs:
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
       - id: deploy
-        uses: google-github-actions/deploy-cloud-functions@main
+        uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
           runtime: "python312"
@@ -101,6 +101,7 @@ jobs:
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/_/bucket/relevate-dev-403605/sample-files-schema"
+          event_trigger_storage: "projects/_/bucket/relevate-dev-403605/sample-files-schema"
           event_trigger_service: "storage.googleapis.com"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
