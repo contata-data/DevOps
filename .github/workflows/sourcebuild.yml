@@ -100,11 +100,15 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_storage: "projects/_/buckets/relevate-dev-403605/devops_poc/*"
+          event_trigger_storage: "projects/_/buckets/relevate-dev-403605/devops_poc"
           event_trigger_service: "storage.googleapis.com"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
           event_trigger_filters: |
+            eventName=google.cloud.storage.object.v1.finalized
+            resource=buckets/relevate-dev-403605/devops_poc
+            bucket=buckets/relevate-dev-403605/devops_poc
+
 
   deploy-dev:
     needs: detect-changes
