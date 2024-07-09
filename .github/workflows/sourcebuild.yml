@@ -105,7 +105,6 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
           event_trigger_filters: |
-            bucket=projects/_/buckets/relevate-dev-403605/devops_poc/*
 
   deploy-dev:
     needs: detect-changes
