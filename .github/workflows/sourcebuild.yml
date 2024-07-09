@@ -106,7 +106,7 @@ jobs:
           source_dir: "src/${{ matrix.function.name }}"
           event_trigger_filters: |
             serviceName=storage.googleapis.com
-            methodName=storage.objects.finalize
+            methodName=storage.objects.v1.finalize
             resourceName=buckets/relevate-dev-403605/sample-files-schema
 
   deploy-dev:
