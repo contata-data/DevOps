@@ -103,7 +103,7 @@ jobs:
           event_trigger_resource: "projects/_/buckets/prac_test"
           event_filters: |
             - attribute: "bucket"
-              value: "prac_test"
+            - value: "prac_test"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
