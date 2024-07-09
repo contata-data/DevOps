@@ -104,6 +104,10 @@ jobs:
           event_trigger_service: "storage.googleapis.com"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
+          event_trigger_filters: |
+            serviceName=storage.googleapis.com
+            methodName=storage.objects.finalize
+            resourceName=buckets/relevate-dev-403605/sample-files-schema
 
   deploy-dev:
     needs: detect-changes
