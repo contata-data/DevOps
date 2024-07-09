@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - main
-    path: 
-      - 'src/*'
+    path:
+      - "src/*"
 
 jobs:
   detect-changes:
@@ -19,9 +19,9 @@ jobs:
       - name: get last commit details
         id: last_commit
         run: |
-           LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
-           echo "last commit: $LAST_COMMIT"
-           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
+          LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
+          echo "last commit: $LAST_COMMIT"
+          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
 
       - name: Get Last Merge Commit
         id: last_merge
@@ -100,8 +100,7 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/_/buckets/prac_test/*"
-          event_filters: '[{"attribute": "bucket", "value": "prac_test"}]'
+          event_trigger_resource: "projects/PROJECT/buckets/prac_test"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
