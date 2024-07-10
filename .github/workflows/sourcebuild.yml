@@ -94,6 +94,8 @@ jobs:
 
       - id: deploy
         run: |
+          export SERVICE_ACCOUNT_KEY=${{ secrets.SSA_KEY }}
+          gcloud auth activate-service-account --key-file /dev/shm/service_account.json  # Use a temporary file
           gcloud functions deploy ${{ matrix.function.name }} \
           --runtime python312 \
           --project relevate-dev-403605 \
