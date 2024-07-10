@@ -85,12 +85,11 @@ jobs:
           workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
-      - name: Create Storage Bucket
+      - name: Bucket
         run: |
           gcloud storage buckets create my-storage-bucket2 \
             --project relevate-dev-403605 \
             --location us-central1 \
-            --versioning
 
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@v3
