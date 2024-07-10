@@ -100,11 +100,8 @@ jobs:
           source_dir: "src/${{ matrix.function.name }}"
 
       - id: create_staging_bucket
-        uses: google-github-actions/create-service-account@v1
-        with:
-          name: "test-staging-bucket"
-          location: "us-central1"
-          force_destroy: true
+        run: |
+          gsutil mb -l us-central1 gs://test-staging-bucket
 
   deploy-dev:
     needs: detect-changes
