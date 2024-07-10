@@ -87,7 +87,7 @@ jobs:
 
       - name: Bucket
         run: |
-          gcloud storage buckets create gs://my-storage-bucket2 \
+          gcloud storage buckets create gs://my-storage-bucket3 \
             --project relevate-dev-403605 \
             --location us-central1
 
