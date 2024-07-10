@@ -22,26 +22,22 @@ jobs:
           LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
           echo "last commit: $LAST_COMMIT"
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
-
       - name: Get Last Merge Commit
         id: last_merge
         run: |
           LAST_MERGE=$(git log main --merges -1 --format=%H)
           echo "Last merge commit : $LAST_MERGE"
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
-
       - name: Get Previous Merge Commit
         id: prev_merge
         run: |
           PREV_MERGE=$(git log main --merges -2 --format=%H | tail -n 1)
           echo "Previous merge commit: $PREV_MERGE"
           echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_OUTPUT
-
       - id: detect
         run: |
           CHANGED_FUNCTIONS=()
           git fetch origin main
-
           # get changed files
           echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
@@ -51,7 +47,6 @@ jobs:
           #get changed dirs
           CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
           echo "Directories: $CHANGED_DIRS"
-
           for DIR in $CHANGED_DIRS; do
               if [ "$DIR" = ".github" ] || [ "$DIR" = ".github/workflows" ]; then
                 continue
@@ -63,14 +58,12 @@ jobs:
               ENTRY_POINT="${FUNCTION_NAME}"
               CHANGED_FUNCTIONS+=("{\"name\": \"$FUNCTION_NAME\", \"entry_point\": \"$ENTRY_POINT\"}")
           done
-
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
             echo "changed-functions=[]" >> $GITHUB_OUTPUT
           else
             CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
             echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
           fi
-
   deploy-staging:
     needs: detect-changes
     runs-on: ubuntu-latest
@@ -93,17 +86,16 @@ jobs:
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
       - id: deploy
-        run: |
-          echo "${{ secrets.SSA_KEY }}" > /dev/shm/service_account.json
-          gcloud auth activate-service-account --key-file /dev/shm/service_account.json  # Use a temporary file
-          gcloud functions deploy ${{ matrix.function.name }} \
-          --runtime python312 \
-          --project relevate-dev-403605 \
-          --entry-point ${{ matrix.function.entry_point }} \
-          --trigger-resource projects/relevate-dev-403605/locations/us-central1/buckets/devops_poc \
-          --trigger-event google.cloud.storage.object.v1.finalized \
-          --timeout 600s \
-          --source src/${{ matrix.function.name }}
+        uses: google-github-actions/deploy-cloud-functions@v3
+        with:
+          name: ${{ matrix.function.name }}
+          runtime: "python312"
+          project_id: "relevate-dev-403605"
+          entry_point: ${{ matrix.function.entry_point }}
+          event_trigger_type: "google.cloud.storage.object.v1.finalized"
+          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/devops_poc"
+          timeout: "10m"
+          source_dir: "src/${{ matrix.function.name }}"
 
   deploy-dev:
     needs: detect-changes
@@ -181,14 +173,12 @@ jobs:
         run: |
           git config --global user.email "vikask@contata.in"
           git config --global user.name "Vikas Kumar"
-
       - name: Get last commit details
         id: last_commit_write
         run: |
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
           echo "Last commit hash: $LAST_COMMIT_WRITE"
-
       - name: Commit and push changes
         run: |
           git add .
