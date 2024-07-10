@@ -93,14 +93,13 @@ jobs:
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
       - id: deploy
-        uses: google-github-actions/deploy-cloud-functions@v3
         run: |
           gcloud functions deploy ${{ matrix.function.name }} \
           --runtime python312 \
           --project relevate-dev-403605 \
           --entry-point ${{ matrix.function.entry_point }} \
-          --trigger-event google.cloud.storage.object.v1.finalized \
           --trigger-resource projects/relevate-dev-403605/locations/us-central1/buckets/devops_poc \
+          --trigger-event google.cloud.storage.object.v1.finalized \
           --timeout 600s \
           --source src/${{ matrix.function.name }}
 
