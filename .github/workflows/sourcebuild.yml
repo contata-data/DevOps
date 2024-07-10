@@ -90,11 +90,13 @@ jobs:
         run: |
           BUCKET_NAME="vikas_test_08"
           if gsutil ls -b gs://$BUCKET_NAME; then
-            echo "Bucket $BUCKET_NAME exists."
+            echo "Bucket $BUCKET_NAME exists"
           else
-            echo "Bucket $BUCKET_NAME does not exist."
-            echo "Creating bucket $BUCKET_NAME."
-            gsutil mb -p relevate-dev-403605 -l us-central1 gs://$BUCKET_NAME
+            echo "Bucket $BUCKET_NAME does not exist"
+            echo "Creating bucket $BUCKET_NAME"
+            gcloud storage buckets create gs://$BUCKET_NAME \
+              --project relevate-dev-403605 \
+              --location us-central1
           fi
 
       - name: topic
