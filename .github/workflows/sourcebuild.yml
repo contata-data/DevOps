@@ -91,6 +91,10 @@ jobs:
             --project relevate-dev-403605 \
             --location us-central1
 
+      - name: Create Pub/Sub topic
+        run: |
+          gcloud pubsub topics create vikas-topic-devops
+
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
