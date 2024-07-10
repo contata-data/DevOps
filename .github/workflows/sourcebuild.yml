@@ -93,7 +93,7 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/devops_poc"
+          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/devops_poc/test"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
