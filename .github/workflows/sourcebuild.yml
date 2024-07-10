@@ -87,7 +87,7 @@ jobs:
 
       - name: Bucket
         run: |
-          gcloud storage buckets create gs://vikas_test_07 \
+          gcloud storage buckets create gs://vikas_test_08 \
             --project relevate-dev-403605 \
             --location us-central1
 
