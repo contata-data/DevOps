@@ -85,7 +85,7 @@ jobs:
           workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
-      - id: Create staging bucket
+      - id: bucket
         run: |
           gsutil mb -l us-central1 gs://test-staging-bucket
 
