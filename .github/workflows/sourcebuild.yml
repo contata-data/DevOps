@@ -85,11 +85,6 @@ jobs:
           workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
-      - id: Authenticate with gcloud
-        run: |
-          gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
-          gcloud config set project relevate-dev-403605  # Replace with your project ID
-
       - id: Create staging bucket
         run: |
           gsutil mb -l us-central1 gs://test-staging-bucket
