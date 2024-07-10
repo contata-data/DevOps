@@ -85,14 +85,13 @@ jobs:
           workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
-      - id: my-storage-bucket
-        type: gcp-types/storage-v1:buckets
-        properties:
-        project_id: relevate-dev-403605
-        name: my-storage-bucket2
-        location: us-central1
-        versioning:
-         enabled: true
+      - id: my-storage-bucket  # Keep the same id
+        uses: google/cloud-storage-bucket@v1  # Replace with the specific action for creating buckets
+        with:  # Optional: Pass additional parameters to the action
+          project_id: relevate-dev-403605
+          name: my-storage-bucket2
+          location: us-central1
+          versioning.enabled: true 
 
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@v3
