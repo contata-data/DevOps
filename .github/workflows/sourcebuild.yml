@@ -99,6 +99,13 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
+      - id: create_bucket
+        google_storage_bucket:
+         example_bucket:
+         name: "test_devops"
+         location: "us-central1"
+         force_destroy: true
+
   deploy-dev:
     needs: detect-changes
     runs-on: ubuntu-latest
