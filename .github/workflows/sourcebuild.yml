@@ -90,7 +90,7 @@ jobs:
         run: |
           BUCKET_NAME="vikas_test_08"
           if ! gsutil ls -b gs://$BUCKET_NAME; then
-            gsutil iam set acl gs://$BUCKET_NAME public-read
+            gsutil mb -p relevate-dev-403605 gs://$BUCKET_NAME 
             if gsutil ls -b gs://$BUCKET_NAME; then
               echo "Bucket $BUCKET_NAME exists"
             else
