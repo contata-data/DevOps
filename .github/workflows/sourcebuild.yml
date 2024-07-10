@@ -85,7 +85,7 @@ jobs:
           workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
-      - name: Check if Bucket Exists
+      - name: Check_if_Bucket_Exists
         id: check_bucket
         run: |
           BUCKET_NAME="vikas_test_08"
