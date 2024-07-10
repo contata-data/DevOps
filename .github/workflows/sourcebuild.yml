@@ -85,9 +85,14 @@ jobs:
           workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
-      - run: |
-          gsutil mb -l us-central1 gs://my-bucket1  # Replace with your desired bucket name
-          echo "BUCKET_NAME=my-bucket1" >> $GITHUB_ENV  # Add bucket name to environment
+      - id: my-storage-bucket
+        type: gcp-types/storage-v1:buckets
+        properties:
+        project_id: relevate-dev-403605
+        name: my-storage-bucket2
+        location: us-central1
+        versioning:
+         enabled: true
 
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@v3
