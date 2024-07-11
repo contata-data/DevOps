@@ -56,12 +56,12 @@ jobs:
               echo "function name: $FUNCTION_NAME"
               # Split function name into parts
               IFS='_' read -r part1 part2 part3 <<< "$FUNCTION_NAME"
-              echo "TopicName: $part1"
+              echo "TriggerName: $part1"
               echo "FunName: $part2"
-              echo "PubSubTest: $part3"
+              echo "Trigger: $part3"
               # Assuming entry point can be derived from function name
               ENTRY_POINT="${FUNCTION_NAME}"
-              CHANGED_FUNCTIONS+=("{\"name\": \"$FUNCTION_NAME\", \"entry_point\": \"$ENTRY_POINT\"}")
+              CHANGED_FUNCTIONS+=("{\"name\": \"$part2\", \"entry_point\": \"$part2\", \"TriggerName\": \"$part2\", \"Trigger\": \"$part3\"}")
           done
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
             echo "changed-functions=[]" >> $GITHUB_OUTPUT
@@ -93,7 +93,7 @@ jobs:
       - name: Create Bucket
         id: check_bucket
         run: |
-          BUCKET_NAME="vikas_test_08"
+          BUCKET_NAME=${{ matrix.function.TriggerName }}
           if ! gsutil mb -p relevate-dev-403605 gs://$BUCKET_NAME; then
            echo "Bucket $BUCKET_NAME already exists"
           else
@@ -103,7 +103,7 @@ jobs:
       - name: Create Topic
         id: create_topic
         run: |
-          TOPIC_NAME="DevOpsTesting"
+          TOPIC_NAME=${{ matrix.function.TriggerName }}
           if ! gcloud pubsub topics list --filter="name:projects/relevate-dev-403605/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
             # Create topic if it doesn't exist
             gcloud pubsub topics create $TOPIC_NAME
@@ -120,9 +120,9 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/devops_poc"
+          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ matrix.function.TriggerName }}"
           event_trigger_filters: |-
-             bucket= devops_poc
+             bucket= ${{ matrix.function.TriggerName }}
           timeout: "10m"
           source_dir: "src/${{ matrix.function.name }}"
 
