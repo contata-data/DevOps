@@ -93,14 +93,25 @@ jobs:
       - name: Create Bucket
         id: check_bucket
         run: |
-          #BUCKET_NAME=${{ matrix.function.TriggerName }}
-          if  gsutil ls -b gs://${{ matrix.function.TriggerName }}; then
-           echo "Bucket $${{ matrix.function.TriggerName }} already exists"
+          gcloud auth login  # Run this only if authentication is not set elsewhere
+          PROJECT_ID=$(gcloud config get-value project)
+          if [[ -z "$PROJECT_ID" ]]; then
+           echo "Error: No default project configured! Please set a project using:"
+           echo "  gcloud config set project relevate-dev-403605"
+          exit 1
+          fi
+          if [[ "$PROJECT_ID" != "relevate-dev-403605" ]]; then
+           echo "Warning: Using project '$PROJECT_ID'. Make sure it's correct."
+          fi
+          BUCKET_NAME="${{ matrix.function.TriggerName }}"
+          if ! gsutil ls -b gs://$BUCKET_NAME &> /dev/null; then
+            echo "Bucket $BUCKET_NAME does  not exist (or 'gsutil ls' failed)"
+            echo "Creating bucket $BUCKET_NAME"
+            gcloud storage buckets create gs://$BUCKET_NAME \
+                --project $PROJECT_ID \
+                --location us-central1
           else
-           echo "Created bucket ${{ matrix.function.TriggerName }}"
-            gcloud storage buckets create gs://${{ matrix.function.TriggerName }} \
-              --project relevate-dev-403605 \
-              --location us-central1
+            echo "Bucket $BUCKET_NAME already exists"
           fi
 
 
