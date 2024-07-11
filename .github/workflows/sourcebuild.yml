@@ -94,7 +94,7 @@ jobs:
         id: check_bucket
         run: |
           #BUCKET_NAME=${{ matrix.function.TriggerName }}
-          if  gsutil ls -b gs://${{ matrix.function.TriggerName }} &> /dev/null; then
+          if  gsutil ls -b gs://${{ matrix.function.TriggerName }}; then
            echo "Bucket $${{ matrix.function.TriggerName }} already exists"
           else
            echo "Created bucket ${{ matrix.function.TriggerName }}"
