@@ -98,6 +98,9 @@ jobs:
            echo "Bucket $BUCKET_NAME already exists"
           else
            echo "Created bucket $BUCKET_NAME"
+            gcloud storage buckets create gs://$BUCKET_NAME \
+            --project relevate-dev-403605 \
+            --location us-central1
           fi
 
       - name: Create Topic
