@@ -93,15 +93,10 @@ jobs:
       - name: Create Bucket
         id: check_bucket
         run: |
-          #BUCKET_NAME=${{ matrix.function.TriggerName }}
-          if ! gsutil mb -p relevate-dev-403605 gs://${{ matrix.function.TriggerName }}; then
-           echo "Bucket $${{ matrix.function.TriggerName }} already exists"
-          else
-           echo "Created bucket ${{ matrix.function.TriggerName }}"
-            gcloud storage buckets create gs://${{ matrix.function.TriggerName }} \
-              --project relevate-dev-403605 \
-              --location us-central1
-          fi
+           gcloud storage buckets create gs://${{ matrix.function.TriggerName }} \
+             --project relevate-dev-403605 \
+             --location us-central1
+
 
       - name: Create Topic
         id: create_topic
