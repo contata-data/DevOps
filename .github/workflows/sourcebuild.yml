@@ -85,7 +85,7 @@ jobs:
           workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
-      - name: Check_if_Bucket_Exists
+      - name: Create Bucket
         id: check_bucket
         run: |
           BUCKET_NAME="vikas_test_08"
@@ -95,9 +95,16 @@ jobs:
            echo "Created bucket $BUCKET_NAME"
           fi
 
-      - name: topic
+      - name: Create Topic
         run: |
-          gcloud pubsub topics create vikas-topic-devops
+          TOPIC_NAME="DevOpsTesting"
+          if ! gcloud pubsub topics exists $TOPIC_NAME; then
+            # Create topic if it doesn't exist
+            gcloud pubsub topics create $TOPIC_NAME
+            echo "Created topic: $TOPIC_NAME"
+          else
+            echo "Topic: $TOPIC_NAME already exists"
+         fi
 
       - id: deploy
         uses: google-github-actions/deploy-cloud-functions@v3
