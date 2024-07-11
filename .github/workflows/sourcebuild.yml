@@ -88,11 +88,20 @@ jobs:
       - name: Check_if_Bucket_Exists
         id: check_bucket
         run: |
+          PROJECT_ID=$(gcloud config get-value project)
+          if [[ -z "$PROJECT_ID" ]]; then
+            echo "Error: No default project configured! Please set a project using:"
+            echo "  gcloud config set project relevate-dev-403605"
+            exit 1
+          fi
+          if [[ "$PROJECT_ID" != "relevate-dev-403605" ]]; then
+                echo "Warning: Using project '$PROJECT_ID'. Make sure it's correct."
+          fi
           BUCKET_NAME="vikas_test_08"
           if gsutil ls -b gs://$BUCKET_NAME; then
              echo "Bucket $BUCKET_NAME exists"
           else
-            echo "Bucket $BUCKET_NAME does not exist "
+            echo "Bucket $BUCKET_NAME does not exist"
             gcloud storage buckets create gs://$BUCKET_NAME \
             --project relevate-dev-403605 \
             --location us-central1
