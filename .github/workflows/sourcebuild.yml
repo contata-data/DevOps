@@ -89,19 +89,13 @@ jobs:
         id: check_bucket
         run: |
           BUCKET_NAME="vikas_test_08"
-          if ! gsutil ls -b gs://$BUCKET_NAME; then
-            gsutil iam set gs://$BUCKET_NAME  public-read 
-            if gsutil ls -b gs://$BUCKET_NAME; then
-              echo "Bucket $BUCKET_NAME exists"
-            else
-              echo "Bucket $BUCKET_NAME does not exist "
-              gcloud storage buckets create gs://$BUCKET_NAME \
-                  --project relevate-dev-403605 \
-                  --location us-central1
-            fi
-            gsutil iam revoke acl gs://$BUCKET_NAME public-read
+          if gsutil ls -b gs://$BUCKET_NAME; then
+             echo "Bucket $BUCKET_NAME exists"
           else
-           echo "Bucket $BUCKET_NAME exists"
+            echo "Bucket $BUCKET_NAME does not exist "
+            gcloud storage buckets create gs://$BUCKET_NAME \
+            --project relevate-dev-403605 \
+            --location us-central1
           fi
 
       - name: topic
