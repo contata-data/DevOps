@@ -95,7 +95,8 @@ jobs:
            echo "Created bucket $BUCKET_NAME"
           fi
 
-      - id: Create Topic
+      - name: Create topic
+      - id: Create_Topic
         run: |
           TOPIC_NAME="DevOpsTesting"
           if ! gcloud pubsub topics exists $TOPIC_NAME; then
