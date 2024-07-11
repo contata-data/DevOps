@@ -54,6 +54,16 @@ jobs:
               echo "Directory name: $DIR"
               FUNCTION_NAME=$(basename $DIR)
               echo "function name: $FUNCTION_NAME"
+              #Spilt topic name 
+               input: FUNCTION_NAME
+               split: '_'
+               output: 
+                 - part1
+                 - part2 
+                 - part3 
+                echo "TopicName: $part1"
+                echo "FunName: $part2"
+                echo "PubSubTest: $part3"
               # Assuming entry point can be derived from function name
               ENTRY_POINT="${FUNCTION_NAME}"
               CHANGED_FUNCTIONS+=("{\"name\": \"$FUNCTION_NAME\", \"entry_point\": \"$ENTRY_POINT\"}")
