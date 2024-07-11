@@ -95,7 +95,7 @@ jobs:
         run: |
           PROJECT_ID=$(gcloud config get-value project)
           if [[ -z "$PROJECT_ID" ]]; then
-            echo "Error: No default project configured! Please set a project using:"
+            echo "Error: No default project  configured! Please set a project using:"
             echo "  gcloud config set project relevate-dev-403605"
             exit 1
           fi
@@ -104,7 +104,7 @@ jobs:
           fi
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
           # Check bucket existence with exit code handling
-          if ! gsutil ls -b gs://$BUCKET_NAME &> /dev/null; then
+          if  gsutil ls -b gs://$BUCKET_NAME &> /dev/null; then
             echo "Bucket $BUCKET_NAME does not exist (or 'gsutil ls' failed)"
             echo "Creating bucket $BUCKET_NAME"
             gcloud storage buckets create gs://$BUCKET_NAME \
