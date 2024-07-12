@@ -104,7 +104,7 @@ jobs:
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
           # Check bucket existence with exit code handling
-          if  [ "${{ steps.trigger_details.outputs.TRIGGER_DETAILS }}" = "" ]; then
+          if [[ ! -z "${{ steps.trigger_details.outputs.TRIGGER_DETAILS }}" ]]; then
             echo "Bucket $BUCKET_NAME does not exist (or 'gsutil ls' failed)"
             echo "Creating bucket $BUCKET_NAME"
             gcloud storage buckets create gs://$BUCKET_NAME \
