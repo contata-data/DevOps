@@ -207,7 +207,7 @@ jobs:
           source_dir: "src/${{ matrix.function.name }}"
 
   commitwrite:
-    needs: detect-changes
+    needs: deploy-staging
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -221,26 +221,11 @@ jobs:
         run: |
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
+          WRITE_TRIGGER=${{ matrix.function.TriggerName }}
+          echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt
           echo "Last commit hash: $LAST_COMMIT_WRITE"
       - name: Commit and push changes
         run: |
-          git add .
-          git commit -m "Automated commit by CI/CD"
-          git push origin main
-  committriggerwrite:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Get last trigger  details
-        id: WRITE_TRIGGER
-        run: |
-          git config --global user.email "vikask@contata.in"
-          git config --global user.name "Vikas Kumar"
-          WRITE_TRIGGER=${{ matrix.function.TriggerName }}
-          echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt
-          echo "Last commit hash: $WRITE_TRIGGER"
           git add .
           git commit -m "Automated commit by CI/CD"
           git push origin main
