@@ -97,7 +97,7 @@ jobs:
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
           PROJECT_Ids="relevate-dev-403605"
-          BUCKET_NAME="$PROJECT_Ids_${{ matrix.function.TriggerName }}"
+          BUCKET_NAME="${PROJECT_Ids}_${{ matrix.function.TriggerName }}"
           # Check bucket existence with exit code handling
           TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt)
           echo "trigger  details: $TRIGGER_DETAILS"
