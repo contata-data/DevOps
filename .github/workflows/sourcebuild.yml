@@ -116,7 +116,6 @@ jobs:
 
       - name: Get last commit details
         id: WRITE_TRIGGER
-        uses: actions/checkout@v2
         run: |
           WRITE_TRIGGER=${{ matrix.function.TriggerName }}
           echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt
