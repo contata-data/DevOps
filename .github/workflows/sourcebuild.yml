@@ -144,7 +144,7 @@ jobs:
         id: WRITE_TRIGGER
         run: |
           WRITE_TRIGGER=${{ matrix.function.TriggerName }}
-          echo "$WRITE_TRIGGER" > ${{ src/devtestbucketvk123_DevInsertDataStorage_Storage  }}/Trigger.txt
+          echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt
           echo "Last commit hash: $WRITE_TRIGGER"
       - name: Commit and push changes
         run: |
