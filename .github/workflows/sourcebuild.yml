@@ -134,7 +134,7 @@ jobs:
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ env.PROJECTID }}-${{ matrix.function.TriggerName }}"
           event_trigger_filters: |-
-             bucket= "${{ env.PROJECTID }}"
+             bucket= "${{ env.PROJECTID }}-${{ matrix.function.TriggerName }}"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
 
