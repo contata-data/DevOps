@@ -97,6 +97,7 @@ jobs:
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
           PROJECT_Ids="relevate-dev-403605"
+          BUCKET_NAME="PROJECT_Ids _ ${{ matrix.function.TriggerName }}"
           # Check bucket existence with exit code handling
           TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt)
           echo "trigger details: $TRIGGER_DETAILS"
@@ -104,7 +105,7 @@ jobs:
           if [ "${TRIGGER_DETAILS}" = "" ]; then
             echo "Bucket $BUCKET_NAME does not exist (or 'gsutil ls' failed)"
             echo "Creating bucket $BUCKET_NAME"
-            gcloud storage buckets create gs://$PROJECT_Ids+$BUCKET_NAME \
+            gcloud storage buckets create gs://$BUCKET_NAME \
                 --project relevate-dev-403605 \
                 --location us-central1
           else
