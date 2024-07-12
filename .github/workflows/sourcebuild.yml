@@ -111,8 +111,6 @@ jobs:
           else
             echo "Bucket $BUCKET_FULL_NAME already  exists "
           fi
-        outputs:
-          BUCKET_FULL_NAME: ${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
 
       - name: Create Topic
         id: create_topic
