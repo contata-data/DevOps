@@ -26,7 +26,7 @@ jobs:
       - name: trigger details
         id: trigger_details
         run: |
-          TRIGGER_DETAILS=$(cat "${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt")
+          TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt)
           echo "trigger details: $TRIGGER_DETAILS"
           echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
 
