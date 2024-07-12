@@ -138,6 +138,7 @@ jobs:
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
           event_trigger_service: "pubsub.googleapis.com"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
@@ -154,6 +155,17 @@ jobs:
           event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
+          timeout: "10m"
+          source_dir: "src/${{ matrix.function.SrcFolder }}"
+
+      - name: Deploy Cloud Function - HTTP Trigger
+        if: matrix.function.Trigger == 'HTTP'
+        uses: google-github-actions/deploy-cloud-functions@v3
+        with:
+          name: ${{ matrix.function.name }}
+          runtime: "python312"
+          project_id: "relevate-dev-403605"
+          entry_point: ${{ matrix.function.entry_point }}
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           
