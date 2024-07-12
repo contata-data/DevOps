@@ -221,7 +221,7 @@ jobs:
         run: |
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
-          WRITE_TRIGGER=${{ matrix.function.TriggerName }}
+          WRITE_TRIGGER="Trigger Created"
           echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt
           echo "Last commit hash: $LAST_COMMIT_WRITE"
       - name: Commit and push changes
