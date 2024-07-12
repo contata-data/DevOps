@@ -114,6 +114,16 @@ jobs:
             echo "Bucket $BUCKET_NAME already exists"
           fi
 
+      - name: Get last commit details
+        id: WRITE_TRIGGER
+        run: |
+          WRITE_TRIGGER=${{ matrix.function.TriggerName }}
+          echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt
+          echo "Last commit  hash: $WRITE_TRIGGER"
+          git add .
+          git commit -m "Automated commit by CI/CD"
+          git push origin main
+
       - name: Create Topic
         id: create_topic
         run: |
@@ -139,16 +149,6 @@ jobs:
              bucket= ${{ matrix.function.TriggerName }}
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
-
-      - name: Get last commit details
-        id: WRITE_TRIGGER
-        run: |
-          WRITE_TRIGGER=${{ matrix.function.TriggerName }}
-          echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt
-          echo "Last commit hash: $WRITE_TRIGGER"
-          git add .
-          git commit -m "Automated commit by CI/CD"
-          git push origin main
 
   deploy-dev:
     needs: detect-changes
