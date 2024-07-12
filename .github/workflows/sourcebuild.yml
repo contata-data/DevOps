@@ -121,7 +121,7 @@ jobs:
             gcloud pubsub topics create $TOPIC_NAME
             echo "Created topic: $TOPIC_NAME"
           else
-            echo "Topic: $TOPIC_NAME already exists"
+            echo "Topic: $TOPIC_NAME already exists  "
           fi
 
       - id: deploy
