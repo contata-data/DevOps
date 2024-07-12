@@ -121,7 +121,7 @@ jobs:
             gcloud pubsub topics create $TOPIC_NAME
             echo "Created topic: $TOPIC_NAME"
           else
-            echo "Topic: $TOPIC_NAME already exists "
+            echo "Topic: $TOPIC_NAME already exists"
           fi
 
       - id: deploy
@@ -134,7 +134,7 @@ jobs:
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${project_id}-${{ matrix.function.TriggerName }}"
           event_trigger_filters: |-
-             bucket= ${project_id}-${{ matrix.function.TriggerName }}
+             bucket= '${project_id}'-${{ matrix.function.TriggerName }}
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
 
