@@ -120,6 +120,8 @@ jobs:
           WRITE_TRIGGER=${{ matrix.function.TriggerName }}
           echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt
           echo "Last commit  hash: $WRITE_TRIGGER"
+          git config --global user.email "vikask@contata.in"
+          git config --global user.name "Vikas Kumar"
           git add .
           git commit -m "Automated commit by CI/CD"
           git push origin main
