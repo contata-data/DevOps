@@ -109,7 +109,7 @@ jobs:
                 --project relevate-dev-403605 \
                 --location us-central1
           else
-            echo "Bucket $BUCKET_NAME already exists"
+            echo "Bucket $BUCKET_NAME already  exists"
           fi
 
       - name: Create Topic
@@ -132,7 +132,7 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ matrix.function.TriggerName }}"
+          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{BUCKET_NAME }}"
           event_trigger_filters: |-
              bucket= ${{ matrix.function.TriggerName }}
           timeout: "10m"
