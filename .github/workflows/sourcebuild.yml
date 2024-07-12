@@ -98,6 +98,7 @@ jobs:
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
           PROJECT_Ids="relevate-dev-403605"
           BUCKET_FULL_NAME="relevate-dev-403605-${BUCKET_NAME}"
+          echo "BUCKET_FULL_NAME=$BUCKET_FULL_NAME" >> $GITHUB_OUTPUT
           # Check bucket existence with exit code handling
           TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt)
           echo "trigger  details: $TRIGGER_DETAILS"
