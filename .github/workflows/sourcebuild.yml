@@ -109,7 +109,7 @@ jobs:
                 --project relevate-dev-403605 \
                 --location us-central1
           else
-            echo "Bucket $BUCKET_FULL_NAME already  exists"
+            echo "Bucket $BUCKET_FULL_NAME already exists"
           fi
 
       - name: Create Topic
