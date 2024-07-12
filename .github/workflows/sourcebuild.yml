@@ -99,7 +99,7 @@ jobs:
           PROJECT_Ids="relevate-dev-403605"
           BUCKET_FULL_NAME="${BUCKET_NAME}"
           # Check bucket existence with exit code handling
-          TRIGGER_DETAILS=$(cat ${{ github.workspace }}/SrcFolder/Trigger.txt)
+          TRIGGER_DETAILS=$(cat ${{ github.workspace }}/${{ matrix.function.SrcFolder }}/Trigger.txt)
           echo "trigger  details: $TRIGGER_DETAILS"
           echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
           if [ "${TRIGGER_DETAILS}" = "" ]; then
