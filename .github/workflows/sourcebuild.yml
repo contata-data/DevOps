@@ -123,7 +123,7 @@ jobs:
             gcloud pubsub topics create $TOPIC_NAME
             echo "Created topic: $TOPIC_NAME"
           else
-            echo "Topic: $TOPIC_NAME already  exists"
+            echo "Topic: $TOPIC_NAME already exists"
           fi
 
       - id: deploy
@@ -133,20 +133,20 @@ jobs:
           runtime: "python312"
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
-          if: matrix.function.TriggerName == 'topic'
+          timeout: "10m"
+          source_dir: "src/${{ matrix.function.SrcFolder }}"
+        if: matrix.function.Trigger == 'topic'
+        With:
             event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
             event_trigger_resource: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
             event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
             event_trigger_service: "pubsub.googleapis.com"
-          elif: matrix.function.TriggerName == 'storage'
+        if: matrix.function.TriggerName == 'storage'
+        with:
             event_trigger_type: "google.cloud.storage.object.v1.finalized"
             event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
             event_trigger_filters: |-
               bucket= ${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
-         else
-            timeout: "10m"
-            source_dir: "src/${{ matrix.function.SrcFolder }}"
-         
 
   deploy-dev:
     needs: detect-changes
