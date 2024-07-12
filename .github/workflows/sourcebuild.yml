@@ -22,6 +22,14 @@ jobs:
           LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
           echo "last commit: $LAST_COMMIT"
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
+
+      - name: trigger details
+        id: trigger_details
+        run: |
+          TRIGGER_DETAILS=$(cat ${{ src\devtestbucketvk123_DevInsertDataStorage_Storage }}/Trigger.txt)
+          echo "trigger details: $TRIGGER_DETAILS"
+          echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
+
       - name: Get Last Merge Commit
         id: last_merge
         run: |
@@ -93,18 +101,9 @@ jobs:
       - name: Create Bucket
         id: check_bucket
         run: |
-          PROJECT_ID=$(gcloud config get-value project)
-          if [[ -z "$PROJECT_ID" ]]; then
-            echo "Error: No default project  configured! Please set a project using:"
-            echo "  gcloud config set project relevate-dev-403605"
-            exit 1
-          fi
-          if [[ "$PROJECT_ID" != "relevate-dev-403605" ]]; then
-            echo "Warning: Using project '$PROJECT_ID'. Make sure it's correct."
-          fi
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
           # Check bucket existence with exit code handling
-          if  gsutil ls -b gs://$BUCKET_NAME &> /dev/null; then
+          if  {{trigger details}}=''; then
             echo "Bucket $BUCKET_NAME does not exist (or 'gsutil ls' failed)"
             echo "Creating bucket $BUCKET_NAME"
             gcloud storage buckets create gs://$BUCKET_NAME \
@@ -139,6 +138,18 @@ jobs:
              bucket= ${{ matrix.function.TriggerName }}
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
+
+      - name: Get last commit details
+        id: WRITE_TRIGGER
+        run: |
+          WRITE_TRIGGER=${{ matrix.function.TriggerName }}
+          echo "$WRITE_TRIGGER" > ${{ src/devtestbucketvk123_DevInsertDataStorage_Storage  }}/Trigger.txt
+          echo "Last commit hash: $WRITE_TRIGGER"
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Automated commit by CI/CD"
+          git push origin main
 
   deploy-dev:
     needs: detect-changes
