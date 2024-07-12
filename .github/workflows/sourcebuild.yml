@@ -97,7 +97,7 @@ jobs:
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
           PROJECT_Ids="relevate-dev-403605"
-          BUCKET_FULL_NAME="stag-${BUCKET_NAME}"
+          BUCKET_FULL_NAME="${BUCKET_NAME}"
           # Check bucket existence with exit code handling
           TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt)
           echo "trigger  details: $TRIGGER_DETAILS"
@@ -132,9 +132,9 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/stag-${{ matrix.function.TriggerName }}"
+          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ matrix.function.TriggerName }}"
           event_trigger_filters: |-
-             bucket= "stag-${{ matrix.function.TriggerName }}"
+             bucket= "${{ matrix.function.TriggerName }}"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
 
