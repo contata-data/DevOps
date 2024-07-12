@@ -23,13 +23,6 @@ jobs:
           echo "last commit: $LAST_COMMIT"
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
 
-      - name: trigger details
-        id: trigger_details
-        run: |
-          TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt)
-          echo "trigger details: $TRIGGER_DETAILS"
-          echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
-
       - name: Get Last Merge Commit
         id: last_merge
         run: |
@@ -104,7 +97,10 @@ jobs:
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
           # Check bucket existence with exit code handling
-          if [[ ! -z "${{ steps.trigger_details.outputs.TRIGGER_DETAILS }}" ]]; then
+          TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/devtestbucketvk123_DevInsertDataStorage_Storage/Trigger.txt)
+          echo "trigger details: $TRIGGER_DETAILS"
+          echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
+          if ${{TRIGGER_DETAILS}}=""; then
             echo "Bucket $BUCKET_NAME does not exist (or 'gsutil ls' failed)"
             echo "Creating bucket $BUCKET_NAME"
             gcloud storage buckets create gs://$BUCKET_NAME \
