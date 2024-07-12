@@ -99,7 +99,7 @@ jobs:
           PROJECT_Ids="relevate-dev-403605"
           BUCKET_FULL_NAME="relevate-dev-403605-${BUCKET_NAME}"
           echo "BUCKET_FULL_NAME=$BUCKET_FULL_NAME" >> $GITHUB_OUTPUT
-          echo "BUCKET_FULL_NAME 102: $BUCKET_FULL_NAME"
+          echo "BUCKET_FULL_NAME : $BUCKET_FULL_NAME"
           # Check bucket existence with exit code handling
           TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt)
           echo "trigger  details: $TRIGGER_DETAILS"
@@ -133,12 +133,20 @@ jobs:
           runtime: "python312"
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
+          if ${{ matrix.function.name }}='topic' then;
+          event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
+          event_trigger_resource: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_service: "pubsub.googleapis.com"
+          elsif ${{ matrix.function.name }}='storage' then;
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |-
              bucket= ${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
+          else
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
+          fi
 
   deploy-dev:
     needs: detect-changes
