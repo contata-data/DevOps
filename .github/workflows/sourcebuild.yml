@@ -132,9 +132,9 @@ jobs:
           project_id: "relevate-dev-403605"
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ env.PROJECTID }}-${{ matrix.function.TriggerName }}"
+          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/relevate-dev-403605-${{ matrix.function.TriggerName }}"
           event_trigger_filters: |-
-             bucket= "${{ env.PROJECTID }}-${{ matrix.function.TriggerName }}"
+             bucket= "relevate-dev-403605-${{ matrix.function.TriggerName }}"
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
 
