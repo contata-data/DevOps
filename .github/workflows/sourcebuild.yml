@@ -26,7 +26,7 @@ jobs:
       - name: trigger details
         id: trigger_details
         run: |
-          TRIGGER_DETAILS=$(cat ${{ src\devtestbucketvk123_DevInsertDataStorage_Storage }}/Trigger.txt)
+          TRIGGER_DETAILS=$(cat ${{ src/devtestbucketvk123_DevInsertDataStorage_Storage }}/Trigger.txt)
           echo "trigger details: $TRIGGER_DETAILS"
           echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
 
@@ -36,6 +36,7 @@ jobs:
           LAST_MERGE=$(git log main --merges -1 --format=%H)
           echo "Last merge commit : $LAST_MERGE"
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
+
       - name: Get Previous Merge Commit
         id: prev_merge
         run: |
