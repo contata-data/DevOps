@@ -177,7 +177,7 @@ jobs:
         id: Trigger_write
         run: |
           Trigger_write="Trigger Created"
-          ech0 "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
+          echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
           echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           echo "Last commit hash: $Trigger_write"
       - name: Commit and push changes
