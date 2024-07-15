@@ -186,7 +186,7 @@ jobs:
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
           WRITE_TRIGGER="Trigger Created"
-          echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/${{ CHANGED_FUNCTIONS.outputs.SrcFolder }}/Trigger.txt
+          echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/${{ fromJson(needs.detect-changes.outputs.changed-functions)[0].SrcFolder }}/Trigger.txt
           echo "Last commit hash: $LAST_COMMIT_WRITE"
       - name: Commit and push changes
         run: |
