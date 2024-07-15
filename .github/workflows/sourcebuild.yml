@@ -168,7 +168,23 @@ jobs:
           entry_point: ${{ matrix.function.entry_point }}
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
-          
+
+      - name: Set up Git identity
+        run: |
+          git config --global user.email "vikask@contata.in"
+          git config --global user.name "Vikas Kumar"
+      - name: Get last commit details
+        id: Trigger_write
+        run: |
+          Trigger_write="Trigger Created"
+          ech0 "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
+          echo "$Trigger_write" > ${{ github.workspace }}/src/$${{ matrix.function.SrcFolder }}/Trigger.txt
+          echo "Last commit hash: $Trigger_write"
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Automated  commit by CI/CD"
+          git push origin main
 
   commitwrite:
     needs: detect-changes 
@@ -187,29 +203,6 @@ jobs:
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
           WRITE_TRIGGER="Trigger Created"
           echo "Last commit hash: $LAST_COMMIT_WRITE"
-      - name: Commit and push changes
-        run: |
-          git add .
-          git commit -m "Automated commit by CI/CD"
-          git push origin main
-
-  committriggerwrite:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Git identity
-        run: |
-          git config --global user.email "vikask@contata.in"
-          git config --global user.name "Vikas Kumar"
-      - name: Get last commit details
-        id: Trigger_write
-        run: |
-          Trigger_write="Trigger Created"
-          ech0 "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
-          echo "$Trigger_write" > ${{ github.workspace }}/src/${{ fromJson(needs.detect-changes.outputs.changed-functions)[0].SrcFolder }}/Trigger.txt
-          echo "Last commit hash: $Trigger_write"
       - name: Commit and push changes
         run: |
           git add .
