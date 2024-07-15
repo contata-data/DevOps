@@ -204,11 +204,11 @@ jobs:
           git config --global user.email "vikask@contata.in"
           git config --global user.name "Vikas Kumar"
       - name: Get last commit details
-        id: last_commit_write
+        id: Trigger_write
         run: |
-          WRITE_TRIGGER="Trigger Created"
-          echo "$WRITE_TRIGGER" > ${{ github.workspace }}/src/${{ fromJson(needs.detect-changes.outputs.changed-functions)[0].SrcFolder }}/Trigger.txt
-          echo "Last commit hash: $LAST_COMMIT_WRITE"
+          Trigger_write="Trigger Created"
+          echo "$Trigger_write" > ${{ github.workspace }}/src/${{ fromJson(needs.detect-changes.outputs.changed-functions)[0].SrcFolder }}/Trigger.txt
+          echo "Last commit hash: $Trigger_write"
       - name: Commit and push changes
         run: |
           git add .

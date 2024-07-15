@@ -1,0 +1,7 @@
+functions-framework==3.*
+pandas
+db-dtypes
+fsspec
+gcsfs
+pandas-gbq
+google-cloud-pubsub
