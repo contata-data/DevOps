@@ -7,7 +7,7 @@ from google.cloud import pubsub_v1
 
 
 @functions_framework.http
-def DevOpsInsertDataIntoTable(request):
+def DevOpsInsertDataIntoTableHTTP(request):
     if request.method == "OPTIONS":
         headers = {
             "Access-Control-Allow-Origin": "*",
