@@ -5,3 +5,4 @@ fsspec
 gcsfs
 pandas-gbq
 google-cloud-pubsub
+google-cloud-bigquery
