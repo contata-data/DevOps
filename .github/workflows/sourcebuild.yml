@@ -198,6 +198,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+    strategy:
+      matrix:
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
+
       - name: Set up Git identity
         run: |
           git config --global user.email "vikask@contata.in"
@@ -207,7 +211,7 @@ jobs:
         run: |
           Trigger_write="Trigger Created"
           echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
-          echo "$Trigger_write" > ${{ github.workspace }}/src/${{ fromJson(needs.detect-changes.outputs.changed-functions)[0].SrcFolder }}/Trigger.txt
+          echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           echo "Last commit hash: $Trigger_write"
       - name: Commit and push changes
         run: |
