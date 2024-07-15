@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for all branches and tags
+          fetch-depth: 0 # Fetch all history for all  branches and tags
 
       - name: get last commit details
         id: last_commit
@@ -176,7 +176,7 @@ jobs:
           echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
           echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           echo "Last commit hash: $Trigger_write"
-          git add src/functionfolder/Trigger.txt
+          git add .
           git commit -m "Write 'Trigger Created' to Trigger.txt  after deployment"
           git push origin main
 
