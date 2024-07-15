@@ -172,6 +172,8 @@ jobs:
       - name: write trigger
         id: Trigger_write
         run: |
+          git config --global user.email "vikask@contata.in"
+          git config --global user.name "Vikas Kumar"
           Trigger_write="Trigger Created"
           echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
           echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
@@ -195,7 +197,6 @@ jobs:
         run: |
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
-          WRITE_TRIGGER="Trigger Created"
           echo "Last commit hash:  $LAST_COMMIT_WRITE"
       - name: Commit and push changes
         run: |
