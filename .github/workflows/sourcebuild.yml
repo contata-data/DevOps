@@ -176,6 +176,9 @@ jobs:
           echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
           echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           echo "Last commit hash: $Trigger_write"
+          git add src/functionfolder/Trigger.txt
+          git commit -m "Write 'Trigger Created' to Trigger.txt  after deployment"
+          git push origin main
 
   commitwrite:
     needs: detect-changes 
