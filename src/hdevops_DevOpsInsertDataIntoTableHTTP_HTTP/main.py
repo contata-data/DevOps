@@ -7,7 +7,7 @@ from google.cloud import pubsub_v1
 
 
 @functions_framework.http
-def DevOpsInsert_test_Bucket(request):
+def DevOpsInsertDataIntoTable(request):
     if request.method == "OPTIONS":
         headers = {
             "Access-Control-Allow-Origin": "*",
@@ -44,9 +44,9 @@ def DevOpsInsert_test_Bucket(request):
         if id_ == "":
             print("Id is blank")
     else:
-        print("Id is missing in payload")
-        return "Id is missing in payload, please re-request with id11", 500
-    
+        print("Id is missing in payload1")
+        return "Id is missing in payload, please re-request with id 01072024 Commit 2", 500
+
     if "Name" in request_json:
         Name_ = request_json.get("Name")
         print(Name_)
