@@ -7,7 +7,7 @@ from google.cloud import pubsub_v1
 
 
 @functions_framework.http
-def DevInsertDataStorage1507S2(request):
+def DevInsertDataPubSub15073(request):
     if request.method == "OPTIONS":
         headers = {
             "Access-Control-Allow-Origin": "*",
@@ -45,7 +45,7 @@ def DevInsertDataStorage1507S2(request):
             print("Id is blank")
     else:
         print("Id is missing in payload")
-        return "Id is missing in payload, please re-request with id Storage1 2345", 500
+        return "Id is missing in payload, please re-request with ID Pub/Sub1234", 500
 
     if "Name" in request_json:
         Name_ = request_json.get("Name")
