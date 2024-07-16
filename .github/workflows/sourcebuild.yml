@@ -223,6 +223,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          git pull
           git add .
           git commit -m "Automated commit by CI/CD"
           git push origin main
