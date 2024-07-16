@@ -226,6 +226,6 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add .
+          git add ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           git commit -m "Automated commit by CI/CD"
           git push origin main
