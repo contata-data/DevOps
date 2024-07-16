@@ -182,9 +182,8 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
 
-      - post:
-        success:
-          name: Wait for previous deployment
+      - name: Wait for previous deployment
+        if: always()
           run: |
             if [[ "${{ matrix.function.SrcFolder }}" != "" ]]; then
               echo "Waiting for previous  Function deployment..."
