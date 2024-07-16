@@ -138,7 +138,7 @@ jobs:
           echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           echo "Last commit hash: $Trigger_write"
           git add .
-          git commit -m "Write 'Trigger Created' to Trigger.txt after deployment"
+          git commit -m "Write 'Trigger Created'  to Trigger.txt after deployment"
           git push https://$GITHUB_ACTOR:${{ secrets.PAT}}@github.com/contata-data/DevOps.git HEAD:main
           
       - name: Deploy Cloud Function - Topic Trigger
