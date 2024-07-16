@@ -174,7 +174,7 @@ jobs:
         run: |
             if [[ "${{ matrix.function.SrcFolder }}" != "" ]]; then
               echo "Waiting for previous  Function deployment..."
-              sleep 20  # Adjust sleep duration as needed
+              sleep 10  # Adjust sleep duration as needed
             fi
 
   commitwrite:
@@ -222,10 +222,17 @@ jobs:
           echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           echo "Last commit hash: $Trigger_write"
           echo "Waiting for previous  Function deployment..."
-          sleep 20
 
       - name: Commit and push changes
         run: |
-          git add ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
-          git commit -m "Automated commit by CI/CD"
-          git push origin main
+            git status
+            if [[ $(git status --porcelain) ]]; then
+              echo "Changes detected. Committing and pushing..."
+              echo "Trigger Created for ${{ matrix.function.name }}" >> ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
+              git add ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
+              git commit -m "Automated: Trigger created for function ${{ matrix.function.name }}"
+              git push origin main
+            else
+              echo "No changes detected. Skipping commit and push."
+            fi
+          
