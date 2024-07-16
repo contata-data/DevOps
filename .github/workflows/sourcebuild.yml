@@ -180,7 +180,7 @@ jobs:
           echo "Last commit hash: $Trigger_write"
           git add .
           git commit -m "Write 'Trigger Created' to Trigger.txt  after deployment"
-          git push origin main
+          git push https://github.com/contata-data/DevOps.git
 
   commitwrite:
     needs: detect-changes 
