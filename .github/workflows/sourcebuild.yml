@@ -174,7 +174,7 @@ jobs:
         run: |
             if [[ "${{ matrix.function.SrcFolder }}" != "" ]]; then
               echo "Waiting for previous  Function deployment..."
-              sleep 60  # Adjust sleep duration as needed
+              sleep 20  # Adjust sleep duration as needed
             fi
 
   commitwrite:
@@ -220,6 +220,8 @@ jobs:
           echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
           echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           echo "Last commit hash: $Trigger_write"
+          echo "Waiting for previous  Function deployment..."
+          sleep 20
 
       - name: Commit and push changes
         run: |
