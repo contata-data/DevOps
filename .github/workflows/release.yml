@@ -1,8 +1,16 @@
+<<<<<<< HEAD
+name: release
+on:
+  release:
+    branches:
+      - prod
+=======
 name: CI/CD
 on:
   push:
     branches:
       - main
+>>>>>>> 5edb7000f48248310e86e0bbadb0d3ec3d792af3
     path:
       - "src/*"
 

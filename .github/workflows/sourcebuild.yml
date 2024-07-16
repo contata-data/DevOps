@@ -228,7 +228,6 @@ jobs:
             git status
            
               echo "Changes detected. Committing and pushing..."
-              echo "Trigger Created for ${{ matrix.function.name }}" >> ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
               git add ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
               if [[ $(git status --porcelain) ]]; then
               git commit -m "Automated: Trigger created for function ${{ matrix.function.name }}"
