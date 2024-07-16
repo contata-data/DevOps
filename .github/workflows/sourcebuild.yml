@@ -106,7 +106,7 @@ jobs:
           echo "trigger  details: $TRIGGER_DETAILS"
           echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
           if [ "${TRIGGER_DETAILS}" = "" ]; then
-            echo "Bucket $BUCKET_FULL_NAME does not  exists "
+            echo "Bucket $BUCKET_FULL_NAME does not exists "
             echo "Creating bucket $BUCKET_FULL_NAME"
             gcloud storage buckets create gs://$BUCKET_FULL_NAME \
                 --project relevate-dev-403605 \
@@ -225,4 +225,4 @@ jobs:
         run: |
           git add .
           git commit -m "Automated commit by CI/CD"
-          git push origin mains
+          git push origin main
