@@ -1,0 +1,239 @@
+name: CI/CD
+on:
+  push:
+    branches:
+      - main
+    path:
+      - "src/*"
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-functions: ${{ steps.detect.outputs.changed-functions }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all  branches and tags
+
+      - name: get last commit details
+        id: last_commit
+        run: |
+          LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
+          echo "last commit: $LAST_COMMIT"
+          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
+
+      - name: Get Last Merge Commit
+        id: last_merge
+        run: |
+          LAST_MERGE=$(git log main --merges -1 --format=%H)
+          echo "Last merge commit : $LAST_MERGE"
+          echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
+
+      - name: Get Previous Merge Commit
+        id: prev_merge
+        run: |
+          PREV_MERGE=$(git log main --merges -2 --format=%H | tail -n 1)
+          echo "Previous merge commit: $PREV_MERGE"
+          echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_OUTPUT
+      - id: detect
+        run: |
+          CHANGED_FUNCTIONS=()
+          git fetch origin main
+          # get changed files
+          echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
+          echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
+          echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
+          CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
+           
+          #get changed dirs
+          CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
+          echo "Directories: $CHANGED_DIRS"
+          for DIR in $CHANGED_DIRS; do
+              if [ "$DIR" = ".github" ] || [ "$DIR" = ".github/workflows" ]; then
+                continue
+              fi
+              echo "Directory name: $DIR"
+              FUNCTION_NAME=$(basename $DIR)
+              echo "function name: $FUNCTION_NAME"
+              # Split function name into parts
+              IFS='_' read -r part1 part2 part3 <<< "$FUNCTION_NAME"
+              echo "TriggerName: $part1"
+              echo "FunName: $part2"
+              echo "Trigger: $part3"
+              # Assuming entry point can be derived from function name
+              ENTRY_POINT="${FUNCTION_NAME}"
+              CHANGED_FUNCTIONS+=("{\"name\": \"$part2\", \"entry_point\": \"$part2\", \"TriggerName\": \"$part1\", \"Trigger\": \"$part3\",\"SrcFolder\": \"$FUNCTION_NAME\"}")
+          done
+          if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
+            echo "changed-functions=[]" >> $GITHUB_OUTPUT
+          else
+            CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
+            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
+          fi
+  deploy-staging:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    environment: stag
+    permissions:
+      contents: read
+      id-token: write
+
+    strategy:
+      matrix:
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
+          service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
+
+      - name: Create Bucket
+        if: matrix.function.Trigger == 'Storage'
+        id: check_bucket
+        run: |
+          BUCKET_NAME="${{ matrix.function.TriggerName }}"
+          PROJECT_Ids="relevate-dev-403605"
+          BUCKET_FULL_NAME="relevate-dev-403605-${BUCKET_NAME}"
+          echo "BUCKET_FULL_NAME=$BUCKET_FULL_NAME" >> $GITHUB_OUTPUT
+          echo "BUCKET_FULL_NAME : $BUCKET_FULL_NAME"
+          # Check bucket existence with exit  code handling
+          TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt)
+          echo "trigger  details: $TRIGGER_DETAILS"
+          echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
+          if [ "${TRIGGER_DETAILS}" = "" ]; then
+            echo "Bucket $BUCKET_FULL_NAME does not exists "
+            echo "Creating bucket $BUCKET_FULL_NAME"
+            gcloud storage buckets create gs://$BUCKET_FULL_NAME \
+                --project relevate-dev-403605 \
+                --location us-central1
+          else
+            echo "Bucket $BUCKET_FULL_NAME already exists "
+          fi
+
+      - name: Create Topic
+        if: matrix.function.Trigger == 'PubSub'
+        id: create_topic
+        run: |
+          TOPIC_NAME=${{ matrix.function.TriggerName }}
+          if ! gcloud pubsub topics  list --filter="name:projects/relevate-dev-403605/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
+            # Create topic if it doesn't exist
+            gcloud pubsub topics create $TOPIC_NAME
+            echo "Created topic: $TOPIC_NAME"
+          else
+            echo "Topic: $TOPIC_NAME already  exists"
+          fi
+
+      - name: Deploy Cloud Function - Topic Trigger
+        if: matrix.function.Trigger == 'PubSub'
+        uses: google-github-actions/deploy-cloud-functions@v3
+        with:
+          name: ${{ matrix.function.name }}
+          runtime: "python312"
+          project_id: "relevate-dev-403605"
+          entry_point: ${{ matrix.function.entry_point }}
+          event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
+          event_trigger_resource: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_service: "pubsub.googleapis.com"
+          timeout: "10m"
+          source_dir: "src/${{ matrix.function.SrcFolder }}"
+
+      - name: Deploy Cloud Function - Storage Trigger
+        if: matrix.function.Trigger == 'Storage'
+        uses: google-github-actions/deploy-cloud-functions@v3
+        with:
+          name: ${{ matrix.function.name }}
+          runtime: "python312"
+          project_id: "relevate-dev-403605"
+          entry_point: ${{ matrix.function.entry_point }}
+          event_trigger_type: "google.cloud.storage.object.v1.finalized"
+          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
+          event_trigger_filters: |
+             bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
+          timeout: "10m"
+          source_dir: "src/${{ matrix.function.SrcFolder }}"
+
+      - name: Deploy Cloud Function - HTTP Trigger
+        if: matrix.function.Trigger == 'HTTP'
+        uses: google-github-actions/deploy-cloud-functions@v3
+        with:
+          name: ${{ matrix.function.name }}
+          runtime: "python312"
+          project_id: "relevate-dev-403605"
+          entry_point: ${{ matrix.function.entry_point }}
+          timeout: "10m"
+          source_dir: "src/${{ matrix.function.SrcFolder }}"
+
+      - name: Wait for previous deployment
+        if: always()
+        run: |
+            if [[ "${{ matrix.function.SrcFolder }}" != "" ]]; then
+              echo "Waiting for previous  Function deployment..."
+              sleep 10  # Adjust sleep duration as needed
+            fi
+
+  commitwrite:
+    needs: detect-changes 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Git identity
+        run: |
+          git config --global user.email "vikask@contata.in"
+          git config --global user.name "Vikas Kumar"
+      - name: Get last commit details
+        id: last_commit_write
+        run: |
+          LAST_COMMIT_WRITE=$(git rev-parse HEAD)
+          echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
+          echo "Last commit hash: $LAST_COMMIT_WRITE"
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Automated  commit by CI/CD"
+          git push origin main
+
+  committriggerwrite:
+    needs: [deploy-staging,detect-changes]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Git identity
+        run: |
+          git config --global user.email "vikask@contata.in"
+          git config --global user.name "Vikas Kumar"
+
+      - name: write trigger
+        id: Trigger_write
+        run: |
+          git pull
+          Trigger_write="Trigger Created"
+          echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
+          echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
+          echo "Last commit hash: $Trigger_write"
+          echo "Waiting for previous  Function deployment..."
+
+      - name: Commit and push changes
+        run: |
+            git status
+           
+              echo "Changes detected. Committing and pushing..."
+              echo "Trigger Created for ${{ matrix.function.name }}" >> ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
+              git add ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
+              if [[ $(git status --porcelain) ]]; then
+              git commit -m "Automated: Trigger created for function ${{ matrix.function.name }}"
+              git push origin main
+            else
+              echo "No changes detected. Skipping commit and push."
+            fi
+          
