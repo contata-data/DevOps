@@ -127,7 +127,20 @@ jobs:
           else
             echo "Topic: $TOPIC_NAME already exists"
           fi
-
+      
+      - name: write trigger
+        id: Trigger_write
+        run: |
+          git config --global user.email "vikask@contata.in"
+          git config --global user.name "Vikas Kumar"
+          Trigger_write="Trigger Created"
+          echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
+          echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
+          echo "Last commit hash: $Trigger_write"
+          git add .
+          git commit -m "Write 'Trigger Created'  to Trigger.txt after deployment"
+          git push https://vikask@contata.in:${{ secrets.GIT_PAT_TOKEN }}@github.com/contata-data/DevOps.git HEAD:main
+          
       - name: Deploy Cloud Function - Topic Trigger
         if: matrix.function.Trigger == 'PubSub'
         uses: google-github-actions/deploy-cloud-functions@v3
@@ -169,18 +182,14 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
 
-      - name: write trigger
-        id: Trigger_write
-        run: |
-          git config --global user.email "vikask@contata.in"
-          git config --global user.name "Vikas Kumar"
-          Trigger_write="Trigger Created"
-          echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
-          echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
-          echo "Last commit hash: $Trigger_write"
-          git add .
-          git commit -m "Write 'Trigger Created'  to Trigger.txt after deployment"
-          git push https://vikask@contata.in:${{ secrets.GIT_PAT_TOKEN }}@github.com/contata-data/DevOps.git HEAD:main
+      - post:
+        success:
+          name: Wait for previous deployment
+          run: |
+            if [[ "${{ matrix.function.SrcFolder }}" != "" ]]; then
+              echo "Waiting for previous  Function deployment..."
+              sleep 60  # Adjust sleep duration as needed
+            fi
 
   commitwrite:
     needs: detect-changes 
