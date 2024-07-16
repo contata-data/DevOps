@@ -170,6 +170,8 @@ jobs:
           source_dir: "src/${{ matrix.function.SrcFolder }}"
 
       - name: write trigger
+        GITHUB_USERNAME: vikask@contata.in
+        GITHUB_PAT: ${{ secrets.GIT_PAT_TOKEN }}
         id: Trigger_write
         run: |
           git config --global user.email "vikask@contata.in"
@@ -179,8 +181,8 @@ jobs:
           echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
           echo "Last commit hash: $Trigger_write"
           git add .
-          git commit -m "Write 'Trigger Created' to Trigger.txt  after deployment"
-          git push https://github.com/contata-data/DevOps.git
+          git commit -m "Write 'Trigger Created' to Trigger.txt after deployment"
+          git push origin HEAD:$GITHUB_SHA --auth=$GITHUB_USERNAME:$GITHUB_PAT
 
   commitwrite:
     needs: detect-changes 
