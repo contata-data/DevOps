@@ -125,22 +125,9 @@ jobs:
             gcloud pubsub topics create $TOPIC_NAME
             echo "Created topic: $TOPIC_NAME"
           else
-            echo "Topic: $TOPIC_NAME already exists"
+            echo "Topic: $TOPIC_NAME already  exists"
           fi
-      
-      - name: write trigger
-        id: Trigger_write
-        run: |
-          git config --global user.email "vikask@contata.in"
-          git config --global user.name "Vikas Kumar"
-          Trigger_write="Trigger Created"
-          echo "Trigger_write=$Trigger_write" >> $GITHUB_OUTPUT
-          echo "$Trigger_write" > ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
-          echo "Last commit hash: $Trigger_write"
-          git add .
-          git commit -m "Write 'Trigger Created'  to Trigger.txt after deployment"
-          git push https://$GITHUB_ACTOR:${{ secrets.PAT}}@github.com/contata-data/DevOps.git HEAD:main
-          
+
       - name: Deploy Cloud Function - Topic Trigger
         if: matrix.function.Trigger == 'PubSub'
         uses: google-github-actions/deploy-cloud-functions@v3
