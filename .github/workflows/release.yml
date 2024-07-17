@@ -18,15 +18,24 @@ jobs:
       - name: Get release details
         id: get_release
         run: |
-          # Assuming you want to capture the release tag  name
+          # Assuming you want to capture the release tag name
           RELEASE_TAG=$(echo "${{ github.ref }}" | sed -n 's/refs\/tags\/\(.*\)/\1/p')
           echo "Release tag: $RELEASE_TAG"
           echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV  # Pass this as an environment variable
 
+      - name: Verify jq installation
+        run: |
+          jq --version  # Remove this step if confident jq is installed
+
       - name: Detect changes
         id: detect
         run: |
+          # Fetch main branch for comparison
+          git fetch origin main
+          # Option A (assuming single line output): with a space after the dot
           CHANGED_FUNCTIONS=$(git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$|\.js$' | jq -r '.  | {name: basename(. // "-"), SrcFolder: dirname(. // "-")}';)
+          # Option B (alternative, each line represents a file path)
+          # CHANGED_FUNCTIONS=$(git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$|\.js$' | jq -r '.[] | {name: basename(. // "-"), SrcFolder: dirname(. // "-")}';)
           # Check if any changes were found
           if [ -z "$CHANGED_FUNCTIONS" ]; then
             echo "changed-functions=[]" >> $GITHUB_ENV
