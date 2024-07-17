@@ -26,24 +26,15 @@ jobs:
       - name: Detect changes
         id: detect
         run: |
-          CHANGED_FUNCTIONS=()
-          # Fetch main branch for comparison
-          git fetch origin main
-
-          # Example logic to determine changed functions
-          # Replace with your logic based on RELEASE_TAG or other criteria
-          # For now, just simulate a function with static data
-          CHANGED_FUNCTIONS+=("{\"name\": \"example_function\", \"entry_point\": \"example_entry\", \"TriggerName\": \"example_trigger\", \"Trigger\": \"HTTP\", \"SrcFolder\": \"example_folder\"}")
-
-          # Prepare JSON output for changed functions
-          if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
+          CHANGED_FUNCTIONS=$(git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$|\.js$' | jq -r '.[] | {name: basename(. // "-"), SrcFolder: dirname(. // "-")}';)
+          # Check if any changes were found
+          if [ -z "$CHANGED_FUNCTIONS" ]; then
             echo "changed-functions=[]" >> $GITHUB_ENV
           else
-            CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
-            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_ENV
+            echo "changed-functions=$CHANGED_FUNCTIONS" >> $GITHUB_ENV
           fi
 
-  deploy-staging:
+  deploy-production:
     needs: detect-changes
     runs-on: ubuntu-latest
     environment: prod
