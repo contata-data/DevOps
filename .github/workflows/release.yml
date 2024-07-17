@@ -33,12 +33,26 @@ jobs:
         run: |
           git fetch origin main
           git fetch --tags
+          
+      - name: List all tags
+        run: |
+          git tag -l
+
+      - name: Show content of main branch
+        run: |
+          echo "Content of main branch:"
+          git ls-tree -r origin/main --name-only
+
+      - name: Show content of release tag
+        run: |
+          echo "Content of release tag $RELEASE_TAG:"
+          git ls-tree -r $RELEASE_TAG --name-only
 
       - name: Print git diff output
         run: |
           echo "Comparing changes between main branch and tag $RELEASE_TAG"
-          git diff --name-only origin/main...$RELEASE_TAG || echo "git diff command failed"
-          git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$|\.js$' || echo "No Python or JavaScript files changed"
+          git diff --name-only origin/main...$RELEASE_TAG
+          git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$|\.js$'
 
       - name: Detect changes
         id: detect

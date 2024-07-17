@@ -44,7 +44,7 @@ def DevInsertDataPubSub1607(request):
         if id_ == "":
             print("Id is blank")
     else:
-        print("Id is missing in payload ")
+        print("Id is missing in payload")
         return "Id is missing in payload, please re-request with ID Pub1", 500
 
     if "Name" in request_json:
