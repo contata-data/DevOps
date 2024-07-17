@@ -1,4 +1,4 @@
-name: release
+name: Release
 on:
   release:
     branches:
@@ -22,13 +22,6 @@ jobs:
           LAST_COMMIT=$(cat ${{ github.workspace }}/Icf.txt)
           echo "last commit: $LAST_COMMIT"
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
-
-      - name: Get Last Merge Commit
-        id: last_merge
-        run: |
-          LAST_MERGE=$(git log main --merges -1 --format=%H)
-          echo "Last merge commit : $LAST_MERGE"
-          echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
 
       - name: Get Previous Merge Commit
         id: prev_merge
