@@ -18,7 +18,7 @@ jobs:
       - name: Get release details
         id: get_release
         run: |
-          # Assuming you want to capture the release tag name
+          # Assuming you want to capture the release tag  name
           RELEASE_TAG=$(echo "${{ github.ref }}" | sed -n 's/refs\/tags\/\(.*\)/\1/p')
           echo "Release tag: $RELEASE_TAG"
           echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV  # Pass this as an environment variable
