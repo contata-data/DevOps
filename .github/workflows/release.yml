@@ -29,13 +29,16 @@ jobs:
             sudo apt-get update && sudo apt-get install -y jq
           fi
 
-      - name: Fetch main branch
+      - name: Fetch main branch and release tag
         run: |
           git fetch origin main
+          git fetch --tags
 
       - name: Print git diff output
         run: |
-          git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$|\.js$'
+          echo "Comparing changes between main branch and tag $RELEASE_TAG"
+          git diff --name-only origin/main...$RELEASE_TAG || echo "git diff command failed"
+          git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$|\.js$' || echo "No Python or JavaScript files changed"
 
       - name: Detect changes
         id: detect
