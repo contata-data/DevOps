@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history for all branches and tags
 
-           - name: Get release details
+      - name: Get release details
         id: get_release
         run: |
           RELEASE_TAG=$(echo "${{ github.ref }}" | sed -n 's/refs\/tags\/\(.*\)/\1/p')
