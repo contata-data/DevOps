@@ -87,7 +87,7 @@ jobs:
           git push origin main
 
   committriggerwrite:
-    needs: [deploy-staging, detect-changes]
+    needs: [deploy-production, detect-changes]
     runs-on: ubuntu-latest
     strategy:
       matrix:
