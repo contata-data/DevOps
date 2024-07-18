@@ -51,7 +51,7 @@ jobs:
       - name: Print git diff output
         run: |
           echo "Comparing changes between main branch and tag $RELEASE_TAG"
-          git git diff --name-only HEAD $RELEASE_TAG
+          git diff --name-only HEAD $RELEASE_TAG
           git diff --name-only HEAD $RELEASE_TAG | grep -E '\.py$'
 
       - name: Detect changes
