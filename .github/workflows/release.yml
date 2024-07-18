@@ -57,7 +57,7 @@ jobs:
            # Construct JSON format for each file
            file_json=$(printf '{"SrcFolder":"%s","Entry_Point":"%s","FunctionName":"%s","TriggerName":"%s","Trigger":"%s"}' \
                               "$SrcFolder" "$Entry_Point" "$FunctionName" "$TriggerName" "$Trigger")
-         
+           echo "function list  :$file_json"
            # Append to CHANGED_FUNCTIONS array
            if [ -z "$CHANGED_FUNCTIONS" ]; then
              CHANGED_FUNCTIONS="[$file_json"
