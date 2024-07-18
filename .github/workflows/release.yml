@@ -21,19 +21,11 @@ jobs:
           RELEASE_TAG=$(echo "${{ github.ref }}" | sed -n 's/refs\/tags\/\(.*\)/\1/p')
           echo "Release tag: $RELEASE_TAG"
           echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
-
-      - name: Verify jq installation
-        run: |
-          if ! command -v jq &> /dev/null; then
-            echo "jq could not be found, installing..."
-            sudo apt-get update && sudo apt-get install -y jq
-          fi
-
-      - name: Show content of main branch
-        run: |
-          echo "Content of main branch:"
-          git ls-tree -r origin/main --name-only
-
+          
+          RELEASE_PrevTAG=$(git describe --tags --abbrev=0 ${RELEASE_TAG}^)
+          echo "Release Prev tag: $RELEASE_PrevTAG"
+          echo "RELEASE_PrevTAG=$RELEASE_PrevTAG" >> $GITHUB_ENV
+         
       - name: Show content of release tag
         run: |
           echo "Content of release tag $RELEASE_TAG:"
@@ -42,13 +34,14 @@ jobs:
       - name: Print git diff output
         run: |
           echo "Comparing changes between main branch and tag $RELEASE_TAG"
-          git diff --name-only HEAD $RELEASE_TAG
-          git diff --name-only HEAD $RELEASE_TAG | grep -E '\.py$'
+          #git diff --name-only HEAD $RELEASE_PrevTAG
+          #git diff --name-only HEAD $RELEASE_PrevTAG | grep -E '\.py$'
+           git describe --tags --abbrev=0 RELEASE_PrevTAG
 
       - name: Detect changes
         id: detect
         run: |
-          CHANGED_FUNCTIONS=$(git diff --name-only HEAD $RELEASE_TAG | grep -E '\.py$' | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({name: (split("/") | last), SrcFolder: (split("/")[0:-1] | join("/"))})')
+          CHANGED_FUNCTIONS=$(git diff --name-only HEAD $RELEASE_PrevTAG | grep -E '\.py$' | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({name: (split("/") | last), SrcFolder: (split("/")[0:-1] | join("/"))})')
           if [ -z "$CHANGED_FUNCTIONS" ]; then
             CHANGED_FUNCTIONS='[]'
           fi
