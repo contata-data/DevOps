@@ -48,11 +48,11 @@ jobs:
          CHANGED_FUNCTIONS=""
          for file in $(git diff --name-only $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.py$'); do
            # Extract details from file path
-           SrcFolder=$(dirname "$file" | cut -d '/' -f 1)
-           Entry_Point=$(basename "$file" .py)
-           FunctionName=$(basename "$file" .py)
-           TriggerName=$(dirname "$file" | cut -d '_' -f 2)
-           Trigger=$(basename "$file" .py | cut -d '_' -f 3)
+           SrcFolder=$(dirname "$file")
+           Entry_Point=$(dirname "$file" | cut -d '_' -f 2)
+           FunctionName=$(dirname "$file" | cut -d '_' -f 2)
+           TriggerName=$(dirname "$file" | cut -d '_' -f 1)
+           Trigger=$(dirname "$file" | cut -d '_' -f 3)
          
            # Construct JSON format for each file
            file_json=$(printf '{"SrcFolder":"%s","Entry_Point":"%s","FunctionName":"%s","TriggerName":"%s","Trigger":"%s"}' \
