@@ -45,11 +45,12 @@ jobs:
       - name: Detect changes
         id: detect
         run: |
-          CHANGED_FUNCTIONS=$(git diff  $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.py$' | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({name: (split("/") | last), SrcFolder: (split("/")[0:-1] | join("/"))})')
+          CHANGED_FUNCTIONS=$(git diff --name-only $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.py$' | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({name: (split("/") | last), SrcFolder: (split("/")[0:-1] | join("/"))})')
           if [ -z "$CHANGED_FUNCTIONS" ]; then
             CHANGED_FUNCTIONS='[]'
           fi
           echo "changed-functions=$CHANGED_FUNCTIONS" >> $GITHUB_ENV
+          echo "::set-output name=changed-functions::$CHANGED_FUNCTIONS"
 
   deploy-production:
     needs: detect-changes
@@ -78,57 +79,3 @@ jobs:
           entry_point: ${{ matrix.function.entry_point }}
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
-
-  commitwrite:
-    needs: detect-changes 
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Git identity
-        run: |
-          git config --global user.email "vikask@contata.in"
-          git config --global user.name "Vikas Kumar"
-
-      - name: Get last commit details
-        id: last_commit_write
-        run: |
-          LAST_COMMIT_WRITE=$(git rev-parse HEAD)
-          echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
-          echo "Last commit hash: $LAST_COMMIT_WRITE"
-
-      - name: Commit and push changes
-        run: |
-          git add .
-          git commit -m "Automated commit by CI/CD"
-          git push origin main
-
-  committriggerwrite:
-    needs: [deploy-production, detect-changes]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Git identity
-        run: |
-          git config --global user.email "vikask@contata.in"
-          git config --global user.name "Vikas Kumar"
-
-      - name: Write trigger
-        id: Trigger_write
-        run: |
-          echo "Trigger Created for ${{ matrix.function.name }}" >> ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
-
-      - name: Commit and push changes
-        run: |
-          git add ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt
-          if [[ $(git status --porcelain) ]]; then
-            git commit -m "Automated: Trigger created for function ${{ matrix.function.name }}"
-            git push origin main
-          else
-            echo "No changes detected. Skipping commit and push."
-          fi
