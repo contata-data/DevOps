@@ -25,6 +25,10 @@ jobs:
           RELEASE_PrevTAG=$(git describe --tags --abbrev=0 ${RELEASE_TAG}^)
           echo "Release Prev tag: $RELEASE_PrevTAG"
           echo "RELEASE_PrevTAG=$RELEASE_PrevTAG" >> $GITHUB_ENV
+
+          RELEASE_PrevTAG=$(git describe --tags --abbrev=0 ${RELEASE_TAG}^)
+          echo "Release Prev tag: $RELEASE_PrevTAG"
+          echo "RELEASE_PrevTAG=$RELEASE_PrevTAG" >> $GITHUB_ENV
          
       - name: Show content of release tag
         run: |
@@ -36,12 +40,12 @@ jobs:
           echo "Comparing changes between main branch and tag $RELEASE_TAG"
           #git diff --name-only HEAD $RELEASE_PrevTAG
           #git diff --name-only HEAD $RELEASE_PrevTAG | grep -E '\.py$'
-           git describe --tags --abbrev=0 RELEASE_PrevTAG
+          #git describe --tags --abbrev=0 $RELEASE_TAG
 
       - name: Detect changes
         id: detect
         run: |
-          CHANGED_FUNCTIONS=$(git diff --name-only HEAD $RELEASE_PrevTAG | grep -E '\.py$' | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({name: (split("/") | last), SrcFolder: (split("/")[0:-1] | join("/"))})')
+          CHANGED_FUNCTIONS=$(git diff  $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.py$' | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({name: (split("/") | last), SrcFolder: (split("/")[0:-1] | join("/"))})')
           if [ -z "$CHANGED_FUNCTIONS" ]; then
             CHANGED_FUNCTIONS='[]'
           fi
