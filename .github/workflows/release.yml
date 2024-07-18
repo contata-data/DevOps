@@ -51,13 +51,13 @@ jobs:
       - name: Print git diff output
         run: |
           echo "Comparing changes between main branch and tag $RELEASE_TAG"
-          git diff --name-only origin/main...$RELEASE_TAG
-          git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$'
+          git git diff --name-only HEAD $RELEASE_TAG
+          git diff --name-only HEAD $RELEASE_TAG | grep -E '\.py$'
 
       - name: Detect changes
         id: detect
         run: |
-          CHANGED_FUNCTIONS=$(git diff --name-only origin/main...$RELEASE_TAG | grep -E '\.py$' | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({name: (split("/") | last), SrcFolder: (split("/")[0:-1] | join("/"))})')
+          CHANGED_FUNCTIONS=$(git diff --name-only HEAD $RELEASE_TAG | grep -E '\.py$' | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({name: (split("/") | last), SrcFolder: (split("/")[0:-1] | join("/"))})')
           if [ -z "$CHANGED_FUNCTIONS" ]; then
             CHANGED_FUNCTIONS='[]'
           fi
