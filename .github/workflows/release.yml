@@ -29,15 +29,6 @@ jobs:
             sudo apt-get update && sudo apt-get install -y jq
           fi
 
-      - name: Fetch main branch and release tag
-        run: |
-          git fetch origin main
-          git fetch --tags
-          
-      - name: List all tags
-        run: |
-          git tag -l
-
       - name: Show content of main branch
         run: |
           echo "Content of main branch:"

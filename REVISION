@@ -1,0 +1,4 @@
+.github/workflows/release.yml
+Icf.txt
+src/DevOpsTest1607_DevInsertDataPubSub1607_PubSub/main.py
+src/devops1607_InsertDataStorage1607_Storage/main.py
