@@ -121,9 +121,9 @@ jobs:
           #fi
           
           if gsutil ls -b "gs://${BUCKET_FULL_NAME}"; then
-            echo "Bucket - ${BUCKET_FULL_NAME} exists."
+            echo "Bucket - ${BUCKET_FULL_NAME} exists. line 124"
           else
-            echo "Bucket $BUCKET_FULL_NAME does not exists"
+            echo "Bucket $BUCKET_FULL_NAME does not exists line 126"
             echo "Creating bucket - $BUCKET_FULL_NAME"
             gcloud storage buckets create gs://$BUCKET_FULL_NAME \
                 --project relevate-dev-403605 \
