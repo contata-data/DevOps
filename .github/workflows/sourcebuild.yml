@@ -92,6 +92,11 @@ jobs:
           workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
           service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
 
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: relevate-dev-403605
+
       - name: Create Bucket
         if: matrix.function.Trigger == 'Storage'
         id: check_bucket
@@ -106,7 +111,7 @@ jobs:
           echo "trigger  details: $TRIGGER_DETAILS"
           echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
           if [ "${TRIGGER_DETAILS}" = "" ]; then
-            echo "Bucket $BUCKET_FULL_NAME does not exists "
+            echo "Bucket $BUCKET_FULL_NAME does not exists"
             echo "Creating bucket $BUCKET_FULL_NAME"
             gcloud storage buckets create gs://$BUCKET_FULL_NAME \
                 --project relevate-dev-403605 \
