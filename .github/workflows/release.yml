@@ -121,7 +121,7 @@ jobs:
           #  echo "Bucket $BUCKET_FULL_NAME already exists "
           #fi
           
-         if gsutil ls -b "gs://${BUCKET_FULL_NAME}"; then
+          if gsutil ls -b "gs://${BUCKET_FULL_NAME}"; then
             echo "Bucket - ${BUCKET_FULL_NAME} exists. line 125"
           else
             echo "Bucket $BUCKET_FULL_NAME does not exists line 127"
