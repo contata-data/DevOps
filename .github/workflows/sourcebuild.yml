@@ -114,7 +114,13 @@ jobs:
           else
             echo "Bucket $BUCKET_FULL_NAME already exists "
           fi
-
+          
+          if gsutil ls -b "gs://${BUCKET_FULL_NAME}"; then
+            echo "Bucket ${BUCKET_FULL_NAME} exists."
+          else
+            echo "Bucket ${BUCKET_FULL_NAME} does not exist."
+          fi
+          
       - name: Create Topic
         if: matrix.function.Trigger == 'PubSub'
         id: create_topic
