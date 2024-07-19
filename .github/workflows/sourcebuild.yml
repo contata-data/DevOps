@@ -106,24 +106,28 @@ jobs:
           BUCKET_FULL_NAME="relevate-dev-403605-${BUCKET_NAME}"
           echo "BUCKET_FULL_NAME=$BUCKET_FULL_NAME" >> $GITHUB_OUTPUT
           echo "BUCKET_FULL_NAME : $BUCKET_FULL_NAME"
-          # Check bucket existence with exit  code handling
-          TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt)
-          echo "trigger  details: $TRIGGER_DETAILS"
-          echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
-          if [ "${TRIGGER_DETAILS}" = "" ]; then
+          ## Check bucket existence with exit  code handling
+          #TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt)
+          #echo "trigger  details: $TRIGGER_DETAILS"
+          #echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
+          #if [ "${TRIGGER_DETAILS}" = "" ]; then
+          #  echo "Bucket $BUCKET_FULL_NAME does not exists"
+          #  echo "Creating bucket $BUCKET_FULL_NAME"
+          #  gcloud storage buckets create gs://$BUCKET_FULL_NAME \
+          #      --project relevate-dev-403605 \
+          #      --location us-central1
+          #else
+          #  echo "Bucket $BUCKET_FULL_NAME already exists "
+          #fi
+          
+          if gsutil ls -b "gs://${BUCKET_FULL_NAME}"; then
+            echo "Bucket - ${BUCKET_FULL_NAME} exists."
+          else
             echo "Bucket $BUCKET_FULL_NAME does not exists"
-            echo "Creating bucket $BUCKET_FULL_NAME"
+            echo "Creating bucket - $BUCKET_FULL_NAME"
             gcloud storage buckets create gs://$BUCKET_FULL_NAME \
                 --project relevate-dev-403605 \
                 --location us-central1
-          else
-            echo "Bucket $BUCKET_FULL_NAME already exists "
-          fi
-          
-          if gsutil ls -b "gs://${BUCKET_FULL_NAME}"; then
-            echo "Bucket ${BUCKET_FULL_NAME} exists."
-          else
-            echo "Bucket ${BUCKET_FULL_NAME} does not exist."
           fi
           
       - name: Create Topic
