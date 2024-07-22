@@ -2,38 +2,38 @@ name: Create BigQuery Table
 
 on:
   push:
-    branches:
-      - main
-    path:
-      - "srcSQL/*"
+    branches: [ main ]
+  path:
+    - "srcSQL/*"
   workflow_dispatch:
 
 jobs:
   create-bigquery-table:
     runs-on: ubuntu-latest
-    environment: stag
+    environment: stag  # Environment for clarity (optional)
     permissions:
-      contents: read  # Only read permission  needed for checkout
+      contents: read  # Only read permission needed for checkout
       id-token: write  # Needed for Workload Identity
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3  # Updated to latest version
 
-    - id: auth
-      uses: google-github-actions/auth@v2
-      with:
-        workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: ${{ vars.SERVICE_ACCOUNT }}
+      - id: auth
+        uses: google-github-actions/auth@v2  # Updated to latest version
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}  # Use secrets here
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}  # Use secrets here
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v1
-      with:
-        version: 'latest'
-        export_default_credentials: true  # Automatic credential handling
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: 'latest'
+          export_default_credentials: true  # Automatic credential handling
 
-    - name: Execute SQL file
-      with:
-        gcp_project: ${{ env.PROJECTID }}
-        dataset_schema_directory: 'srcSQL/CreateDevOpsTestTable.sql'   # Replace with your schema file path
-        credentials: ${{ vars.SERVICE_ACCOUNT }}  # Assuming service account JSON is stored as a secret
+      - name: Execute SQL file
+        run: |  # Changed to multi-line for readability
+          gcloud sql --quiet query \
+            --project=${{ env.PROJECTID }} \
+            --file="srcSQL/CreateDevOpsTestTable.sql"  # Replace with your schema file path
+
