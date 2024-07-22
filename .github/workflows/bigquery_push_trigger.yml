@@ -1,0 +1,32 @@
+name: Create BigQuery Table
+
+on:
+  push:
+    branches:
+      - main
+    path:
+      - "srcSQL/*"
+  workflow_dispatch:
+
+jobs:
+  create-bigquery-table:
+    runs-on: ubuntu-latest
+    environment: stag
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        version: 'latest'
+        service_account_key: ${{vars.SERVICE_ACCOUNT}}
+        export_default_credentials: true
+
+    - name: Execute SQL file
+      run: |
+        bq query --use_legacy_sql=false --flagfile=./CreateDevOpsTestTable.sql
