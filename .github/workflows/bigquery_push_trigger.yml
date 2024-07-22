@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-    path:
+    paths:
       - "srcSQL/*"
   workflow_dispatch:
 
@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: stag
     permissions:
-      contents: read
-      id-token: write
+      contents: read  # Only read permission needed for checkout
+      id-token: write  # Needed for Workload Identity
 
     steps:
     - name: Checkout code
@@ -23,16 +23,15 @@ jobs:
     - id: auth
       uses: google-github-actions/auth@v2
       with:
-          workload_identity_provider: ${{vars.WORKLOAD_IDENTITY_PROVIDER}}
-          service_account: ${{vars.SERVICE_ACCOUNT}}
-          
+        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
     - name: Set up Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
       with:
         version: 'latest'
-        service_account_key: ${{vars.SERVICE_ACCOUNT}}
-        export_default_credentials: true
+        export_default_credentials: true  #  Automatic credential handling
 
     - name: Execute SQL file
       run: |
-         bq query --use_legacy_sql=false "source ./srcSQL/CreateDevOpsTestTable.sql"
+        bq query --use_legacy_sql=false "source ./srcSQL/CreateDevOpsTestTable.sql"
