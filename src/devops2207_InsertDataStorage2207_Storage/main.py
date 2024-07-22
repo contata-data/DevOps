@@ -45,7 +45,7 @@ def InsertDataStorage2207(request):
             print("Id is blank")
     else:
         print("Id is missing in payload")
-        return "Id is missing in payload, please re-request with id Storage12", 500
+        return "Id is missing in payload, please re-request with id Storage123", 500
     
     if "Name" in request_json:
         Name_ = request_json.get("Name")

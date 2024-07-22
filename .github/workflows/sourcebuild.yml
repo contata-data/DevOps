@@ -102,7 +102,7 @@ jobs:
         id: check_bucket
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
-          PROJECT_Ids=${{ vars.PROJECTID }}
+          PROJECT_Ids="${{ vars.PROJECTID }}"
           BUCKET_FULL_NAME="${{ vars.PROJECTID }}-${BUCKET_NAME}"
           echo "BUCKET_FULL_NAME=$BUCKET_FULL_NAME" >> $GITHUB_OUTPUT
           echo "BUCKET_FULL_NAME : $BUCKET_FULL_NAME"
@@ -120,12 +120,12 @@ jobs:
           #  echo "Bucket $BUCKET_FULL_NAME already exists "
           #fi
           
-          if gsutil ls -b "gs:///${{ vars.PROJECTID }}-${BUCKET_NAME}"; then
+          if gsutil ls -b "gs:///${BUCKET_FULL_NAME}"; then
             echo "Bucket - ${BUCKET_FULL_NAME} exists.line 124"
           else
             echo "Bucket $BUCKET_FULL_NAME does not exists line 126 "
             echo "Creating bucket - $BUCKET_FULL_NAME"
-            gcloud storage buckets create gs://${{ vars.PROJECTID }}-${BUCKET_NAME} \
+            gcloud storage buckets create gs://${BUCKET_FULL_NAME} \
                 --project ${{ vars.PROJECTID }} \
                 --location us-central1
           fi
