@@ -95,24 +95,24 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: "projects/580005102993/locations/global/workloadIdentityPools/testpool1/providers/testprovider1"
-          service_account: "devops-git@relevate-dev-403605.iam.gserviceaccount.com"
+          workload_identity_provider: ${{vars.WORKLOAD_IDENTITY_PROVIDER}}
+          service_account: ${{vars.SERVICE_ACCOUNT}}
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: relevate-dev-403605
+          project_id: ${{ env.PROJECTID }}
 
       - name: Create Bucket
         if: matrix.function.Trigger == 'Storage'
         id: check_bucket
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
-          PROJECT_Ids="relevate-dev-403605"
-          BUCKET_FULL_NAME="relevate-dev-403605-${BUCKET_NAME}"
+          PROJECT_Ids="${{ vars.PROJECTID }}"
+          BUCKET_FULL_NAME="${PROJECT_Ids}-${BUCKET_NAME}"
           echo "BUCKET_FULL_NAME=$BUCKET_FULL_NAME" >> $GITHUB_OUTPUT
           echo "BUCKET_FULL_NAME : $BUCKET_FULL_NAME"
-          ## Check bucket existence with exit  code handling
+          ## Check bucket existence with exit code handling
           #TRIGGER_DETAILS=$(cat ${{ github.workspace }}/${{ matrix.function.SrcFolder }}/Trigger.txt)
           #echo "trigger  details: $TRIGGER_DETAILS"
           #echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
@@ -132,7 +132,7 @@ jobs:
             echo "Bucket $BUCKET_FULL_NAME does not exists line 127"
             echo "Creating bucket - $BUCKET_FULL_NAME"
             gcloud storage buckets create gs://$BUCKET_FULL_NAME \
-                --project relevate-dev-403605 \
+                --project ${{ vars.PROJECTID }} \
                 --location us-central1
           fi
           
@@ -142,7 +142,7 @@ jobs:
         id: create_topic
         run: |
           TOPIC_NAME=${{ matrix.function.TriggerName }}
-          if ! gcloud pubsub topics  list --filter="name:projects/relevate-dev-403605/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
+          if ! gcloud pubsub topics  list --filter="name:projects/${{ vars.PROJECTID }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
             # Create topic if it doesn't exist
             gcloud pubsub topics create $TOPIC_NAME
             echo "Created topic: $TOPIC_NAME"
@@ -156,11 +156,11 @@ jobs:
         with:
           name: ${{ matrix.function.FunctionName }}
           runtime: "python312"
-          project_id: "relevate-dev-403605"
+          project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.Entry_Point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
-          event_trigger_resource: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
-          event_trigger_pubsub_topic: "projects/relevate-dev-403605/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_resource: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_service: "pubsub.googleapis.com"
           timeout: "10m"
           source_dir: "${{ matrix.function.SrcFolder }}"
@@ -171,10 +171,10 @@ jobs:
         with:
           name: ${{ matrix.function.FunctionName }}
           runtime: "python312"
-          project_id: "relevate-dev-403605"
+          project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.Entry_Point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/relevate-dev-403605/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
+          event_trigger_resource: "projects/${{ vars.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
           timeout: "10m"
@@ -186,7 +186,7 @@ jobs:
         with:
           name: ${{ matrix.function.FunctionName }}
           runtime: "python312"
-          project_id: "relevate-dev-403605"
+          project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.Entry_Point }}
           timeout: "10m"
           source_dir: "${{ matrix.function.SrcFolder }}"
