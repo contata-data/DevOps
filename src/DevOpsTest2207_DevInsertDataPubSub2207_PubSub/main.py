@@ -42,7 +42,7 @@ def DevInsertDataPubSub2207(request):
         id_ = request_json.get("Id")
         print(id_)
         if id_ == "":
-            print("Id is blank")
+            print("Id is blank ")
     else:
         print("Id is missing in payload")
         return "Id is missing in payload, please re-request with ID Pub1234567", 500
