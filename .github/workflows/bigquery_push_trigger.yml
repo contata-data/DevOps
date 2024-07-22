@@ -35,4 +35,4 @@ jobs:
 
     - name: Execute SQL file
       run: |
-        bq query --use_legacy_sql=false --flagfile=./CreateDevOpsTestTable.sql
+        bq query --use_legacy_sql=false --flagfile=./srcSQL/CreateDevOpsTestTable.sql
