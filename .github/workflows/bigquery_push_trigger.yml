@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: stag
     permissions:
-      contents: read  # Only read permission needed for checkout
+      contents: read  # Only read permission needed for checkout 
       id-token: write  # Needed for Workload Identity
 
     steps:
