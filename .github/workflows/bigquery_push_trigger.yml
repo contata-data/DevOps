@@ -33,7 +33,7 @@ jobs:
         export_default_credentials: true  # Automatic credential handling
 
     - name: Execute SQL file
-      env:
+      with:
         gcp_project: ${{ env.PROJECTID }}
-        dataset_schema_directory: 'srcSQL/CreateDevOpsTestTable.sql'  # Replace with your schema file path
+        dataset_schema_directory: 'srcSQL/CreateDevOpsTestTable.sql'   # Replace with your schema file path
         credentials: ${{ vars.SERVICE_ACCOUNT }}  # Assuming service account JSON is stored as a secret
