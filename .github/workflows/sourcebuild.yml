@@ -167,7 +167,7 @@ jobs:
           project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/${{ env.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
+          event_trigger_resource: "projects/${{ vars.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
           timeout: "10m"
@@ -199,7 +199,7 @@ jobs:
         run: |
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
-          echo "Last commit hash: $LAST_COMMIT_WRITE"
+          echo "Last commit  hash: $LAST_COMMIT_WRITE"
       - name: Commit and push changes
         run: |
           git add .
