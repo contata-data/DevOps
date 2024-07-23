@@ -102,7 +102,7 @@ jobs:
 
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability 
-          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < ${{ matrix.function.fullpath }}.sql
+          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < ${{ matrix.function.fullpath }}
   commitwrite:
     needs: detect-changes 
     runs-on: ubuntu-latest
