@@ -7,12 +7,81 @@ on:
     - "srcSQL/*"
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-functions: ${{ steps.detect.outputs.changed-functions }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all  branches and tags
+
+      - name: get last commit details
+        id: last_commit
+        run: |
+          LAST_COMMIT=$(cat ${{ github.workspace }}/Icfbig.txt)
+          echo "last commit: $LAST_COMMIT"
+          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
+
+      - name: Get Last Merge Commit
+        id: last_merge
+        run: |
+          LAST_MERGE=$(git log main --merges -1 --format=%H)
+          echo "Last merge commit : $LAST_MERGE"
+          echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
+
+      - name: Get Previous Merge Commit
+        id: prev_merge
+        run: |
+          PREV_MERGE=$(git log main --merges -2 --format=%H | tail -n 1)
+          echo "Previous merge commit: $PREV_MERGE"
+          echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_OUTPUT
+      - id: detect
+        run: |
+          CHANGED_FUNCTIONS=()
+          git fetch origin main
+          # get changed files
+          echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
+          echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
+          echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
+          CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
+           
+          #get changed dirs
+          CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
+          echo "Directories: $CHANGED_DIRS"
+          for DIR in $CHANGED_DIRS; do
+              if [ "$DIR" = ".github" ] || [ "$DIR" = ".github/workflows" ]; then
+                continue
+              fi
+              echo "Directory name: $DIR"
+              FUNCTION_NAME=$(basename $DIR)
+              echo "function name: $FUNCTION_NAME"
+              # Split function name into parts
+              IFS='_' read -r part1 part2 part3 <<< "$FUNCTION_NAME"
+              echo "TriggerName: $part1"
+              echo "FunName: $part2"
+              echo "Trigger: $part3"
+              # Assuming entry point can be derived from function name
+              ENTRY_POINT="${FUNCTION_NAME}"
+              CHANGED_FUNCTIONS+=("{\"name\": \"$part2\", \"entry_point\": \"$part2\", \"TriggerName\": \"$part1\", \"Trigger\": \"$part3\",\"SrcFolder\": \"$FUNCTION_NAME\"}")
+          done
+          if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
+            echo "changed-functions=[]" >> $GITHUB_OUTPUT
+          else
+            CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
+            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
+          fi
+
   create-bigquery-table:
     runs-on: ubuntu-latest
     environment: stag  # Environment for clarity (optional)
     permissions:
       contents: read  # Only read permission needed for checkout
       id-token: write  # Needed for Workload Identity
+
+    strategy:
+      matrix:
+        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
 
     steps:
       - name: Checkout code
@@ -31,5 +100,28 @@ jobs:
           export_default_credentials: true  # Automatic credential handling  
 
       - name: Execute SQL file
-        run: |  # Changed to multi-line for  readability 
-          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < srcSQL/CreateDevOpsTestTable_Proc.sql
+        run: |  # Changed to multi-line for readability 
+          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < ${{ matrix.function.SrcFolder }}.sql
+
+  commitwrite:
+    needs: detect-changes 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Git identity
+        run: |
+          git config --global user.email "vikask@contata.in"
+          git config --global user.name "Vikas Kumar"
+      - name: Get last commit details
+        id: last_commit_write
+        run: |
+          LAST_COMMIT_WRITE=$(git rev-parse HEAD)
+          echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icfbig.txt
+          echo "Last commit  hash: $LAST_COMMIT_WRITE"
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Automated commit by CI/CD"
+          git push origin main
+
