@@ -16,23 +16,23 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Updated to latest version
+        uses: actions/checkout@v4  # Updated to latest version
 
       - id: auth
         uses: google-github-actions/auth@v2  # Updated to latest version
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}  # Use secrets here
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}  # Use secrets here
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}  # Use secrets here
+          service_account: ${{ vars.SERVICE_ACCOUNT }}  # Use secrets here
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: 'latest'
-          export_default_credentials: true  # Automatic credential handling
+          export_default_credentials: true  # Automatic credential handling 
 
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability
           gcloud sql --quiet query \
-            --project=${{ env.PROJECTID }} \
+            --project=${{ vars.PROJECTID }} \
             --file="srcSQL/CreateDevOpsTestTable.sql"  # Replace with your schema file path
 
