@@ -28,8 +28,8 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: 'latest'
-          export_default_credentials: true  # Automatic credential handling 
+          export_default_credentials: true  # Automatic credential  handling 
 
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability
-          bq query --use_legacy_sql=false --project_id =${{ vars.PROJECTID }} @"./srcSQL/CreateDevOpsTestTable.sql"  # Replace with your schema file path
+          bq query --use_legacy_sql=false --project=${{ env.PROJECTID }} @"./srcSQL/CreateDevOpsTestTable.sql"
