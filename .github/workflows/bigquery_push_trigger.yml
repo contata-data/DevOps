@@ -62,7 +62,7 @@ jobs:
                    echo "full name: $FULL_PATH"
                    # Assuming entry point can be derived from function name
                    ENTRY_POINT="${FUNCTION_NAME}"
-                   CHANGED_FUNCTIONS+=("{\"SrcFolder\": \"$FUNCTION_NAME\"}")
+                   CHANGED_FUNCTIONS+=("{\"SrcFolder\": \"$FUNCTION_NAME\",\"fullpath\": \"$FULL_PATH\"}")
                done
            done
            
@@ -102,7 +102,7 @@ jobs:
 
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability 
-          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < ${{ matrix.function.SrcFolder }}.sql
+          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < ${{ matrix.function.fullpath }}.sql
   commitwrite:
     needs: detect-changes 
     runs-on: ubuntu-latest
