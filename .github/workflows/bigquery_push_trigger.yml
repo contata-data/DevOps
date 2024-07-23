@@ -32,4 +32,4 @@ jobs:
 
       - name: Execute SQL file
         run: |  # Changed to multi-line for  readability
-          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 @"./srcSQL/CreateDevOpsTestTable.sql"
+          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 "./srcSQL/CreateDevOpsTestTable.sql"
