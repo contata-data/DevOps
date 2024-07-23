@@ -22,14 +22,12 @@ jobs:
           LAST_COMMIT=$(cat ${{ github.workspace }}/Icfbig.txt)
           echo "last commit: $LAST_COMMIT"
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
-
       - name: Get Last Merge Commit
         id: last_merge
         run: |
           LAST_MERGE=$(git log main --merges -1 --format=%H)
           echo "Last merge commit : $LAST_MERGE"
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
-
       - name: Get Previous Merge Commit
         id: prev_merge
         run: |
@@ -69,8 +67,6 @@ jobs:
                CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
                echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
            fi
-
-
   create-bigquery-table:
     needs: detect-changes
     runs-on: ubuntu-latest
@@ -102,7 +98,6 @@ jobs:
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability 
           bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < ${{ matrix.function.SrcFolder }}.sql
-
   commitwrite:
     needs: detect-changes 
     runs-on: ubuntu-latest
@@ -124,4 +119,3 @@ jobs:
           git add .
           git commit -m "Automated commit by CI/CD"
           git push origin main
-
