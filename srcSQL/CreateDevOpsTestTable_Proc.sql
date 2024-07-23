@@ -3,6 +3,4 @@ BEGIN
 select Id, Name  FROM RelevateSystemStaging.DevOpsTest where id=id_ ;
 union all 
 select Id, Name  FROM RelevateSystemStaging.DevOpsTest where id=id_ ;
-
-
 END; 
