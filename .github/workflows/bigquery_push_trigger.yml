@@ -33,5 +33,5 @@ jobs:
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability
           gcloud components install bigquery  # Install bq command if not present
-          bq query --use_legacy_sql=false --project=${{ env.PROJECTID }} @"./srcSQL/CreateDevOpsTestTable.sql"  # Replace with your schema file path
+          bq query --use_legacy_sql=false --project=${{ vars.PROJECTID }} @"./srcSQL/CreateDevOpsTestTable.sql"  # Replace with your schema file path
 
