@@ -98,7 +98,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: 'latest'
-          export_default_credentials: true  # Automatic credential handling  
+          export_default_credentials: true  # Automatic credential handling   
 
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability 
@@ -116,6 +116,7 @@ jobs:
       - name: Get last commit details
         id: last_commit_write
         run: |
+          git pull
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icfbig.txt
           echo "Last commit  hash: $LAST_COMMIT_WRITE"
