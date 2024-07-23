@@ -47,7 +47,7 @@ jobs:
           CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
            
           #get changed dirs
-          CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
+          CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^srcSQL/' | sort | uniq)
           echo "Directories: $CHANGED_DIRS"
           for DIR in $CHANGED_DIRS; do
               if [ "$DIR" = ".github" ] || [ "$DIR" = ".github/workflows" ]; then
@@ -73,6 +73,7 @@ jobs:
           fi
 
   create-bigquery-table:
+    needs: detect-changes
     runs-on: ubuntu-latest
     environment: stag  # Environment for clarity (optional)
     permissions:
