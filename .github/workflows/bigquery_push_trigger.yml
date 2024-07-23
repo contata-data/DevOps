@@ -32,4 +32,4 @@ jobs:
 
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability
-          bq query --use_legacy_sql=false --project=${{ vars.PROJECTID }} @"./srcSQL/CreateDevOpsTestTable.sql"  # Replace with your schema file path
+          bq query --use_legacy_sql=false --project_id =${{ vars.PROJECTID }} @"./srcSQL/CreateDevOpsTestTable.sql"  # Replace with your schema file path
