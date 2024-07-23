@@ -21,7 +21,7 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2  # Updated to latest version
         with:
-          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}  #Use secrets here
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}  #Use secrets here 
           service_account: ${{ vars.SERVICE_ACCOUNT }}  # Use secrets here
 
       - name: Set up Google Cloud SDK
@@ -32,4 +32,4 @@ jobs:
 
       - name: Execute SQL file
         run: |  # Changed to multi-line for  readability
-          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < srcSQL/CreateDevOpsTestTable.sqls
+          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < srcSQL/CreateDevOpsTestTable.sql
