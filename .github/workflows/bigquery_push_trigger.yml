@@ -55,7 +55,7 @@ jobs:
                fi
                echo "Directory name: $DIR"
                for file in $(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main | grep "^$DIR/"); do
-                   FUNCTION_NAME=$(basename "$file")
+                   FUNCTION_NAME=$(basename "$DIR/""$file")
                    echo "Function name: $FUNCTION_NAME"
                    # Assuming entry point can be derived from function name
                    ENTRY_POINT="${FUNCTION_NAME}"
