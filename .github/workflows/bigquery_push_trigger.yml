@@ -1,11 +1,10 @@
 name: Create BigQuery Table
-
 on:
   push:
-    branches: [ main ]
-  path:
+    branches: 
+      - main
+    path:
     - "srcSQL/*"
-  workflow_dispatch:
 
 jobs:
   create-bigquery-table:
