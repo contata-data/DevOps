@@ -16,7 +16,7 @@ select Cast(Id as String) as Id,Name FROM relevate-dev-403605.RelevateSystemStag
 -- Step 3: Drop the original table with the old data type
 Drop table relevate-dev-403605.RelevateSystemStaging.DevOpsTest;
 
--- Step 4: Clone the new table back to the original table name
+-- Step 4: Clone the new table back to the original table name 
 Create table relevate-dev-403605.RelevateSystemStaging.DevOpsTest Clone 
 
  relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType;
