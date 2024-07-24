@@ -1,7 +1,7 @@
 -- Change data type of a column
 -- Step 1: Create table with the changed data type
 -- Changing data type of Id from INT to STRING
-Drop table if exists relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType
+Drop table if exists relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType;
 create table relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType
 (
   Id String
@@ -19,7 +19,7 @@ Drop table relevate-dev-403605.RelevateSystemStaging.DevOpsTest;
 -- Step 4: Clone the new table back to the original table name
 Create table relevate-dev-403605.RelevateSystemStaging.DevOpsTest Clone 
 
- relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType
+ relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType;
  
  --Step 5 drop table new table  
- drop table relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType
+ drop table relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType;
