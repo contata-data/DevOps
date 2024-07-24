@@ -22,4 +22,5 @@ Create table relevate-dev-403605.RelevateSystemStaging.DevOpsTest Clone
  relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType;
  
  --Step 5 drop table new table  
- drop table relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType;
+ drop table relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType;
+ 
