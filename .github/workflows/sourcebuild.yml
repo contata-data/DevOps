@@ -192,16 +192,16 @@ jobs:
           REGION=us-central1
           PROJECT_ID=${{ vars.PROJECTID }}
           # Check if the API exists
-          API_EXISTS=$(gcloud api-gateway apis list --filter="displayName=$API_NAME" --format="value(name)" --project=$PROJECT_ID)
-          if [ -z "$API_EXISTS" ]; then
+          API_EXISTS=$(gcloud api-gateway apis list --format="value(name)" --project=$PROJECT_ID)
+          if [[ $API_EXISTS != *"$API_NAME"* ]]; then
             echo "Creating new API for $API_NAME"
             gcloud api-gateway apis create $API_NAME --project=$PROJECT_ID
           else
             echo "API $API_NAME already exists"
           fi
           # Create or update the API configuration
-          CONFIG_ID=$(gcloud api-gateway api-configs list --api=$API_NAME --filter="displayName=$CONFIG_NAME" --format="value(name)" --project=$PROJECT_ID)
-          if [ -z "$CONFIG_ID" ]; then
+          CONFIG_ID=$(gcloud api-gateway api-configs list --api=$API_NAME --format="value(name)" --project=$PROJECT_ID)
+          if [[ $CONFIG_ID != *"$CONFIG_NAME"* ]]; then
             echo "Creating new API Gateway configuration for $API_NAME"
             gcloud api-gateway api-configs create $CONFIG_NAME --api=$API_NAME --openapi-spec=src/${{ matrix.function.SrcFolder }}/dev-ops-config-a.yaml --project=$PROJECT_ID
           else
@@ -210,14 +210,15 @@ jobs:
           fi
           # Deploy the API Gateway
           GATEWAY_NAME=${API_NAME}-gateway
-          GATEWAY_EXISTS=$(gcloud api-gateway gateways list --filter="displayName=$GATEWAY_NAME" --format="value(name)" --project=$PROJECT_ID)
-          if [ -z "$GATEWAY_EXISTS" ]; then
+          GATEWAY_EXISTS=$(gcloud api-gateway gateways list --format="value(name)" --project=$PROJECT_ID)
+          if [[ $GATEWAY_EXISTS != *"$GATEWAY_NAME"* ]]; then
             echo "Creating API Gateway $GATEWAY_NAME"
             gcloud api-gateway gateways create $GATEWAY_NAME --api=$API_NAME --api-config=$CONFIG_NAME --location=$REGION --project=$PROJECT_ID
           else
             echo "Updating API Gateway $GATEWAY_NAME"
             gcloud api-gateway gateways update $GATEWAY_NAME --api=$API_NAME --api-config=$CONFIG_NAME --location=$REGION --project=$PROJECT_ID
           fi
+
 
   commitwrite:
     needs: detect-changes 
