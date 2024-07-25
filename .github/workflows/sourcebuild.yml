@@ -185,6 +185,7 @@ jobs:
           API_EXISTS=$(gcloud api-gateway apis list --format="value(name)" --project=${{ vars.PROJECTID }})
           if [[ $API_EXISTS != *"$API_NAME"* ]]; then
             echo "Creating new API for $API_NAME"
+            echo "Creating new API full name for $FULL_API_NAME"
             gcloud api-gateway apis create FULL_API_NAME --display-name="${{ matrix.function.name }}" --project=${{ vars.PROJECTID }}
           else
             echo "API $API_NAME already exists"
