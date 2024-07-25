@@ -108,7 +108,7 @@ jobs:
           echo "BUCKET_FULL_NAME : $BUCKET_FULL_NAME"
           ## Check bucket existence with exit  code handling
           #TRIGGER_DETAILS=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/Trigger.txt)
-          #echo "trigger  details: $TRIGGER_DETAILS"
+          #echo "trigger  details: $TRIGGER_DETAILS" 
           #echo "TRIGGER_DETAILS=$TRIGGER_DETAILS" >> $GITHUB_OUTPUT
           #if [ "${TRIGGER_DETAILS}" = "" ]; then
           #  echo "Bucket $BUCKET_FULL_NAME does not exists"
@@ -183,6 +183,20 @@ jobs:
           entry_point: ${{ matrix.function.entry_point }}
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
+
+      - name: Deploy API Gateway
+        if: matrix.function.Trigger == 'HTTP'
+        run: |
+          API_NAME=${{ matrix.function.name }}-api
+          CONFIG_ID=$(gcloud api-gateway configs describe ${API_NAME}-config --api=${API_NAME} --format='value(name)' || echo "")
+          if [ -z "$CONFIG_ID" ]; then
+            echo "Creating new API Gateway configuration for $API_NAME"
+            gcloud api-gateway configs create ${API_NAME}-config --api=${API_NAME} --openapi-spec=src/${{ matrix.function.SrcFolder }}/openapi.yaml
+            gcloud api-gateway gateways create ${API_NAME}-gateway --api=${API_NAME} --api-config=${API_NAME}-config --location=us-central1
+          else
+            echo "Updating existing API Gateway configuration for $API_NAME"
+            gcloud api-gateway configs update ${API_NAME}-config --api=${API_NAME} --openapi-spec=src/${{ matrix.function.SrcFolder }}/openapi.yaml
+          fi
 
   commitwrite:
     needs: detect-changes 
