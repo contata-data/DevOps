@@ -5,6 +5,8 @@ on:
       - main
     path:
       - "src/*.py"
+    paths-ignore:
+      - "SQLCode/*.sql"
 
 jobs:
   detect-changes:
