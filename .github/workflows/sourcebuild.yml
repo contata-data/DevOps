@@ -191,7 +191,6 @@ jobs:
           CONFIG_NAME=${API_NAME}-config
           REGION=us-central1
           PROJECT_ID=${{ vars.PROJECTID }}
-      
           # Check if the API exists
           API_EXISTS=$(gcloud api-gateway apis list --filter="name:$API_NAME" --format="value(name)" --project=$PROJECT_ID)
           if [ -z "$API_EXISTS" ]; then
@@ -200,7 +199,6 @@ jobs:
           else
             echo "API $API_NAME already exists"
           fi
-      
           # Create or update the API configuration
           CONFIG_ID=$(gcloud api-gateway api-configs list --api=$API_NAME --filter="name:$CONFIG_NAME" --format="value(name)" --project=$PROJECT_ID)
           if [ -z "$CONFIG_ID" ]; then
@@ -210,7 +208,6 @@ jobs:
             echo "Updating existing API Gateway configuration for $API_NAME"
             gcloud api-gateway api-configs update $CONFIG_NAME --api=$API_NAME --openapi-spec=src/${{ matrix.function.SrcFolder }}/dev-ops-config-a.yaml --project=$PROJECT_ID
           fi
-      
           # Deploy the API Gateway
           GATEWAY_NAME=${API_NAME}-gateway
           GATEWAY_EXISTS=$(gcloud api-gateway gateways list --filter="name:$GATEWAY_NAME" --format="value(name)" --project=$PROJECT_ID)
