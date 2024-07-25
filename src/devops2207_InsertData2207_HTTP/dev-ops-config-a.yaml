@@ -1,0 +1,80 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: DEV OPS API
+  description: API for managing DEV ops
+schemes:
+ - https
+paths:
+
+  /insert-data:
+    post:
+      summary: Create a new InsertData
+      description: Create a new InsertData with specified details
+      tags:
+        - Insert_Data
+      operationId: insert_data
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      x-google-backend:
+        address: https://us-central1-relevate-dev-403605.cloudfunctions.net/InsertData2207
+      security:
+      - api_key: [ ]
+      parameters:
+        - in: body
+          name: contact_category
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the category
+              Id:
+                type: string
+                description: Worbix customer ID
+          
+      responses:
+        200:
+          description: Contact category created successfully
+          
+    options:
+      description: options call
+      operationId: insert_data_option
+      tags:
+        - Insert_Data_options
+      x-google-backend:
+        address: https://us-central1-relevate-dev-403605.cloudfunctions.net/InsertData2207
+      security:
+      - api_key: [ ]
+      parameters:
+        - in: body
+          name: contact_category
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the category
+              Id:
+                type: string
+                description: Worbix customer ID
+              
+      responses:
+        200:
+          description: "Allow"
+        401:
+          description: "Cors not allowed"
+     
+ 
+     
+  
+securityDefinitions:
+    # This section configures security authentication for API key.
+    api_key:
+      type: "apiKey"
+      name: "key"
+      in: "query"
