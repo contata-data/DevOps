@@ -8,7 +8,7 @@ create table relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType
   ,Name STRING
 );
 
--- Step 2: Insert data into the new table with the changed data type  
+-- Step 2: Insert data into the new table with the changed data type   
 Insert into  relevate-dev-403605.RelevateSystemStaging.DevOpsTest_DataType
 (Id,Name)
 select Cast(Id as String) as Id,Name FROM relevate-dev-403605.RelevateSystemStaging.DevOpsTest;
