@@ -180,13 +180,17 @@ jobs:
           CONFIG_NAME=${API_NAME}-config
           PROJECT_ID=${{ vars.PROJECTID }}
           REGION=us-central1
+          
+          # Print variable values
+          echo "PROJECT_ID: $PROJECT_ID"
+          echo "REGION: $REGION"
+          echo "API_NAME: $API_NAME"
           FULL_API_NAME="projects/${PROJECT_ID}/locations/${REGION}/apis/${API_NAME}"
           # Check if the API exists
           API_EXISTS=$(gcloud api-gateway apis list --format="value(name)" --project=${{ vars.PROJECTID }})
           if [[ $API_EXISTS != *"$API_NAME"* ]]; then
             echo "Creating new API for $API_NAME"
-            echo "Creating new API full name for $FULL_API_NAME"
-            gcloud api-gateway apis create FULL_API_NAME --display-name="${{ matrix.function.name }}" --project=${{ vars.PROJECTID }}
+            gcloud api-gateway apis create ${{ matrix.function.name }} --display-name="${{ matrix.function.name }}" --project=${{ vars.PROJECTID }}
           else
             echo "API $API_NAME already exists"
           fi
