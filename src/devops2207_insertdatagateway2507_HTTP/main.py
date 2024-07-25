@@ -15,7 +15,7 @@ def insertdatagateway2507(request):
             "Access-Control-Allow-Headers": "Content-Type",
             "Access-Control-Max-Age": "3600",
         }
-        print("responding to preflight")
+        print("responding to preflight ")
         return ("", 204, headers)
 
     request_json = request.get_json(silent=True)
