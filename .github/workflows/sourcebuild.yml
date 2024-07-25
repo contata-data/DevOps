@@ -4,7 +4,7 @@ on:
     branches:
       - main
     path:
-      - "src/**"
+      - "src/*.py"
 
 jobs:
   detect-changes:
