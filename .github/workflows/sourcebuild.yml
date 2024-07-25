@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-    path:
+    paths:
       - "src/*.py"
     paths-ignore:
       - "SQLCode/*.sql"
@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for all  branches and  tags
+          fetch-depth: 0 # Fetch all history for all branches and  tags
 
       - name: get last commit details
         id: last_commit
