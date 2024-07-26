@@ -30,7 +30,7 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2  # Updated to latest version
         with:
-          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}  #Use secrets   here 
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}  #Use secrets  here 
           service_account: ${{ vars.SERVICE_ACCOUNT }}  # Use secrets here
 
       - name: Set up Google Cloud SDK
