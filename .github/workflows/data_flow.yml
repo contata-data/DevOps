@@ -37,7 +37,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           version: 'latest'
-          export_default_credentials: true  # Automatic credential handling   
+          export_default_credentials: true  # Automatic credential  handling   
 
       - name: Deploy Dataflow Template
         run: |
