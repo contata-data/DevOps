@@ -44,4 +44,4 @@ jobs:
            gcloud dataflow jobs run relevate-gcs-to-bq-df-4 \
             --gcs-location=gs://relevate-dev-403605-devops2207/dataflow_template/relevate-gcs-to-bq-df-2 \
             --region=us-central1 \
-            --parameters=parameter1=value1,parameter2=value2
+            --parameters=expectedParameter1=value1,expectedParameter2=value2
