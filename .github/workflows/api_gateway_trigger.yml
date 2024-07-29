@@ -45,7 +45,7 @@ jobs:
             echo "Creating new API for $API_NAME"
             gcloud api-gateway apis create $API_NAME --display-name="$API_NAME" --project=$PROJECT_ID
           else
-            echo "API $API_NAME already exists"
+            echo "API $API_NAME already exists "
           fi
           # Create or update the API configuration
           CONFIG_ID=$(gcloud api-gateway api-configs list --api=$API_NAME --format="value(name)" --project=$PROJECT_ID)
