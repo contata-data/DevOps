@@ -105,7 +105,7 @@ jobs:
       - name: Create Dataflow Template
         id: create_template
         run: |
-          python ${{ matrix.function.name }}.py \
+          python DataFlow/${{ matrix.function.name }}.py \
             --runner=DataflowRunner \
             --project=relevate-dev-403605 \
             --staging_location=gs://relevate-dev-403605-devops2207/staging \
