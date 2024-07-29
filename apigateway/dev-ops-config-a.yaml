@@ -73,7 +73,7 @@ paths:
      
   
 securityDefinitions:
-    # This section configures security authentication for API key.  
+    # This section configures security authentication for API key.   
     api_key:
       type: "apiKey"
       name: "key"
