@@ -25,7 +25,6 @@ jobs:
           service_account: ${{vars.SERVICE_ACCOUNT}}
 
       - name: Deploy API Gateway
-        if: matrix.function.Trigger == 'HTTP'
         run: |
           API_NAME=dev-ops-api-test
           CONFIG_NAME=${API_NAME}-config
@@ -48,7 +47,6 @@ jobs:
           
           if [[ $API_EXISTS != *"$API_NAME"* ]]; then
             echo "Creating new API for $API_NAME"
-            echo "Creating new API  for ${{ matrix.function.name }}"
             gcloud api-gateway apis create ${API_NAME} --display-name="${API_NAME}" --project=${{ vars.PROJECTID }}
           else
             echo "API $API_NAME already exists"
