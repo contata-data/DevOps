@@ -42,7 +42,7 @@ jobs:
           CHANGED_FUNCTIONS=()
           git fetch origin main
           # Get changed files
-          echo "Previous merge  commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
+          echo "Previous  merge  commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
           echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
           CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
@@ -68,10 +68,10 @@ jobs:
               done
           done
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
-              echo "changed-functions=[]" >> $GITHUB_ENV
+              echo "changed-functions=[]" >> $GITHUB_OUTPUT
           else
               CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
-              echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_ENV
+              echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
           fi
 
   data-flow-template:
