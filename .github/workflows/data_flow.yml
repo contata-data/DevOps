@@ -90,7 +90,7 @@ jobs:
         uses: actions/checkout@v4  # Updated to latest version
 
       - id: auth
-        uses: google-github-actions/auth@v2  # Updated to latest version
+        uses: google-github-actions/auth@v2  # Updated to latest version 
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}  # Use secrets here 
           service_account: ${{ secrets.SERVICE_ACCOUNT }}  # Use secrets here
@@ -103,8 +103,8 @@ jobs:
 
       - name: Deploy Dataflow Template
         run: |
-           gcloud dataflow jobs run relevate-gcs-to-bq-df-4 \
-            --gcs-location=gs://relevate-dev-403605-devops2207/dataflow_template/relevate-gcs-to-bq-df-2 \
+           gcloud dataflow jobs run ${{ matrix.function.name }} \
+            --gcs-location=gs://relevate-dev-403605-devops2207/dataflow_template/${{ matrix.function.name }} \
             --region=us-central1
 
   commitwrite:

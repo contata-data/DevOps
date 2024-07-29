@@ -37,10 +37,10 @@ def run():
     google_cloud_options = options.view_as(GoogleCloudOptions)
     google_cloud_options.project = 'relevate-dev-403605'
     google_cloud_options.region = 'us-central1'
-    google_cloud_options.job_name = 'relevate-gcs-to-bq-df-2'
+    google_cloud_options.job_name = 'relevate-gcs-to-bq-df-4'
     google_cloud_options.staging_location = 'gs://relevate-dev-403605-devops2207/staging'
     google_cloud_options.temp_location = 'gs://relevate-dev-403605-devops2207/temp'
-    options.view_as(StandardOptions).runner = 'DataflowRunner'         #DirectRunner
+    options.view_as(StandardOptions).runner = 'DataflowRunner'          #DirectRunner
 
     # Define the pipeline
     with beam.Pipeline(options=options) as p:
