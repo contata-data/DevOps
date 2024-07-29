@@ -102,7 +102,7 @@ jobs:
           version: 'latest'
           export_default_credentials: true  # Automatic credential handling   
 
- - name: Create Dataflow Template
+      - name: Create Dataflow Template
         id: create_template
         run: |
           python ${{ matrix.function.name }}.py \
