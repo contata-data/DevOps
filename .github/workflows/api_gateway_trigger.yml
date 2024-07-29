@@ -24,7 +24,6 @@ jobs:
           workload_identity_provider: ${{vars.WORKLOAD_IDENTITY_PROVIDER}}
           service_account: ${{vars.SERVICE_ACCOUNT}}
 
-
       - name: Deploy API Gateway
         if: matrix.function.Trigger == 'HTTP'
         run: |
