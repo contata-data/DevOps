@@ -69,6 +69,7 @@ jobs:
           else
               CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
               echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_ENV
+          fi
 
   data-flow-template:
     needs: detect-changes
