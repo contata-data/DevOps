@@ -22,16 +22,29 @@ jobs:
           LAST_COMMIT=$(cat ${{ github.workspace }}/IcfDataFlow.txt || echo "Initial")
           echo "last commit: $LAST_COMMIT"
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_ENV
+      - name: Get Last Merge Commit
+        id: last_merge
+        run: |
+          LAST_MERGE=$(git log main --merges -1 --format=%H)
+          echo "Last merge commit : $LAST_MERGE"
+          echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
 
+      - name: Get Previous Merge Commit
+        id: prev_merge
+        run: |
+          PREV_MERGE=$(git log main --merges -2 --format=%H | tail -n 1)
+          echo "Previous merge commit: $PREV_MERGE"
+          echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_OUTPUT
       - id: detect
         run: |
-           CHANGED_FUNCTIONS=()
-           git fetch origin main
-           # Get changed files
-           echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
+          CHANGED_FUNCTIONS=()
+          git fetch origin main
+          # get changed files
+          echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
+          echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
+          echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
+          CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
            
-           CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
-           echo "Changed files: $CHANGED_FILES"
            
            # Get changed directories
            CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^DataFlow/' | sort | uniq)
