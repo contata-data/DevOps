@@ -95,7 +95,7 @@ jobs:
             --region=us-central1
 
   commitwrite:
-    needs: detect-changes 
+    #needs: detect-changes 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
