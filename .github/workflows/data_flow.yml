@@ -44,8 +44,6 @@ jobs:
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
           echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
           CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
-           
-           
            # Get changed directories
            CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^DataFlow/' | sort | uniq)
            echo "Changed directories: $CHANGED_DIRS"
