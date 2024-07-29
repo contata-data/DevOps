@@ -21,7 +21,9 @@ jobs:
         run: |
           LAST_COMMIT=$(cat ${{ github.workspace }}/IcfDataFlow.txt)
           echo "last commit: $LAST_COMMIT"
-          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_ENV
+          echo "last commit: $LAST_COMMIT"
+          echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_OUTPUT
+          
       - name: Get Last Merge Commit
         id: last_merge
         run: |
