@@ -102,6 +102,16 @@ jobs:
           version: 'latest'
           export_default_credentials: true  # Automatic credential handling   
 
+ - name: Create Dataflow Template
+        id: create_template
+        run: |
+          python ${{ matrix.function.name }}.py \
+            --runner=DataflowRunner \
+            --project=relevate-dev-403605 \
+            --staging_location=gs://relevate-dev-403605-devops2207/staging \
+            --temp_location=gs://relevate-dev-403605-devops2207/temp \
+            --template_location=gs://relevate-dev-403605-devops2207/dataflow_template/${{ matrix.function.name }}
+
       - name: Deploy Dataflow Template
         run: |
            gcloud dataflow jobs run ${{ matrix.function.name }} \
