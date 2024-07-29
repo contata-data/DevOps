@@ -3,8 +3,6 @@ from apache_beam.io import ReadFromText
 from apache_beam.io.gcp.bigquery import WriteToBigQuery, BigQueryDisposition
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import GoogleCloudOptions, StandardOptions
-import os 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="C:/Users/Vikas Kumar/Downloads/relevate-dev-403605-340c9af01a97.json"
 
 class SplitRow(beam.DoFn):
     def process(self, element):
