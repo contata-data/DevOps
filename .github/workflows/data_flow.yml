@@ -14,12 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for all branches and tags  
+          fetch-depth: 0 # Fetch all history for all branches and tags   
 
       - name: Get last commit details
         id: last_commit
         run: |
-          LAST_COMMIT=$(cat ${{ github.workspace }}/IcfDataFlow.txt || echo "Initial")
+          LAST_COMMIT=$(cat ${{ github.workspace }}/IcfDataFlow.txt)
           echo "last commit: $LAST_COMMIT"
           echo "LAST_COMMIT=$LAST_COMMIT" >> $GITHUB_ENV
       - name: Get Last Merge Commit
