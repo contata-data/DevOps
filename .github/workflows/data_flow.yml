@@ -56,14 +56,15 @@ jobs:
               fi
               echo "Directory name: $DIR"
               for file in $(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main | grep "^$DIR/"); do
-                  FUNCTION_NAME=$(basename "$file")
+                  FUNCTION_NAME=$(basename "$file" .py)
                   FULL_PATH="$DIR/$FUNCTION_NAME"
                   echo "Function name: $FUNCTION_NAME"
                   echo "Full path: $FULL_PATH"
+                  echo "file path: $FULL_PATH"
                   
                   # Assuming entry point can be derived from function name
                   ENTRY_POINT="${FUNCTION_NAME}"
-                  CHANGED_FUNCTIONS+=("{\"SrcFolder\": \"$FUNCTION_NAME\",\"fullpath\": \"$FULL_PATH\"}")
+                  CHANGED_FUNCTIONS+=("{\"SrcFolder\": \"$FUNCTION_NAME\",\"name\": \"$FUNCTION_NAME\"}")
               done
           done
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
@@ -92,8 +93,8 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2  # Updated to latest version 
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}  # Use secrets here 
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}  # Use secrets here
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}  # Use secrets here 
+          service_account: ${{ vars.SERVICE_ACCOUNT }}  # Use secrets here
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
