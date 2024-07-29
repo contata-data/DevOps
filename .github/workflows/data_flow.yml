@@ -57,14 +57,14 @@ jobs:
               echo "Directory name: $DIR"
               for file in $(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main | grep "^$DIR/"); do
                   FUNCTION_NAME=$(basename "$file" .py)
-                  FULL_PATH="$DIR/$FUNCTION_NAME"
+                  FULL_PATH="$DIR"
                   echo "Function name: $FUNCTION_NAME"
                   echo "Full path: $FULL_PATH"
                   echo "file path: $FULL_PATH"
                   
                   # Assuming entry point can be derived from function name
                   ENTRY_POINT="${FUNCTION_NAME}"
-                  CHANGED_FUNCTIONS+=("{\"SrcFolder\": \"$FUNCTION_NAME\",\"name\": \"$FUNCTION_NAME\"}")
+                  CHANGED_FUNCTIONS+=("{\"SrcFolder\": \"$FULL_PATH\",\"name\": \"$FUNCTION_NAME\"}")
               done
           done
           if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
@@ -105,9 +105,9 @@ jobs:
       - name: Create Dataflow Template
         id: create_template
         run: |
-          python DataFlow/${{ matrix.function.name }}.py \
+          python ${{ matrix.function.SrcFolder }}/${{ matrix.function.name }}.py \
             --runner=DataflowRunner \
-            --project=relevate-dev-403605 \
+            --project=${{ vars.PROJECTID }} \
             --staging_location=gs://relevate-dev-403605-devops2207/staging \
             --temp_location=gs://relevate-dev-403605-devops2207/temp \
             --template_location=gs://relevate-dev-403605-devops2207/dataflow_template/${{ matrix.function.name }}
