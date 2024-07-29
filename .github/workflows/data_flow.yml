@@ -28,8 +28,6 @@ jobs:
            CHANGED_FUNCTIONS=()
            git fetch origin main
            # Get changed files
-           echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
-           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
            echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
            
            CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
