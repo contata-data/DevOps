@@ -7,7 +7,6 @@ on:
       - "apigateway/**"
 
 jobs:
-
   deploy-staging:
     runs-on: ubuntu-latest
     environment: stag
