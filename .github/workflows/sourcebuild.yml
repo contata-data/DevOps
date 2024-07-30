@@ -173,56 +173,6 @@ jobs:
           timeout: "10m"
           source_dir: "src/${{ matrix.function.SrcFolder }}"
 
-      - name: Deploy API Gateway
-        if: matrix.function.Trigger == 'HTTP'
-        run: |
-          API_NAME=${{ matrix.function.name }}
-          CONFIG_NAME=${API_NAME}-config
-          PROJECT_ID=${{ vars.PROJECTID }}
-          REGION=us-central1
-          
-          # Print variable values
-          echo "PROJECT_ID: $PROJECT_ID"
-          echo "REGION: $REGION"
-          echo "API_NAME: $API_NAME"
-          # Check if the API exists
-          API_EXISTS=$(gcloud api-gateway apis list --format="value(name)" --project=${{ vars.PROJECTID }})
-          
-          
-          # Print variable values
-          echo "PROJECT_ID: $PROJECT_ID"
-          echo "REGION: $REGION"
-          echo "API_NAME: $API_NAME"
-          echo "API_EXISTS: $API_EXISTS"
-          
-          if [[ $API_EXISTS != *"$API_NAME"* ]]; then
-            echo "Creating new API for $API_NAME"
-            echo "Creating new API  for ${{ matrix.function.name }}"
-            gcloud api-gateway apis create ${{ matrix.function.name }} --display-name="${{ matrix.function.name }}" --project=${{ vars.PROJECTID }}
-          else
-            echo "API $API_NAME already exists"
-          fi
-                    # Create or update the API configuration
-          CONFIG_ID=$(gcloud api-gateway api-configs list --api=$API_NAME --format="value(name)" --project=${{ vars.PROJECTID }})
-          if [[ $CONFIG_ID != *"$CONFIG_NAME"* ]]; then
-            echo "Creating new API Gateway configuration for $API_NAME"
-            gcloud api-gateway api-configs create $CONFIG_NAME --api=$API_NAME --openapi-spec=src/${{ matrix.function.SrcFolder }}/dev-ops-config-a.yaml --project=${{ vars.PROJECTID }}
-          else
-            echo "Updating existing API Gateway configuration for $API_NAME"
-            gcloud api-gateway api-configs update $CONFIG_NAME --api=$API_NAME --openapi-spec=src/${{ matrix.function.SrcFolder }}/dev-ops-config-a.yaml --project=${{ vars.PROJECTID }}
-          fi
-          # Deploy the API Gateway
-          GATEWAY_NAME=${API_NAME}-gateway
-          GATEWAY_EXISTS=$(gcloud api-gateway gateways list --format="value(name)" --project=${{ vars.PROJECTID }} --location=$REGION)
-          if [[ $GATEWAY_EXISTS != *"$GATEWAY_NAME"* ]]; then
-            echo "Creating API Gateway $GATEWAY_NAME"
-            gcloud api-gateway gateways create $GATEWAY_NAME --api=$API_NAME --api-config=$CONFIG_NAME --location=$REGION --project=${{ vars.PROJECTID }}
-          else
-            echo "Updating API Gateway $GATEWAY_NAME"
-            gcloud api-gateway gateways update $GATEWAY_NAME --api=$API_NAME --api-config=$CONFIG_NAME --location=$REGION --project=${{ vars.PROJECTID }}
-          fi
-
-
       - name: Deploy Cloud Function - HTTP Trigger
         if: matrix.function.Trigger == 'HTTP'
         uses: google-github-actions/deploy-cloud-functions@v3
