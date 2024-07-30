@@ -200,7 +200,7 @@ jobs:
         run: |
           LAST_COMMIT_WRITE=$(git rev-parse HEAD)
           echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icf.txt
-          echo "Last commit  hash: $LAST_COMMIT_WRITE"
+          echo "Last commit hash: $LAST_COMMIT_WRITE"
       - name: Commit and push changes
         run: |
           git add .
