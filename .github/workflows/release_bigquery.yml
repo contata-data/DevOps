@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "Comparing  changes between main branch and tag $RELEASE_TAG"
           #git diff --name-only HEAD $RELEASE_PrevTAG
-          #git diff --name-only HEAD $RELEASE_PrevTAG | grep -E '\.py$'
+          #git diff --name-only HEAD $RELEASE_PrevTAG | grep -E '\.sql$'
           #git describe --tags --abbrev=0 $RELEASE_TAG
 
       - name: Detect changes
