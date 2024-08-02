@@ -49,14 +49,8 @@ jobs:
          for file in $(git diff --name-only $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.sql$'); do
            # Extract details from file path
            SrcFolder=$(dirname "$file")
-           Entry_Point=$(dirname "$file" | cut -d '_' -f 2)
-           FunctionName=$(dirname "$file" | cut -d '_' -f 2)
-           TriggerName=$(basename "$(dirname "$file")" | cut -d '_' -f 1)
-           Trigger=$(dirname "$file" | cut -d '_' -f 3)
-         
            # Construct JSON format for each file
-           file_json=$(printf '{"SrcFolder":"%s","Entry_Point":"%s","FunctionName":"%s","TriggerName":"%s","Trigger":"%s"}' \
-                              "$SrcFolder" "$Entry_Point" "$FunctionName" "$TriggerName" "$Trigger")
+           file_json=$(printf '{"SrcFolder":"%s")
            echo "function list  :$file_json"
            # Append to CHANGED_FUNCTIONS array
            if [ -z "$CHANGED_FUNCTIONS" ]; then
