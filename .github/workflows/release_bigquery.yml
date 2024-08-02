@@ -47,11 +47,8 @@ jobs:
         run: |
          CHANGED_FUNCTIONS=""
          for file in $(git diff --name-only $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.sql$'); do
-           # Extract details from file path
+           # Construct JSON format for each file with full paths
            file_json=$(printf '{"fullpath":"%s"}' "$file")
-           SrcFolder=$(dirname "$file")
-           # Construct JSON format for each file
-           file_json=$(printf '{"SrcFolder":"%s"}' "$SrcFolder")
            echo "function list : $file_json"
            # Append to CHANGED_FUNCTIONS array
            if [ -z "$CHANGED_FUNCTIONS" ]; then
