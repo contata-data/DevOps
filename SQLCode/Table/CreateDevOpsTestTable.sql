@@ -1,4 +1,4 @@
-Drop table if exists relevate-dev-403605.RelevateSystemStaging.DevOpsTest ;
+Drop table if exists relevate-dev-403605.RelevateSystemStaging.DevOpsTest  ;
 create table relevate-dev-403605.RelevateSystemStaging.DevOpsTest
 (
   Id INT64

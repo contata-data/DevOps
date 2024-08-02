@@ -49,7 +49,7 @@ jobs:
          for file in $(git diff --name-only $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.sql$'); do
            # Extract details from file path
            SrcFolder=$(dirname "$file")
-           # Construct JSON format for each file
+           # Construct  JSON format for each file
            file_json=$(printf '{"SrcFolder":"%s")
            echo "function list  :$file_json"
            # Append to CHANGED_FUNCTIONS array
