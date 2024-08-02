@@ -101,25 +101,3 @@ jobs:
       - name: Execute SQL file
         run: |  # Changed to multi-line for readability 
           bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < ${{ matrix.function.fullpath }}
-  commitwrite:
-    needs: detect-changes 
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Git identity
-        run: |
-          git config --global user.email "vikask@contata.in"
-          git config --global user.name "Vikas Kumar"
-      - name: Get last commit details
-        id: last_commit_write
-        run: |
-          git pull
-          LAST_COMMIT_WRITE=$(git rev-parse HEAD)
-          echo "$LAST_COMMIT_WRITE" > ${{ github.workspace }}/Icfbig.txt
-          echo "Last commit  hash: $LAST_COMMIT_WRITE"
-      - name: Commit and push changes
-        run: |
-          git add .
-          git commit -m "Automated commit by CI/CD"
-          git push origin main
