@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for  all  branches and  tags
+          fetch-depth: 0 # Fetch all history for  all  branches and   tags
 
       - name: Get release details
         id: get_release
@@ -25,7 +25,6 @@ jobs:
           RELEASE_PrevTAG=$(git describe --tags --abbrev=0 ${RELEASE_TAG}^)
           echo "Release Prev tag: $RELEASE_PrevTAG"
           echo "RELEASE_PrevTAG=$RELEASE_PrevTAG" >> $GITHUB_ENV
-
           RELEASE_PrevTAG=$(git describe --tags --abbrev=0 ${RELEASE_TAG}^)
           echo "Release Prev tag: $RELEASE_PrevTAG"
           echo "RELEASE_PrevTAG=$RELEASE_PrevTAG" >> $GITHUB_ENV
