@@ -48,6 +48,7 @@ jobs:
          CHANGED_FUNCTIONS=""
          for file in $(git diff --name-only $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.sql$'); do
            # Extract details from file path
+           file_json=$(printf '{"fullpath":"%s"}' "$file")
            SrcFolder=$(dirname "$file")
            # Construct JSON format for each file
            file_json=$(printf '{"SrcFolder":"%s"}' "$SrcFolder")
