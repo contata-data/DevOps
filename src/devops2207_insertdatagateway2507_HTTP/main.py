@@ -28,7 +28,7 @@ def insertdatagateway2507(request):
     )
     request_logging_data = json.dumps(
         {
-            "cloudfunction": "relevate-ai-decile-report-data-insert",
+            "cloudfunction": "relevate-ai-decile-report-data-insert ",
             "ipaddress": f"{ip_address}",
             "payload": request_json,
             "createdon": f"{current_timestamp}",
