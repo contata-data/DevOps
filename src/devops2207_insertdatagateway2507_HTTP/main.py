@@ -24,11 +24,11 @@ def insertdatagateway2507(request):
     current_timestamp = datetime.now()
     publisher = pubsub_v1.PublisherClient()
     request_logging_topic = (
-        "projects/relevate-dev-403605/topics/relevate-ai-request-logging"
+        "projects/relevate-dev-403605/topics/relevate-ai-request-logging "
     )
     request_logging_data = json.dumps(
         {
-            "cloudfunction": "relevate-ai-decile-report-data-insert",
+            "cloudfunction": "relevate-ai-decile-report-data-insert ",
             "ipaddress": f"{ip_address}",
             "payload": request_json,
             "createdon": f"{current_timestamp}",
