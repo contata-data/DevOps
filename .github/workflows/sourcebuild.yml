@@ -143,12 +143,7 @@ jobs:
             echo "Topic: $TOPIC_NAME already  exists"
           fi
 
-      - name: get cloud function storage details 
-        id: cf_storage_size
-        run: |
-          CF_STORAGE_SIZE=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/cf_storage_size.txt)
-          echo "last commit: $CF_STORAGE_SIZE"
-          echo "CF_STORAGE_SIZE=$CF_STORAGE_SIZE" >> $GITHUB_OUTPUT
+
      
       - name: Parse Cloud Function Storage Details
         id: parse_cf_storage
@@ -163,6 +158,13 @@ jobs:
           echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
           echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
           echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
+          
+     - name: get cloud function storage details 
+        id: cf_storage_size
+        run: |
+          CF_STORAGE_SIZE=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/cf_storage_size.txt)
+          echo "last commit: $CF_STORAGE_SIZE"
+          echo "CF_STORAGE_SIZE=$CF_STORAGE_SIZE" >> $GITHUB_OUTPUT
           
       - name: Deploy Cloud Function - Topic Trigger
         if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.CF_STORAGE_SIZE != ''
