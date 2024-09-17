@@ -161,7 +161,7 @@ jobs:
           
           
       - name: Deploy Cloud Function - Topic Trigger
-        if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.CF_STORAGE_SIZE != ''
+        if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.MEMORY != ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -181,7 +181,7 @@ jobs:
           retry: false
 
       - name: Deploy Cloud Function - Topic Trigger
-        if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.CF_STORAGE_SIZE == ''
+        if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.MEMORY == ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -200,7 +200,7 @@ jobs:
           retry: false
 
       - name: Deploy Cloud Function - Storage Trigger
-        if: matrix.function.Trigger == 'Storage' && steps.cf_storage_size.outputs.CF_STORAGE_SIZE != ''
+        if: matrix.function.Trigger == 'Storage' && steps.cf_storage_size.outputs.MEMORY != ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -220,7 +220,7 @@ jobs:
           retry: false 
 
       - name: Deploy Cloud Function - Storage Trigger
-        if: matrix.function.Trigger == 'Storage' && steps.cf_storage_size.outputs.CF_STORAGE_SIZE == ''
+        if: matrix.function.Trigger == 'Storage' && steps.cf_storage_size.outputs.MEMORY == ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -239,7 +239,7 @@ jobs:
           retry: false 
 
       - name: Deploy Cloud Function - HTTP Trigger
-        if: matrix.function.Trigger == 'HTTP' && steps.cf_storage_size.outputs.CF_STORAGE_SIZE != ''
+        if: matrix.function.Trigger == 'HTTP' && steps.cf_storage_size.outputs.MEMORY != ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -255,7 +255,7 @@ jobs:
           retry: false
 
       - name: Deploy Cloud Function - HTTP Trigger
-        if: matrix.function.Trigger == 'HTTP' && steps.cf_storage_size.outputs.CF_STORAGE_SIZE == ''
+        if: matrix.function.Trigger == 'HTTP' && steps.cf_storage_size.outputs.MEMORY == ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
