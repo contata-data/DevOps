@@ -239,7 +239,7 @@ jobs:
           retry: false 
 
       - name: Deploy Cloud Function - HTTP Trigger
-        if: matrix.function.Trigger == 'HTTP' && steps.cf_storage_size.outputs.MEMORY != ''
+        if: matrix.function.Trigger == 'HTTP'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
