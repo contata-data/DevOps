@@ -254,21 +254,6 @@ jobs:
           environment: "GEN_2"
           retry: false
 
-      - name: Deploy Cloud Function - HTTP Trigger
-        if: matrix.function.Trigger == 'HTTP' && steps.cf_storage_size.outputs.MEMORY == ''
-        uses: google-github-actions/deploy-cloud-functions@v3
-        with:
-          name: ${{ matrix.function.name }}
-          runtime: "python312"
-          project_id: ${{ env.PROJECTID }}
-          entry_point: ${{ matrix.function.entry_point }}
-          timeout: "10m"
-          source_dir: "src/${{ matrix.function.SrcFolder }}"
-          environment: "GEN_2"
-          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
-          allow_unauthenticated: true   
-          retry: false
-
   commitwrite:
     needs: detect-changes 
     runs-on: ubuntu-latest
