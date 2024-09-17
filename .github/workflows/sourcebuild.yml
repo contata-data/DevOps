@@ -155,6 +155,19 @@ jobs:
           echo "Memory: $MEMORY"
           echo "Timeout: $TIMEOUT"
           echo "Runtime: $RUNTIME"
+          # Check and assign default values if variables are empty
+          if [ -z "$MEMORY" ]; then
+          MEMORY="256Mi"
+          fi
+          if [ -z "$TIMEOUT" ]; then
+          TIMEOUT="10m"
+          fi
+          if [ -z "$RUNTIME" ]; then
+          RUNTIME="python312"
+          fi
+          echo "Using Memory: $MEMORY"
+          echo "Using Timeout: $TIMEOUT"
+          echo "Using Runtime: $RUNTIME"
           echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
           echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
           echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
@@ -167,7 +180,7 @@ jobs:
 
           
       - name: Deploy Cloud Function - Topic Trigger
-        if: matrix.function.Trigger == 'PubSub' && steps.parse_cf_storage.outputs.MEMORY != ''
+        if: matrix.function.Trigger == 'PubSub'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -185,28 +198,9 @@ jobs:
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false
-
-      - name: Deploy Cloud Function - Topic Trigger
-        if: matrix.function.Trigger == 'PubSub' && steps.parse_cf_storage.outputs.MEMORY == ''
-        uses: google-github-actions/deploy-cloud-functions@v3
-        with:
-          name: ${{ matrix.function.name }}
-          runtime: "python312"
-          project_id: ${{ env.PROJECTID }}
-          entry_point: ${{ matrix.function.entry_point }}
-          event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
-          event_trigger_resource: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
-          event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
-          event_trigger_service: "pubsub.googleapis.com"
-          timeout: "10m"
-          source_dir: "src/${{ matrix.function.SrcFolder }}"
-          environment: "GEN_2"
-          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
-          allow_unauthenticated: true  
-          retry: false
-
+ 
       - name: Deploy Cloud Function - Storage Trigger
-        if: matrix.function.Trigger == 'Storage' && steps.parse_cf_storage.outputs.MEMORY != ''
+        if: matrix.function.Trigger == 'Storage'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -223,25 +217,6 @@ jobs:
           allow_unauthenticated: true  
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
-          retry: false 
-
-      - name: Deploy Cloud Function - Storage Trigger
-        if: matrix.function.Trigger == 'Storage' && steps.parse_cf_storage.outputs.MEMORY == ''
-        uses: google-github-actions/deploy-cloud-functions@v3
-        with:
-          name: ${{ matrix.function.name }}
-          runtime: "python312"
-          project_id: ${{ env.PROJECTID }}
-          entry_point: ${{ matrix.function.entry_point }}
-          event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/${{ vars.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
-          event_trigger_filters: |
-             bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
-          timeout: "10m"
-          source_dir: "src/${{ matrix.function.SrcFolder }}"
-          environment: "GEN_2"
-          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
-          allow_unauthenticated: true  
           retry: false 
 
       - name: Deploy Cloud Function - HTTP Trigger
