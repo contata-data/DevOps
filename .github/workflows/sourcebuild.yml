@@ -174,9 +174,9 @@ jobs:
           
       - name: Debug Parsed Outputs
         run: |
-                echo "Runtime 1: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
-                echo "Memory 1: ${{ steps.parse_cf_storage.outputs.MEMORY }}"
-                echo "Timeout 1: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}"
+                echo "Runtime1: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
+                echo "Memory1: ${{ steps.parse_cf_storage.outputs.MEMORY }}"
+                echo "Timeout1: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}"
 
           
       - name: Deploy Cloud Function - Topic Trigger
