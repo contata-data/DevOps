@@ -254,7 +254,7 @@ jobs:
           entry_point: ${{ matrix.function.entry_point }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
-          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
+          ingress_settings: "ALLOW_ALL"  # Allow traffic from all  sources
           allow_unauthenticated: true   
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
