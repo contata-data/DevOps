@@ -159,30 +159,24 @@ jobs:
           echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
           echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
           
-      - name: get cloud function storage details 
-        id: cf_storage_size
-        run: |
-          CF_STORAGE_SIZE=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/cf_storage_size.txt)
-          echo "last commit: $CF_STORAGE_SIZE"
-          echo "CF_STORAGE_SIZE=$CF_STORAGE_SIZE" >> $GITHUB_OUTPUT
           
       - name: Deploy Cloud Function - Topic Trigger
         if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.CF_STORAGE_SIZE != ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
-          runtime: "python312"
+          runtime: ${{ steps.cf_storage_size.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_service: "pubsub.googleapis.com"
-          timeout: "10m"
+          timeout: ${{ steps.cf_storage_size.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
-          memory: ${{ steps.cf_storage_size.outputs.CF_STORAGE_SIZE }}
+          memory: ${{ steps.cf_storage_size.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false
 
@@ -210,18 +204,18 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
-          runtime: "python312"
+          runtime: ${{ steps.cf_storage_size.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/${{ vars.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
-          timeout: "10m"
+          timeout: ${{ steps.cf_storage_size.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
-          memory: ${{ steps.cf_storage_size.outputs.CF_STORAGE_SIZE }}
+          memory: ${{ steps.cf_storage_size.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false 
 
@@ -249,14 +243,14 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
-          runtime: "python312"
+          runtime: ${{ steps.cf_storage_size.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.entry_point }}
-          timeout: "10m"
+          timeout: ${{ steps.cf_storage_size.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true   
-          memory: ${{ steps.cf_storage_size.outputs.CF_STORAGE_SIZE }}
+          memory: ${{ steps.cf_storage_size.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false
 
