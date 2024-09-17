@@ -159,7 +159,7 @@ jobs:
           echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
           echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
           
-     - name: get cloud function storage details 
+      - name: get cloud function storage details 
         id: cf_storage_size
         run: |
           CF_STORAGE_SIZE=$(cat ${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/cf_storage_size.txt)
