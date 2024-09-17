@@ -159,6 +159,12 @@ jobs:
           echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
           echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
           
+      - name: Debug Parsed Outputs
+        run: |
+                echo "Runtime: ${{ steps.cf_storage_size.outputs.RUNTIME }}"
+                echo "Memory: ${{ steps.cf_storage_size.outputs.MEMORY }}"
+                echo "Timeout: ${{ steps.cf_storage_size.outputs.TIMEOUT }}"
+
           
       - name: Deploy Cloud Function - Topic Trigger
         if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.MEMORY != ''
