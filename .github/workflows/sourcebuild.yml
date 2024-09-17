@@ -161,33 +161,33 @@ jobs:
           
       - name: Debug Parsed Outputs
         run: |
-                echo "Runtime 1: ${{ steps.cf_storage_size.outputs.RUNTIME }}"
-                echo "Memory 1: ${{ steps.cf_storage_size.outputs.MEMORY }}"
-                echo "Timeout 1: ${{ steps.cf_storage_size.outputs.TIMEOUT }}"
+                echo "Runtime 1: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
+                echo "Memory 1: ${{ steps.parse_cf_storage.outputs.MEMORY }}"
+                echo "Timeout 1: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}"
 
           
       - name: Deploy Cloud Function - Topic Trigger
-        if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.MEMORY != ''
+        if: matrix.function.Trigger == 'PubSub' && steps.parse_cf_storage.outputs.MEMORY != ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
-          runtime: ${{ steps.cf_storage_size.outputs.RUNTIME }}
+          runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_service: "pubsub.googleapis.com"
-          timeout: ${{ steps.cf_storage_size.outputs.TIMEOUT }}
+          timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
-          memory: ${{ steps.cf_storage_size.outputs.MEMORY }}
+          memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false
 
       - name: Deploy Cloud Function - Topic Trigger
-        if: matrix.function.Trigger == 'PubSub' && steps.cf_storage_size.outputs.MEMORY == ''
+        if: matrix.function.Trigger == 'PubSub' && steps.parse_cf_storage.outputs.MEMORY == ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -206,27 +206,27 @@ jobs:
           retry: false
 
       - name: Deploy Cloud Function - Storage Trigger
-        if: matrix.function.Trigger == 'Storage' && steps.cf_storage_size.outputs.MEMORY != ''
+        if: matrix.function.Trigger == 'Storage' && steps.parse_cf_storage.outputs.MEMORY != ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
-          runtime: ${{ steps.cf_storage_size.outputs.RUNTIME }}
+          runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/${{ vars.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
-          timeout: ${{ steps.cf_storage_size.outputs.TIMEOUT }}
+          timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
-          memory: ${{ steps.cf_storage_size.outputs.MEMORY }}
+          memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false 
 
       - name: Deploy Cloud Function - Storage Trigger
-        if: matrix.function.Trigger == 'Storage' && steps.cf_storage_size.outputs.MEMORY == ''
+        if: matrix.function.Trigger == 'Storage' && steps.parse_cf_storage.outputs.MEMORY == ''
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
@@ -249,14 +249,14 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.name }}
-          runtime: ${{ steps.cf_storage_size.outputs.RUNTIME }}
+          runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
           entry_point: ${{ matrix.function.entry_point }}
-          timeout: ${{ steps.cf_storage_size.outputs.TIMEOUT }}
+          timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true   
-          memory: ${{ steps.cf_storage_size.outputs.MEMORY }}
+          memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false
 
