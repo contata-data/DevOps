@@ -148,10 +148,11 @@ jobs:
       - name: Parse Cloud Function Storage Details
         id: parse_cf_storage
         run: |
-          FILE="${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/cf_storage_size.txt"
+          FILE="${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/config.txt"
           MEMORY=$(grep '^memory:' $FILE | cut -d':' -f2 | xargs)
           TIMEOUT=$(grep '^timeout:' $FILE | cut -d':' -f2 | xargs)
           RUNTIME=$(grep '^runtime:' $FILE | cut -d':' -f2 | xargs)
+          CPU=$(grep '^cpu:' $FILE | cut -d':' -f2 | xargs)
           echo "Memory: $MEMORY"
           echo "Timeout: $TIMEOUT"
           echo "Runtime: $RUNTIME"
@@ -165,18 +166,24 @@ jobs:
           if [ -z "$RUNTIME" ]; then
           RUNTIME="python312"
           fi
+          if [ -z "$CPU" ]; then
+          CPU="167millis"
+          fi
           echo "Using Memory: $MEMORY"
           echo "Using Timeout: $TIMEOUT"
           echo "Using Runtime: $RUNTIME"
+          echo "Using CPU: $CPU"
           echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
           echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
           echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
+          echo "CPU=$CPU" >> $GITHUB_OUTPUT
           
       - name: Debug Parsed Outputs
         run: |
                 echo " Runtime1: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
                 echo "Memory1: ${{ steps.parse_cf_storage.outputs.MEMORY }}"
                 echo "Timeout1: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}"
+                echo "CPU1: ${{ steps.parse_cf_storage.outputs.CPU }}"
 
           
       - name: Deploy Cloud Function - Topic Trigger
@@ -196,6 +203,7 @@ jobs:
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
+          cpu: ${{ steps.parse_cf_storage.outputs.CPU }}
           environment: "GEN_2"
           retry: false
  
@@ -216,6 +224,7 @@ jobs:
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
+          cpu: ${{ steps.parse_cf_storage.outputs.CPU }}
           environment: "GEN_2"
           retry: false 
 
@@ -233,6 +242,7 @@ jobs:
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all  sources
           allow_unauthenticated: true   
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
+          cpu: ${{ steps.parse_cf_storage.outputs.CPU }}
           environment: "GEN_2"
           retry: false
 
