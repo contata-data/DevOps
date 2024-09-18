@@ -221,7 +221,7 @@ jobs:
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
-          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
+          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources 
           allow_unauthenticated: true  
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           cpu: ${{ steps.parse_cf_storage.outputs.CPU }}
