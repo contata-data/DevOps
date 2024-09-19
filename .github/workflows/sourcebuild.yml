@@ -161,7 +161,7 @@ jobs:
           MEMORY="256Mi"
           fi
           if [ -z "$TIMEOUT" ]; then
-          TIMEOUT="10m"
+          TIMEOUT="30m"
           fi
           if [ -z "$RUNTIME" ]; then
           RUNTIME="python312"
