@@ -1,4 +1,0 @@
-memory: 2Gi
-timeout: 1800s
-runtime: python312
-cpu: 533m
