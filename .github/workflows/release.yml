@@ -58,7 +58,7 @@ jobs:
          
            # Construct JSON format for each file
            file_json=$(printf '{"SrcFolder":"%s","Entry_Point":"%s","FunctionName":"%s","TriggerName":"%s","Trigger":"%s"}' \
-                              "$SrcFolder" "$Entry_Point" "$FunctionName" "$TriggerName" "$Trigger","File":"%s")
+                              "$SrcFolder" "$Entry_Point" "$FunctionName" "$TriggerName" "$Trigger")
            echo "function list  :$file_json"
            # Append to CHANGED_FUNCTIONS array
            if [ -z "$CHANGED_FUNCTIONS" ]; then
@@ -446,15 +446,15 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.FunctionName }}
-          runtime: "python312"
+          runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
-          timeout: 10m
-          service_timeout: 1800s
+          timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
+          service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
-          memory: 512Mi
+          memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false
 
