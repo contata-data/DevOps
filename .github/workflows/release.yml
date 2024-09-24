@@ -405,7 +405,7 @@ jobs:
         with:
           name: ${{ matrix.function.FunctionName }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ env.PROJECTID_PROD }}
+          project_id: ${{ vars.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
@@ -426,7 +426,7 @@ jobs:
         with:
           name: ${{ matrix.function.FunctionName }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ env.PROJECTID_PROD }}
+          project_id: ${{ vars.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
@@ -447,7 +447,7 @@ jobs:
         with:
           name: ${{ matrix.function.FunctionName }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ env.PROJECTID_PROD }}
+          project_id: ${{ var.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
