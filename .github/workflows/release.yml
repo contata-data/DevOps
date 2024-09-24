@@ -316,7 +316,7 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{vars.WORKLOAD_IDENTITY_PROVIDER_PROD}}
-          service_account: ${{vars.SERVICE_ACsCOUNT_PROD}}
+          service_account: ${{vars.SERVICE_ACCOUNT_PROD}}
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
