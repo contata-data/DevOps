@@ -454,7 +454,7 @@ jobs:
           source_dir: "${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
-          memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
+          memory: 512Mi
           environment: "GEN_2"
           retry: false
 
