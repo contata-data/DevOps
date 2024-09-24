@@ -446,11 +446,11 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.FunctionName }}
-          runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
+          runtime: "python312"
           project_id: ${{ env.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
-          timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
-          service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
+          timeout: 10m
+          service_timeout: 1800s
           source_dir: "${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
