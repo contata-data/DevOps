@@ -447,7 +447,7 @@ jobs:
         with:
           name: ${{ matrix.function.FunctionName }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ var.PROJECTID_PROD }}
+          project_id: ${{ vars.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
