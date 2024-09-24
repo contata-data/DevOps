@@ -2,12 +2,39 @@ name: Release
 
 on:
   release:
-    types: [created]  # Trigger on release  creation
-    paths:
-      - "src/**"
+    types: [created]  # Trigger on release  creation  
 
 jobs:
-  detect-changes:
+  get-release-details:
+    runs-on: ubuntu-latest
+    outputs:
+      release-tag: ${{ steps.get-release-details.outputs.release-tag }}
+      prev-tag: ${{ steps.get-release-details.outputs.prev-tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags 
+
+      - name: Get release details
+        id: get-release-details
+        run: |
+          # Extract release tag from the GitHub ref
+          RELEASE_TAG=$(echo "${{ github.ref }}" | sed -n 's/refs\/tags\/\(.*\)/\1/p')
+          echo "Release tag: $RELEASE_TAG"
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+          # Fetch all tags to ensure we have the context
+          git fetch --tags
+          # Find the previous tag
+          RELEASE_PrevTAG=$(git describe --tags --abbrev=0 ${RELEASE_TAG}^ 2>/dev/null || echo "none")
+          echo "Release Prev tag: $RELEASE_PrevTAG"
+          echo "RELEASE_PrevTAG=$RELEASE_PrevTAG" >> $GITHUB_ENV
+          # Output the tags as job outputs
+          echo "::set-output name=release-tag::$RELEASE_TAG"
+          echo "::set-output name=prev-tag::$RELEASE_PrevTAG"
+
+  detect-functions:
+    needs: get-release-details
     runs-on: ubuntu-latest
     outputs:
       changed-functions: ${{ steps.detect.outputs.changed-functions }}
@@ -15,40 +42,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
+          fetch-depth: 0  # Fetch all history for all branches and tags 
 
-      - name: Get release details
-        id: get_release
-        run: |
-          RELEASE_TAG=$(echo "${{ github.ref }}" | sed -n 's/refs\/tags\/\(.*\)/\1/p')
-          echo "Release tag: $RELEASE_TAG"
-          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
-          
-          RELEASE_PrevTAG=$(git describe --tags --abbrev=0 ${RELEASE_TAG}^)
-          echo "Release Prev tag: $RELEASE_PrevTAG"
-          echo "RELEASE_PrevTAG=$RELEASE_PrevTAG" >> $GITHUB_ENV
-
-          RELEASE_PrevTAG=$(git describe --tags --abbrev=0 ${RELEASE_TAG}^)
-          echo "Release Prev tag: $RELEASE_PrevTAG"
-          echo "RELEASE_PrevTAG=$RELEASE_PrevTAG" >> $GITHUB_ENV
-         
-      - name: Show content of release tag
-        run: |
-          echo "Content of release tag $RELEASE_TAG:"
-          git ls-tree -r $RELEASE_TAG --name-only
-
-      - name: Print git diff output
-        run: |
-          echo "Comparing  changes between main branch and tag $RELEASE_TAG"
-          #git diff --name-only HEAD $RELEASE_PrevTAG
-          #git diff --name-only HEAD $RELEASE_PrevTAG | grep -E '\.py$'
-          #git describe --tags --abbrev=0 $RELEASE_TAG
-
-      - name: Detect changes
+      - name: Detect cloud funcation changes
         id: detect
         run: |
          CHANGED_FUNCTIONS=""
-         for file in $(git diff --name-only $RELEASE_TAG $RELEASE_PrevTAG | grep -E '\.py$'); do
+         for file in $(git diff --name-only ${{ needs.get-release-details.outputs.release-tag }} ${{ needs.get-release-details.outputs.prev-tag }} | grep -E 'src.*\.py'); do
            # Extract details from file path
            SrcFolder=$(dirname "$file")
            Entry_Point=$(dirname "$file" | cut -d '_' -f 2)
@@ -58,7 +58,7 @@ jobs:
          
            # Construct JSON format for each file
            file_json=$(printf '{"SrcFolder":"%s","Entry_Point":"%s","FunctionName":"%s","TriggerName":"%s","Trigger":"%s"}' \
-                              "$SrcFolder" "$Entry_Point" "$FunctionName" "$TriggerName" "$Trigger")
+                              "$SrcFolder" "$Entry_Point" "$FunctionName" "$TriggerName" "$Trigger","File":"%s")
            echo "function list  :$file_json"
            # Append to CHANGED_FUNCTIONS array
            if [ -z "$CHANGED_FUNCTIONS" ]; then
@@ -79,8 +79,227 @@ jobs:
          echo "changed-functions=$CHANGED_FUNCTIONS" >> $GITHUB_ENV
          echo "::set-output name=changed-functions::$CHANGED_FUNCTIONS"
 
-  deploy-production:
-    needs: detect-changes
+  detect-bigquery:
+    needs: get-release-details
+    runs-on: ubuntu-latest
+    outputs:
+      changed-bigquery: ${{ steps.detect_bigquery.outputs.changed-bigquery }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+  
+      - name: Debug tags
+        run: |
+          echo "Release Tag: ${{ needs.get-release-details.outputs.release-tag }}"
+          echo "Previous Tag: ${{ needs.get-release-details.outputs.prev-tag }}"
+  
+      - name: Detect Bigquery changes
+        id: detect_bigquery
+        run: |
+          CHANGED_BIGQUERY=""
+          for file in $(git diff --name-only ${{ needs.get-release-details.outputs.release-tag }} ${{ needs.get-release-details.outputs.prev-tag }} | grep -E '\.sql$'); do
+            FilePath=$file
+            file_json=$(printf '{"FilePath":"%s"}' "$FilePath")
+            if [ -z "$CHANGED_BIGQUERY" ]; then
+              CHANGED_BIGQUERY="[$file_json"
+            else
+              CHANGED_BIGQUERY="$CHANGED_BIGQUERY,$file_json"
+            fi
+          done
+          if [ -n "$CHANGED_BIGQUERY" ]; then
+            CHANGED_BIGQUERY="$CHANGED_BIGQUERY]"
+          else
+            CHANGED_BIGQUERY='[]'
+          fi
+          echo "::set-output name=changed-bigquery::$CHANGED_BIGQUERY"
+
+  detect-api:
+    needs: get-release-details
+    runs-on: ubuntu-latest
+    outputs:
+      changed-api: ${{ steps.detect-api.outputs.changed-api }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags  
+
+      - name: Detect API changes
+        id: detect-api
+        run: |
+         CHANGED_API=""
+         for file in $(git diff --name-only ${{ needs.get-release-details.outputs.release-tag }} ${{ needs.get-release-details.outputs.prev-tag }} | grep -E 'ApiGateway.*\.yml$'); do
+           # Extract details from file path
+           SrcFolder=$(dirname "$file")
+           FileName=$(basename "$file" .yml)  # Extract the file name without the extension
+           
+           # Construct JSON format for each file
+           file_json=$(printf '{"SrcFolder":"%s","File":"%s"}' "$SrcFolder" "$FileName")
+           echo "function list  :$file_json"
+           # Append to CHANGED_API array
+           if [ -z "$CHANGED_API" ]; then
+             CHANGED_API="[$file_json"
+           else
+             CHANGED_API="$CHANGED_API,$file_json"
+           fi
+         done
+         
+         # Close the JSON array if there were changed functions
+         if [ -n "$CHANGED_API" ]; then
+           CHANGED_API="$CHANGED_API]"
+         else
+           CHANGED_API='[]'
+         fi
+         
+         # Output to GitHub environment and set output
+         echo "::set-output name=changed-api::$CHANGED_API"
+  detect-dataflow:
+    needs: get-release-details
+    runs-on: ubuntu-latest
+    outputs:
+      changed-dataflows: ${{ steps.detect-dataflow.outputs.changed-dataflows }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags  
+
+      - name: Detect Data flow changes
+        id: detect-dataflow
+        run: |
+         CHANGED_DATAFLOW=""
+         for file in $(git diff --name-only ${{ needs.get-release-details.outputs.release-tag }} ${{ needs.get-release-details.outputs.prev-tag }} | grep -E 'DataFlow.*\.py'); do
+           SrcFolder=$(dirname "$file")
+           FileName=$(basename "$file" .py)  
+           file_json=$(printf '{"SrcFolder":"%s","File":"%s"}' "$SrcFolder" "$FileName")
+           echo "function list  :$file_json"
+           # Append to CHANGED_DATAFLOW array
+           if [ -z "$CHANGED_DATAFLOW" ]; then
+             CHANGED_DATAFLOW="[$file_json"
+           else
+             CHANGED_DATAFLOW="$CHANGED_DATAFLOW,$file_json"
+           fi
+         done
+         if [ -n "$CHANGED_DATAFLOW" ]; then
+           CHANGED_DATAFLOW="$CHANGED_DATAFLOW]"
+         else
+           CHANGED_DATAFLOW='[]'
+         fi
+         
+         # Output to GitHub environment and set output
+         echo "::set-output name=changed-dataflows::$CHANGED_DATAFLOW"
+
+
+  deploy-api-gateway:
+    needs: [detect-api]
+    if: needs.detect-api.outputs.changed-api != '[]'
+    runs-on: ubuntu-latest
+    environment: stag   
+    permissions:
+      contents: read   
+      id-token: write   
+
+    strategy:
+      matrix:
+        apifilename: ${{ fromJson(needs.detect-api.outputs.changed-api) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4  # Updated to latest version
+
+      - id: auth
+        uses: google-github-actions/auth@v2  # Updated to latest version
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER_PROD }}  #Use secrets here 
+          service_account: ${{ vars.SERVICE_ACCOUNT_PROD }}  # Use secrets here
+
+      - name: Deploy API Gateway
+        run: |
+          API_NAME=${{ matrix.apifilename.File}}
+          CONFIG_NAME=${API_NAME}-config
+          TIMESTAMP=$(date +"%Y%m%d%H%M%S")  # Generate timestamp in YYYYMMDDHHMMSS format
+          CONFIG_NAME_WITH_TIMESTAMP="${CONFIG_NAME}-${TIMESTAMP}"
+          PROJECT_ID=${{ vars.PROJECTID_PROD }}
+          REGION=us-central1
+          
+          # Print variable values
+          echo "PROJECT_ID: $PROJECT_ID"
+          echo "REGION: $REGION"
+          echo "API_NAME: $API_NAME"
+          echo "CONFIG_NAME_WITH_TIMESTAMP: $CONFIG_NAME_WITH_TIMESTAMP"
+          
+          # Check if the API exists
+          API_EXISTS=$(gcloud api-gateway apis list --format="value(name)" --project=${PROJECT_ID})
+          
+          # Print API existence   
+          echo "API_EXISTS: $API_EXISTS"
+          
+          if [[ $API_EXISTS != *"$API_NAME"* ]]; then
+            echo "Creating new API for $API_NAME"
+            gcloud api-gateway apis create $API_NAME --display-name="$API_NAME" --project=$PROJECT_ID
+          else
+            echo "API $API_NAME already exists "
+          fi
+          
+          # Create or update the API configuration 
+          CONFIG_ID=$(gcloud api-gateway api-configs list --api=$API_NAME --format="value(name)" --project=$PROJECT_ID)
+          if [[ $CONFIG_ID != *"$CONFIG_NAME"* ]]; then
+            echo "Creating new API Gateway configuration for $API_NAME"
+            gcloud api-gateway api-configs create $CONFIG_NAME_WITH_TIMESTAMP --api=$API_NAME --openapi-spec=ApiGateway/$API_NAME.yml --project=$PROJECT_ID
+          else
+            echo "Updating existing API Gateway configuration for $API_NAME"
+            gcloud api-gateway api-configs create "$CONFIG_NAME_WITH_TIMESTAMP" --api=$API_NAME --openapi-spec=ApiGateway/$API_NAME.yml --project=$PROJECT_ID
+          fi
+          
+          # Deploy the API Gateway
+          GATEWAY_NAME=${API_NAME}-gateway
+          GATEWAY_EXISTS=$(gcloud api-gateway gateways list --format="value(name)" --project=$PROJECT_ID --location=$REGION)
+          if [[ $GATEWAY_EXISTS != *"$GATEWAY_NAME"* ]]; then
+            echo "Creating API Gateway $GATEWAY_NAME"
+            gcloud api-gateway gateways create $GATEWAY_NAME --api=$API_NAME --api-config=$CONFIG_NAME --location=$REGION --project=$PROJECT_ID
+          else
+            echo "Updating API Gateway $GATEWAY_NAME"
+            gcloud api-gateway gateways update $GATEWAY_NAME --api=$API_NAME --api-config=$CONFIG_NAME --location=$REGION --project=$PROJECT_ID
+          fi
+
+  deploy-bigquery-script:
+    needs: [detect-bigquery]
+    if: needs.detect-bigquery.outputs.changed-bigquery != '[]'
+    runs-on: ubuntu-latest
+    environment: stag   
+    permissions:
+      contents: read   
+      id-token: write   
+
+    strategy:
+      matrix:
+        bigquerys: ${{ fromJson(needs.detect-bigquery.outputs.changed-bigquery) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4  # Updated to latest version
+
+      - id: auth
+        uses: google-github-actions/auth@v2  # Updated to latest version
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER_PROD }}  #Use secrets here 
+          service_account: ${{ vars.SERVICE_ACCOUNT_PROD }}  # Use secrets here
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: 'latest'
+          export_default_credentials: true  # Automatic credential handling   
+
+      - name: Execute SQL file
+        run: |  # Changed to multi-line for readability 
+          bq query --use_legacy_sql=false --project_id=relevate-dev-403605 < ${{ matrix.bigquerys.FilePath}}
+
+  deploy-function:
+    needs: [detect-functions]
+    if: needs.detect-functions.outputs.changed-functions != '[]'
     runs-on: ubuntu-latest
     environment: prod
     permissions:
@@ -89,28 +308,29 @@ jobs:
 
     strategy:
       matrix:
-        function: ${{ fromJson(needs.detect-changes.outputs.changed-functions) }}
-
+        function: ${{ fromJson(needs.detect-functions.outputs.changed-functions) }}
     steps:
       - uses: actions/checkout@v4
 
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{vars.WORKLOAD_IDENTITY_PROVIDER}}
-          service_account: ${{vars.SERVICE_ACCOUNT}}
+          workload_identity_provider: ${{vars.WORKLOAD_IDENTITY_PROVIDER_PROD}}
+          service_account: ${{vars.SERVICE_ACsCOUNT}}
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ env.PROJECTID }}
+          version: 'latest'
+          export_default_credentials: true
+
 
       - name: Create Bucket
         if: matrix.function.Trigger == 'Storage'
         id: check_bucket
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
-          PROJECT_Ids="${{ vars.PROJECTID }}"
+          PROJECT_Ids="${{ vars.PROJECTID_PROD }}"
           BUCKET_FULL_NAME="${PROJECT_Ids}-${BUCKET_NAME}"
           echo "BUCKET_FULL_NAME=$BUCKET_FULL_NAME" >> $GITHUB_OUTPUT
           echo "BUCKET_FULL_NAME : $BUCKET_FULL_NAME"
@@ -134,7 +354,7 @@ jobs:
             echo "Bucket $BUCKET_FULL_NAME does not exists line 127"
             echo "Creating bucket - $BUCKET_FULL_NAME"
             gcloud storage buckets create gs://$BUCKET_FULL_NAME \
-                --project ${{ vars.PROJECTID }} \
+                --project ${{ vars.PROJECTID_PROD }} \
                 --location us-central1
           fi
           
@@ -144,7 +364,7 @@ jobs:
         id: create_topic
         run: |
           TOPIC_NAME=${{ matrix.function.TriggerName }}
-          if ! gcloud pubsub topics  list --filter="name:projects/${{ vars.PROJECTID }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
+          if ! gcloud pubsub topics  list --filter="name:projects/${{ vars.PROJECTID_PROD }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
             # Create topic if it doesn't exist
             gcloud pubsub topics create $TOPIC_NAME
             echo "Created topic: $TOPIC_NAME"
@@ -152,43 +372,140 @@ jobs:
             echo "Topic: $TOPIC_NAME already  exists"
           fi
 
+      - name: Parse Cloud Function Storage Details
+        id: parse_cf_storage
+        run: |
+          FILE="${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/config.txt"
+          MEMORY=$(grep '^memory:' $FILE | cut -d':' -f2 | xargs)
+          TIMEOUT=$(grep '^timeout:' $FILE | cut -d':' -f2 | xargs)
+          RUNTIME=$(grep '^runtime:' $FILE | cut -d':' -f2 | xargs)
+          echo "Memory: $MEMORY"
+          echo "Timeout: $TIMEOUT"
+          echo "Runtime: $RUNTIME"
+          # Check and assign default values if variables are empty
+          if [ -z "$MEMORY" ]; then
+          MEMORY="256Mi"
+          fi
+          if [ -z "$TIMEOUT" ]; then
+          TIMEOUT="10m"
+          fi
+          if [ -z "$RUNTIME" ]; then
+          RUNTIME="python312"
+          fi
+          echo "Using Memory: $MEMORY"
+          echo "Using Timeout: $TIMEOUT"
+          echo "Using Runtime: $RUNTIME"
+          echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
+          echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
+          echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
+
       - name: Deploy Cloud Function - Topic Trigger
         if: matrix.function.Trigger == 'PubSub'
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.FunctionName }}
-          runtime: "python312"
-          project_id: ${{ env.PROJECTID }}
+          runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
+          project_id: ${{ env.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
-          event_trigger_resource: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
-          event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_service: "pubsub.googleapis.com"
-          timeout: "10m"
+          timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
+          service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "${{ matrix.function.SrcFolder }}"
+          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
+          allow_unauthenticated: true  
+          memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
+          environment: "GEN_2"
+          retry: false
 
       - name: Deploy Cloud Function - Storage Trigger
         if: matrix.function.Trigger == 'Storage'
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.FunctionName }}
-          runtime: "python312"
-          project_id: ${{ env.PROJECTID }}
+          runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
+          project_id: ${{ env.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/${{ vars.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
+          event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
-          timeout: "10m"
+          timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
+          service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "${{ matrix.function.SrcFolder }}"
+          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
+          allow_unauthenticated: true  
+          memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
+          environment: "GEN_2"
+          retry: false
 
       - name: Deploy Cloud Function - HTTP Trigger
         if: matrix.function.Trigger == 'HTTP'
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
           name: ${{ matrix.function.FunctionName }}
-          runtime: "python312"
-          project_id: ${{ env.PROJECTID }}
+          runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
+          project_id: ${{ env.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.Entry_Point }}
-          timeout: "10m"
+          timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
+          service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "${{ matrix.function.SrcFolder }}"
+          ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
+          allow_unauthenticated: true  
+          memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
+          environment: "GEN_2"
+          retry: false
+
+  deploy-data-flow-template:
+    if: needs.detect-dataflow.outputs.changed-dataflows != '[]'
+    needs: detect-dataflow
+    runs-on: ubuntu-latest
+    environment: stag   
+    permissions:
+      contents: read   
+      id-token: write   
+
+    strategy:
+      matrix:
+        dataflowlist: ${{ fromJson(needs.detect-dataflow.outputs.changed-dataflows) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4  # Updated to latest version
+
+      - id: auth
+        uses: google-github-actions/auth@v2  # Updated to latest version 
+        with:
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER_PROD }}  # Use secrets here 
+          service_account: ${{ vars.SERVICE_ACCOUNT_PROD }}  # Use secrets here
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          version: 'latest'
+          export_default_credentials: true  # Automatic credential handling   
+
+      - name: Install Python and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip
+          python3 -m pip install --upgrade pip
+          pip3 install apache-beam[gcp]
+
+      - name: Create Dataflow Template
+        id: create_template
+        run: |
+          python ${{matrix.dataflowlist.SrcFolder }}/${{ matrix.dataflowlist.File }}.py \
+            --runner=DataflowRunner \
+            --project=${{ vars.PROJECTID_PROD }} \
+            --staging_location=gs://relevate-dev-403605-devops2207/staging \
+            --temp_location=gs://relevate-dev-403605-devops2207/temp \
+            --template_location=gs://relevate-dev-403605-devops2207/dataflow_template/${{ matrix.dataflowlist.File }}
+
+      - name: Deploy Dataflow Template
+        run: |
+           gcloud dataflow jobs run ${{ matrix.dataflowlist.File }} \
+            --gcs-location=gs://relevate-dev-403605-devops2207/dataflow_template/${{ matrix.dataflowlist.File }} \
+            --region=us-central1
