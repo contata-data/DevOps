@@ -28,7 +28,7 @@ def cfsizeCICD1(request):
     )
     request_logging_data = json.dumps(
         {
-            "cloudfunction": "relevate-ai-decile-report-data-insert12345",
+            "cloudfunction": "relevate-ai-decile-report-data-insert123456789",
             "ipaddress": f"{ip_address}",
             "payload": request_json,
             "createdon": f"{current_timestamp}",
