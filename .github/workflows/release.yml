@@ -130,7 +130,7 @@ jobs:
         id: detect-api
         run: |
          CHANGED_API=""
-         for file in $(git diff --name-only ${{ needs.get-release-details.outputs.release-tag }} ${{ needs.get-release-details.outputs.prev-tag }} | grep -E 'ApiGateway.*\.yml$'); do
+         for file in $(git diff --name-only ${{ needs.get-release-details.outputs.release-tag }} ${{ needs.get-release-details.outputs.prev-tag }} | grep -E 'ApiGatewayProd.*\.yml$'); do
            # Extract details from file path
            SrcFolder=$(dirname "$file")
            FileName=$(basename "$file" .yml)  # Extract the file name without the extension
