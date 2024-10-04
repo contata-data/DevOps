@@ -7,7 +7,7 @@ from google.cloud import pubsub_v1
 
 
 @functions_framework.http
-def cfsizeCICD1PubSub2(request):
+def cfsizeCICDPubSub2(request):
     if request.method == "OPTIONS":
         headers = {
             "Access-Control-Allow-Origin": "*",
@@ -28,7 +28,7 @@ def cfsizeCICD1PubSub2(request):
     )
     request_logging_data = json.dumps(
         {
-            "cloudfunction": "relevate-ai-decile-report-data-insert11245678900116778_2",
+            "cloudfunction": "relevate-ai-decile-report-data-insert11245678900116778_2_1",
             "ipaddress": f"{ip_address}",
             "payload": request_json,
             "createdon": f"{current_timestamp}",
