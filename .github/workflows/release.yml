@@ -359,17 +359,28 @@ jobs:
           fi
           
 
-      - name: Create Topic
+      - name: Create Topic in Parallel
         if: matrix.function.Trigger == 'PubSub'
         id: create_topic
         run: |
+          set -e  # Stop on errors
+          trap 'echo "Error occurred while creating Pub/Sub topic: $TOPIC_NAME"' ERR  # Catch errors
           TOPIC_NAME=${{ matrix.function.TriggerName }}
-          if ! gcloud pubsub topics  list --filter="name:projects/${{ vars.PROJECTID_PROD }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
-            # Create topic if it doesn't exist
-            gcloud pubsub topics create $TOPIC_NAME
-            echo "Created topic: $TOPIC_NAME"
+          # Check if topic already exists
+          if ! gcloud pubsub topics list --filter="name:projects/${{ vars.PROJECTID }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
+            echo "Creating Pub/Sub topic: $TOPIC_NAME"
+            # Attempt to create topic, ignore if already created by another process
+            gcloud pubsub topics create $TOPIC_NAME || {
+              # Check if the failure was because the topic already exists
+              if gcloud pubsub topics list --filter="name:projects/${{ vars.PROJECTID }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
+                echo "Topic: $TOPIC_NAME was already created by another process."
+              else
+                echo "Failed to create topic: $TOPIC_NAME due to unexpected error."
+                exit 1
+              fi
+            }
           else
-            echo "Topic: $TOPIC_NAME already  exists"
+            echo "Topic: $TOPIC_NAME already exists, skipping creation."
           fi
 
       - name: Parse Cloud Function Storage Details
