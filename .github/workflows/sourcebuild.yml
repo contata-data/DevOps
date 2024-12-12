@@ -164,6 +164,8 @@ jobs:
           MEMORY=$(grep '^memory:' $FILE | cut -d':' -f2 | xargs)
           TIMEOUT=$(grep '^timeout:' $FILE | cut -d':' -f2 | xargs)
           RUNTIME=$(grep '^runtime:' $FILE | cut -d':' -f2 | xargs)
+          ENDPOINT=$(grep '^endpoint:' $FILE | cut -d':' -f2 | xargs)
+          CFNAME=$(grep '^cfname:' $FILE | cut -d':' -f2 | xargs)
           CPU=$(grep '^cpu:' $FILE | cut -d':' -f2 | xargs)
           echo "Memory: $MEMORY"
           echo "Timeout: $TIMEOUT"
@@ -178,18 +180,30 @@ jobs:
           if [ -z "$RUNTIME" ]; then
           RUNTIME="python312"
           fi
+          if [ -z "$ENDPOINT" ]; then
+          ENDPOINT="${{ matrix.function.name }}"
+          fi
+          if [ -z "$CFNAME" ]; then
+          CFNAME="${{ matrix.function.name }}"
+          fi
+          
           echo "Using Memory: $MEMORY"
           echo "Using Timeout: $TIMEOUT"
           echo "Using Runtime: $RUNTIME"
           echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
           echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
-          echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
+          echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
+          
+          echo "ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
+          echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
           
       - name: Debug Parsed Outputs
         run: |
                 echo " Runtime1: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
                 echo "Memory1: ${{ steps.parse_cf_storage.outputs.MEMORY }}"
                 echo "Timeout1: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}"
+                echo "ENDPOINT: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}"
+                echo "CFNAME: ${{ steps.parse_cf_storage.outputs.CFNAME }}"
 
           
       - name: Deploy Cloud Function - Topic Trigger
