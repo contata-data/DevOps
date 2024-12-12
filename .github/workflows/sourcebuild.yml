@@ -210,10 +210,10 @@ jobs:
         if: matrix.function.Trigger == 'PubSub'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: ${{ matrix.function.name }}
+          name: ${{ steps.parse_cf_storage.outputs.CFNAME }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID_PROD }}
-          entry_point: ${{ matrix.function.entry_point }}
+          entry_point: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
@@ -230,10 +230,10 @@ jobs:
         if: matrix.function.Trigger == 'Storage'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: ${{ matrix.function.name }}
+          name: ${{ steps.parse_cf_storage.outputs.CFNAME }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID_PROD }}
-          entry_point: ${{ matrix.function.entry_point }}
+          entry_point: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
@@ -250,10 +250,10 @@ jobs:
         if: matrix.function.Trigger == 'HTTP'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: ${{ matrix.function.name }}
+          name: ${{ steps.parse_cf_storage.outputs.CFNAME }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID_PROD }}
-          entry_point: ${{ matrix.function.entry_point }}
+          entry_point: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
