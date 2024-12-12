@@ -2,7 +2,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - Release
+      - release_1
     paths:
       - "src/**"
 
@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for all branches and tags
+          fetch-depth: 0 # Fetch all history for all branches and tags 
 
       - name: get last commit details
         id: last_commit
@@ -26,25 +26,25 @@ jobs:
       - name: Get Last Merge Commit
         id: last_merge
         run: |
-          LAST_MERGE=$(git log Release --merges -1 --format=%H)
+          LAST_MERGE=$(git log release_1 --merges -1 --format=%H)
           echo "Last merge commit : $LAST_MERGE"
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
 
       - name: Get Previous Merge Commit
         id: prev_merge
         run: |
-          PREV_MERGE=$(git log Release --merges -2 --format=%H | tail -n 1)
+          PREV_MERGE=$(git log release_1 --merges -2 --format=%H | tail -n 1)
           echo "Previous merge commit: $PREV_MERGE"
           echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_OUTPUT
       - id: detect
         run: |
           CHANGED_FUNCTIONS=()
-          git fetch origin Release
+          git fetch origin release_1
           # get changed files
           echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
           echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
-          CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} Release)
+          CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} release_1)
            
           #get changed dirs
           CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
@@ -268,4 +268,4 @@ jobs:
         run: |
           git add .
           git commit -m "Automated commit by CI/CD"
-          git push origin Release
+          git push origin release_1
