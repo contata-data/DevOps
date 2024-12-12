@@ -9,7 +9,7 @@ on:
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
-    environment: stag
+    environment: prod
     permissions:
       contents: read
       id-token: write
