@@ -2,7 +2,7 @@ name: Data flow
 on:
   push:
     branches: 
-      - main
+      - Release
     paths:
       - "DataFlow/**"
 
@@ -27,25 +27,25 @@ jobs:
       - name: Get Last Merge Commit
         id: last_merge
         run: |
-          LAST_MERGE=$(git log main --merges -1 --format=%H)
+          LAST_MERGE=$(git log Release --merges -1 --format=%H)
           echo "Last merge commit : $LAST_MERGE"
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
 
       - name: Get Previous Merge Commit
         id: prev_merge
         run: |
-          PREV_MERGE=$(git log main --merges -2 --format=%H | tail -n 1)
+          PREV_MERGE=$(git log Release --merges -2 --format=%H | tail -n 1)
           echo "Previous merge commit: $PREV_MERGE"
           echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_OUTPUT
       - id: detect
         run: |
           CHANGED_FUNCTIONS=()
-          git fetch origin main
+          git fetch origin Release
           # Get changed files
           echo "Previous  merge  commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
           echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
-          CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
+          CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} Release)
           # Get changed directories
           CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^DataFlow/' | sort | uniq)
           echo "Changed directories: $CHANGED_DIRS"
@@ -55,7 +55,7 @@ jobs:
                   continue
               fi
               echo "Directory name: $DIR"
-              for file in $(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main | grep "^$DIR/"); do
+              for file in $(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} Release | grep "^$DIR/"); do
                   FUNCTION_NAME=$(basename "$file" .py)
                   FULL_PATH="$DIR"
                   echo "Function name: $FUNCTION_NAME"
@@ -93,8 +93,8 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2  # Updated to latest version 
         with:
-          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER }}  # Use secrets here 
-          service_account: ${{ vars.SERVICE_ACCOUNT }}  # Use secrets here
+          workload_identity_provider: ${{ vars.WORKLOAD_IDENTITY_PROVIDER_PROD }}  # Use secrets here 
+          service_account: ${{ vars.SERVICE_ACCOUNT_PROD }}  # Use secrets here
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -114,7 +114,7 @@ jobs:
         run: |
           python ${{ matrix.function.SrcFolder }}/${{ matrix.function.name }}.py \
             --runner=DataflowRunner \
-            --project=${{ vars.PROJECTID }} \
+            --project=${{ vars.PROJECTID_PROD }} \
             --staging_location=gs://relevate-dev-403605-devops2207/staging \
             --temp_location=gs://relevate-dev-403605-devops2207/temp \
             --template_location=gs://relevate-dev-403605-devops2207/dataflow_template/${{ matrix.function.name }}
@@ -148,4 +148,4 @@ jobs:
         run: |
           git add .
           git commit -m "Automated commit by CI/CD"
-          git push origin main
+          git push origin Release
