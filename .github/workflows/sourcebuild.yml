@@ -74,7 +74,7 @@ jobs:
   deploy-staging:
     needs: detect-changes
     runs-on: ubuntu-latest
-    environment: stag
+    environment: prod
     permissions:
       contents: read
       id-token: write
