@@ -95,7 +95,7 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ env.PROJECTID }}
+          project_id: ${{ env.PROJECTID_PROD }}
 
       - name: Create Bucket
         if: matrix.function.Trigger == 'Storage'
@@ -198,7 +198,8 @@ jobs:
         with:
           name: ${{ matrix.function.name }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ vars.PROJECTID_PROD }}
+          project_id: ${{ env.PROJECTID_PROD }}
+
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
@@ -218,7 +219,7 @@ jobs:
         with:
           name: ${{ matrix.function.name }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ vars.PROJECTID_PROD }}
+          project_id: ${{ env.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
@@ -238,7 +239,7 @@ jobs:
         with:
           name: ${{ matrix.function.name }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ vars.PROJECTID_PROD }}
+          project_id: ${{ env.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.entry_point }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
