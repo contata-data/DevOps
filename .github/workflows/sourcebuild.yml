@@ -188,7 +188,7 @@ jobs:
           fi
           
           echo "Using Function Name: $${{ matrix.function.name }}"
-          echo "Using Entry point: ${{ matrix.function.name }}"
+          echo "Using Entry point: $${{ matrix.function.name }}"
           
           
           echo "Using Memory: $MEMORY"
@@ -254,10 +254,10 @@ jobs:
         if: matrix.function.Trigger == 'HTTP'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: ${{ steps.parse_cf_storage.outputs.CFNAME }}
+          name: ${{ matrix.function.name }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID_PROD }}
-          entry_point: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}
+          entry_point: ${{ matrix.function.name }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
