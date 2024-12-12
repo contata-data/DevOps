@@ -2,7 +2,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - main
+      - Release
     paths:
       - "src/**"
 
@@ -26,25 +26,25 @@ jobs:
       - name: Get Last Merge Commit
         id: last_merge
         run: |
-          LAST_MERGE=$(git log main --merges -1 --format=%H)
+          LAST_MERGE=$(git log Release --merges -1 --format=%H)
           echo "Last merge commit : $LAST_MERGE"
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
 
       - name: Get Previous Merge Commit
         id: prev_merge
         run: |
-          PREV_MERGE=$(git log main --merges -2 --format=%H | tail -n 1)
+          PREV_MERGE=$(git log Release --merges -2 --format=%H | tail -n 1)
           echo "Previous merge commit: $PREV_MERGE"
           echo "PREV_MERGE=$PREV_MERGE" >> $GITHUB_OUTPUT
       - id: detect
         run: |
           CHANGED_FUNCTIONS=()
-          git fetch origin main
+          git fetch origin Release
           # get changed files
           echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
           echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
-          CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
+          CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} Release)
            
           #get changed dirs
           CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
@@ -89,8 +89,8 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{vars.WORKLOAD_IDENTITY_PROVIDER}}
-          service_account: ${{vars.SERVICE_ACCOUNT}}
+          workload_identity_provider: ${{vars.WORKLOAD_IDENTITY_PROVIDER_PROD}}
+          service_account: ${{vars.SERVICE_ACCOUNT_PROD}}
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -102,7 +102,7 @@ jobs:
         id: check_bucket
         run: |
           BUCKET_NAME="${{ matrix.function.TriggerName }}"
-          PROJECT_Ids="${{ vars.PROJECTID }}"
+          PROJECT_Ids="${{ vars.PROJECTID_PROD }}"
           BUCKET_FULL_NAME="${PROJECT_Ids}-${BUCKET_NAME}"
           echo "BUCKET_FULL_NAME=$BUCKET_FULL_NAME" >> $GITHUB_OUTPUT
           echo "BUCKET_FULL_NAME : $BUCKET_FULL_NAME"
@@ -126,7 +126,7 @@ jobs:
             echo "Bucket $BUCKET_FULL_NAME does not exists line 126 "
             echo "Creating bucket - $BUCKET_FULL_NAME"
             gcloud storage buckets create gs://${BUCKET_FULL_NAME} \
-                --project ${{ vars.PROJECTID }} \
+                --project ${{ vars.PROJECTID_PROD }} \
                 --location us-central1
           fi
           
@@ -138,12 +138,12 @@ jobs:
           trap 'echo "Error occurred while creating Pub/Sub topic: $TOPIC_NAME"' ERR  # Catch errors
           TOPIC_NAME=${{ matrix.function.TriggerName }}
           # Check if topic already exists
-          if ! gcloud pubsub topics list --filter="name:projects/${{ vars.PROJECTID }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
+          if ! gcloud pubsub topics list --filter="name:projects/${{ vars.PROJECTID_PROD }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
             echo "Creating Pub/Sub topic: $TOPIC_NAME"
             # Attempt to create topic, ignore if already created by another process
             gcloud pubsub topics create $TOPIC_NAME || {
               # Check if the failure was because the topic already exists
-              if gcloud pubsub topics list --filter="name:projects/${{ vars.PROJECTID }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
+              if gcloud pubsub topics list --filter="name:projects/${{ vars.PROJECTID_PROD }}/topics/$TOPIC_NAME" | grep "$TOPIC_NAME"; then
                 echo "Topic: $TOPIC_NAME was already created by another process."
               else
                 echo "Failed to create topic: $TOPIC_NAME due to unexpected error."
@@ -198,11 +198,11 @@ jobs:
         with:
           name: ${{ matrix.function.name }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ env.PROJECTID }}
+          project_id: ${{ vars.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
-          event_trigger_resource: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
-          event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
+          event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_service: "pubsub.googleapis.com"
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
@@ -218,10 +218,10 @@ jobs:
         with:
           name: ${{ matrix.function.name }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ env.PROJECTID }}
+          project_id: ${{ vars.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
-          event_trigger_resource: "projects/${{ vars.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
+          event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
@@ -238,7 +238,7 @@ jobs:
         with:
           name: ${{ matrix.function.name }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
-          project_id: ${{ env.PROJECTID }}
+          project_id: ${{ vars.PROJECTID_PROD }}
           entry_point: ${{ matrix.function.entry_point }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
@@ -268,4 +268,4 @@ jobs:
         run: |
           git add .
           git commit -m "Automated commit by CI/CD"
-          git push origin main
+          git push origin Release
