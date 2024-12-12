@@ -2,7 +2,7 @@ name: API gateway deployment
 on:
   push:
     branches:
-      - main
+      - Release
     paths:
       - "apigateway/**"
 
@@ -27,7 +27,7 @@ jobs:
         run: |
           API_NAME=dev-ops-api-test
           CONFIG_NAME=${API_NAME}-config
-          PROJECT_ID=${{ vars.PROJECTID }}
+          PROJECT_ID=${{ vars.PROJECTID_PROD }}
           REGION=us-central1
           
           # Print variable values
