@@ -2,7 +2,7 @@ name: API gateway deployment
 on:
   push:
     branches:
-      - Release
+      - release_1
     paths:
       - "apigateway/**"
 
@@ -35,7 +35,7 @@ jobs:
           echo "REGION: $REGION"
           echo "API_NAME: $API_NAME"
           
-          # Check if the API exists
+          # Check if the API exists 
           API_EXISTS=$(gcloud api-gateway apis list --format="value(name)" --project=${PROJECT_ID})
           
           # Print API existence
