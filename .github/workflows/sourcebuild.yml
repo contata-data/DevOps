@@ -253,10 +253,10 @@ jobs:
         if: matrix.function.Trigger == 'HTTP'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: ${{ matrix.function.name }}
+          name: ${{ steps.parse_cf_storage.outputs.CFNAME }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID_PROD }}
-          entry_point: ${{ matrix.function.name }}
+          entry_point: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
