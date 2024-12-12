@@ -194,9 +194,8 @@ jobs:
           echo "Using Memory: $MEMORY"
           echo "Using Timeout: $TIMEOUT"
           echo "Using Runtime: $RUNTIME"
-          echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
+          echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
           echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
-          echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
           
           echo "ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
           echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
