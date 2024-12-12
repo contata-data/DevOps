@@ -199,7 +199,6 @@ jobs:
           name: ${{ matrix.function.name }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID_PROD }}
-
           entry_point: ${{ matrix.function.entry_point }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/${{ vars.PROJECTID_PROD }}/topics/${{ matrix.function.TriggerName }}"
