@@ -187,6 +187,10 @@ jobs:
           CFNAME="${{ matrix.function.name }}"
           fi
           
+          echo "Using Function Name: $${{ matrix.function.name }}"
+          echo "Using Entry point: ${{ matrix.function.name }}"
+          
+          
           echo "Using Memory: $MEMORY"
           echo "Using Timeout: $TIMEOUT"
           echo "Using Runtime: $RUNTIME"
