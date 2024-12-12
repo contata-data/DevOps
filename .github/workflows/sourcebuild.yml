@@ -188,7 +188,7 @@ jobs:
           fi
           
           echo "Using Function Name: $${{ matrix.function.name }}"
-          echo "Using Entry point: ${{ matrix.function.name }}"
+          echo "Using Entry point: $${{ matrix.function.name }}"
           
           
           echo "Using Memory: $MEMORY"
