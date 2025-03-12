@@ -301,6 +301,8 @@ jobs:
           min_instances: ${{steps.parse_cf_storage.outputs.MIN_INSTANCE}}   # Ensures at least one instance is always running
           max_instances: ${{steps.parse_cf_storage.outputs.MAX_INSTANCE}} # Limits the maximum number of instances for concurrency control
           concurrency: ${{steps.parse_cf_storage.outputs.CONCURRENCY}}
+          gen: 2
+          
 
   commitwrite:
     needs: detect-changes 
