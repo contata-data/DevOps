@@ -1,0 +1,7 @@
+{
+  "memory": "512Mi",
+  "timeout": "400s",
+  "runtime": "python312",
+  "endpoint": "configjsontest_json",
+  "cfname": "configjsontest_json_cf"
+}
