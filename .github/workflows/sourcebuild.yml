@@ -211,6 +211,8 @@ jobs:
             RUNTIME=$(jq -r '.runtime // "python312"' "$CONFIG_FILE")
             ENDPOINT=$(jq -r '.endpoint // "${{ matrix.function.name }}"' "$CONFIG_FILE")
             CFNAME=$(jq -r '.cfname // "${{ matrix.function.name }}"' "$CONFIG_FILE")
+            MIN_INSTANCE=$(jq -r '.min_instance // 1' "$CONFIG_FILE")
+            MAX_INSTANCE=$(jq -r '.max_instance // 3' "$CONFIG_FILE")
             echo "Parsed Config - Memory: $MEMORY, Timeout: $TIMEOUT, Runtime: $RUNTIME, Endpoint: $ENDPOINT, CFName: $CFNAME"
             # Set outputs
             echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
@@ -218,6 +220,8 @@ jobs:
             echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
             echo "ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
             echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
+            echo "MIN_INSTANCE=$MIN_INSTANCE" >> $GITHUB_OUTPUT
+            echo "MAX_INSTANCE=$MAX_INSTANCE" >> $GITHUB_OUTPUT
       - name: Debug Parsed Outputs
         run: |
                 echo " RUNTIME: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
@@ -225,6 +229,8 @@ jobs:
                 echo "Timeout1: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}"
                 echo "ENDPOINT: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}"
                 echo "CFNAME: ${{ steps.parse_cf_storage.outputs.CFNAME }}"
+                echo "MIN_INSTANCE: ${{ steps.parse_cf_storage.outputs.MIN_INSTANCE }}"
+                echo "MAX_INSTANCE: ${{ steps.parse_cf_storage.outputs.MAX_INSTANCE }}"
 
           
       - name: Deploy Cloud Function - Topic Trigger
@@ -288,6 +294,8 @@ jobs:
           environment: "GEN_2"
           retry: false
           event_trigger_retry: false
+          min_instances: ${{steps.parse_cf_storage.outputs.MIN_INSTANCE}}   # Ensures at least one instance is always running
+          max_instances: ${{steps.parse_cf_storage.outputs.MAX_INSTANCE}} # Limits the maximum number of instances for concurrency control
 
   commitwrite:
     needs: detect-changes 
