@@ -300,7 +300,7 @@ jobs:
           event_trigger_retry: false
           min_instances: ${{steps.parse_cf_storage.outputs.MIN_INSTANCE}}   # Ensures at least one instance is always running
           max_instances: ${{steps.parse_cf_storage.outputs.MAX_INSTANCE}} # Limits the maximum number of instances for concurrency control
-          concurrency: ${{steps.parse_cf_storage.outputs.CONCURRENCY}}
+          concurrency: 2
           gen: 2
           
 
