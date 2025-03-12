@@ -129,7 +129,7 @@ jobs:
                 --project ${{ vars.PROJECTID }} \
                 --location us-central1
           fi
-          
+
       - name: Create Topic in Parallel
         if: matrix.function.Trigger == 'PubSub'
         id: create_topic
@@ -154,8 +154,6 @@ jobs:
             echo "Topic: $TOPIC_NAME already exists, skipping creation."
           fi
 
-
-
      
       # name: Parse Cloud Function Storage Details
       # id: parse_cf_storage
@@ -164,7 +162,8 @@ jobs:
       #   MEMORY=$(grep '^memory:' $FILE | cut -d':' -f2 | xargs)
       #   TIMEOUT=$(grep '^timeout:' $FILE | cut -d':' -f2 | xargs)
       #   RUNTIME=$(grep '^runtime:' $FILE | cut -d':' -f2 | xargs)
-      #   CPU=$(grep '^cpu:' $FILE | cut -d':' -f2 | xargs)
+      #   ENDPOINT=$(grep '^endpoint:' $FILE | cut -d':' -f2 | xargs)
+      #   CFNAME=$(grep '^cfname:' $FILE | cut -d':' -f2 | xargs)
       #   echo "Memory: $MEMORY"
       #   echo "Timeout: $TIMEOUT"
       #   echo "Runtime: $RUNTIME"
@@ -173,18 +172,30 @@ jobs:
       #   MEMORY="256Mi"
       #   fi
       #   if [ -z "$TIMEOUT" ]; then
-      #   TIMEOUT="30m"
+      #   TIMEOUT="8m"
       #   fi
       #   if [ -z "$RUNTIME" ]; then
       #   RUNTIME="python312"
       #   fi
+      #   if [ -z "$ENDPOINT" ]; then
+      #   ENDPOINT="${{ matrix.function.name }}"
+      #   fi
+      #   if [ -z "$CFNAME" ]; then
+      #   CFNAME="${{ matrix.function.name }}"
+      #   fi
+      #   echo "Using Function Name: $${{ matrix.function.name }}"
+      #   echo "Using Entry point: $${{ matrix.function.name }}"
+      #   
       #   echo "Using Memory: $MEMORY"
       #   echo "Using Timeout: $TIMEOUT"
-      #   echo "Using Runtime: $RUNTIME"
+      #   echo "Using RUNTIME: $RUNTIME"
+      #   
       #   echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
       #   echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
       #   echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
-      #   
+      #   echo "ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
+      #   echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
+
       - name: Parse Cloud Function Config (JSON)
         id: parse_cf_storage
         run: |
@@ -209,66 +220,74 @@ jobs:
             echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
       - name: Debug Parsed Outputs
         run: |
-                echo " Runtime1: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
-                echo "Memory1: ${{ steps.parse_cf_storage.outputs.MEMORY }}"
+                echo " RUNTIME: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
+                echo "MEMORY: ${{ steps.parse_cf_storage.outputs.MEMORY }}"
                 echo "Timeout1: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}"
+                echo "ENDPOINT: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}"
+                echo "CFNAME: ${{ steps.parse_cf_storage.outputs.CFNAME }}"
 
           
       - name: Deploy Cloud Function - Topic Trigger
         if: matrix.function.Trigger == 'PubSub'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: ${{ matrix.function.name }}
+          name: ${{ steps.parse_cf_storage.outputs.CFNAME }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
-          entry_point: ${{ matrix.function.entry_point }}
+          entry_point: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}
           event_trigger_type: "google.cloud.pubsub.topic.v1.messagePublished"
           event_trigger_resource: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_pubsub_topic: "projects/${{ vars.PROJECTID }}/topics/${{ matrix.function.TriggerName }}"
           event_trigger_service: "pubsub.googleapis.com"
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
+          service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources
           allow_unauthenticated: true  
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false
+          event_trigger_retry: false
  
       - name: Deploy Cloud Function - Storage Trigger
         if: matrix.function.Trigger == 'Storage'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: ${{ matrix.function.name }}
+          name: ${{ steps.parse_cf_storage.outputs.CFNAME }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
-          entry_point: ${{ matrix.function.entry_point }}
+          entry_point: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}
           event_trigger_type: "google.cloud.storage.object.v1.finalized"
           event_trigger_resource: "projects/${{ vars.PROJECTID }}/locations/us-central1/buckets/${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}"
           event_trigger_filters: |
              bucket=${{ steps.check_bucket.outputs.BUCKET_FULL_NAME }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
+          service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all sources 
           allow_unauthenticated: true  
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
           environment: "GEN_2"
           retry: false 
+          event_trigger_retry: false
 
       - name: Deploy Cloud Function - HTTP Trigger
         if: matrix.function.Trigger == 'HTTP'  
         uses: google-github-actions/deploy-cloud-functions@v3
         with:
-          name: ${{ matrix.function.name }}
+          name: ${{ steps.parse_cf_storage.outputs.CFNAME }}
           runtime: ${{ steps.parse_cf_storage.outputs.RUNTIME }}
           project_id: ${{ env.PROJECTID }}
-          entry_point: ${{ matrix.function.entry_point }}
+          entry_point: ${{ steps.parse_cf_storage.outputs.ENDPOINT }}
           timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           service_timeout: ${{ steps.parse_cf_storage.outputs.TIMEOUT }}
           source_dir: "src/${{ matrix.function.SrcFolder }}"
           ingress_settings: "ALLOW_ALL"  # Allow traffic from all  sources
           allow_unauthenticated: true   
           memory: ${{ steps.parse_cf_storage.outputs.MEMORY }}
+          environment: "GEN_2"
           retry: false
+          event_trigger_retry: false
 
   commitwrite:
     needs: detect-changes 
