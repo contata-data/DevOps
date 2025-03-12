@@ -1,0 +1,9 @@
+{
+	"memory": "512Mi",
+	"timeout": "600s",
+	"runtime": "python312",
+	"endpoint": "jsonconcurrency1_endpoint",
+	"cfname": "jsonconcurrency1_cf",
+	"min_instance": 1,
+	"max_instance": 2
+}
