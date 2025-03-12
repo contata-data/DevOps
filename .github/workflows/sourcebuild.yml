@@ -157,34 +157,56 @@ jobs:
 
 
      
-      - name: Parse Cloud Function Storage Details
+      # name: Parse Cloud Function Storage Details
+      # id: parse_cf_storage
+      # run: |
+      #   FILE="${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/config.txt"
+      #   MEMORY=$(grep '^memory:' $FILE | cut -d':' -f2 | xargs)
+      #   TIMEOUT=$(grep '^timeout:' $FILE | cut -d':' -f2 | xargs)
+      #   RUNTIME=$(grep '^runtime:' $FILE | cut -d':' -f2 | xargs)
+      #   CPU=$(grep '^cpu:' $FILE | cut -d':' -f2 | xargs)
+      #   echo "Memory: $MEMORY"
+      #   echo "Timeout: $TIMEOUT"
+      #   echo "Runtime: $RUNTIME"
+      #   # Check and assign default values if variables are empty
+      #   if [ -z "$MEMORY" ]; then
+      #   MEMORY="256Mi"
+      #   fi
+      #   if [ -z "$TIMEOUT" ]; then
+      #   TIMEOUT="30m"
+      #   fi
+      #   if [ -z "$RUNTIME" ]; then
+      #   RUNTIME="python312"
+      #   fi
+      #   echo "Using Memory: $MEMORY"
+      #   echo "Using Timeout: $TIMEOUT"
+      #   echo "Using Runtime: $RUNTIME"
+      #   echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
+      #   echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
+      #   echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
+      #   
+      - name: Parse Cloud Function Config (JSON)
         id: parse_cf_storage
         run: |
-          FILE="${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/config.txt"
-          MEMORY=$(grep '^memory:' $FILE | cut -d':' -f2 | xargs)
-          TIMEOUT=$(grep '^timeout:' $FILE | cut -d':' -f2 | xargs)
-          RUNTIME=$(grep '^runtime:' $FILE | cut -d':' -f2 | xargs)
-          CPU=$(grep '^cpu:' $FILE | cut -d':' -f2 | xargs)
-          echo "Memory: $MEMORY"
-          echo "Timeout: $TIMEOUT"
-          echo "Runtime: $RUNTIME"
-          # Check and assign default values if variables are empty
-          if [ -z "$MEMORY" ]; then
-          MEMORY="256Mi"
-          fi
-          if [ -z "$TIMEOUT" ]; then
-          TIMEOUT="30m"
-          fi
-          if [ -z "$RUNTIME" ]; then
-          RUNTIME="python312"
-          fi
-          echo "Using Memory: $MEMORY"
-          echo "Using Timeout: $TIMEOUT"
-          echo "Using Runtime: $RUNTIME"
-          echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
-          echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
-          echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
-          
+            CONFIG_FILE="${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/config.json"
+            # Check if the config file exists
+            if [ ! -f "$CONFIG_FILE" ]; then
+            echo "Config file $CONFIG_FILE not found!"
+            exit 1
+            fi
+            # Parse JSON and assign defaults if keys are missing
+            MEMORY=$(jq -r '.memory // "256Mi"' "$CONFIG_FILE")
+            TIMEOUT=$(jq -r '.timeout // "8m"' "$CONFIG_FILE")
+            RUNTIME=$(jq -r '.runtime // "python312"' "$CONFIG_FILE")
+            ENDPOINT=$(jq -r '.endpoint // "${{ matrix.function.name }}"' "$CONFIG_FILE")
+            CFNAME=$(jq -r '.cfname // "${{ matrix.function.name }}"' "$CONFIG_FILE")
+            echo "Parsed Config - Memory: $MEMORY, Timeout: $TIMEOUT, Runtime: $RUNTIME, Endpoint: $ENDPOINT, CFName: $CFNAME"
+            # Set outputs
+            echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
+            echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
+            echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
+            echo "ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
+            echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
       - name: Debug Parsed Outputs
         run: |
                 echo " Runtime1: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
