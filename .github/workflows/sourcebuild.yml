@@ -51,7 +51,9 @@ jobs:
           echo "Directories: $CHANGED_DIRS"
           
           SKIP_LIST_FILE="${{ github.workspace }}/SkipDeployFolders.txt"
+          
           for DIR in $CHANGED_DIRS; do
+              echo "Checking DIR: '$DIR'"
               if grep -Fxq "$DIR" "$SKIP_LIST_FILE"; then
                 echo "Skipping deployment for: $DIR"
                 continue
