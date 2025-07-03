@@ -44,36 +44,51 @@ jobs:
           echo "Previous merge commit: ${{ steps.prev_merge.outputs.PREV_MERGE }}"
           echo "Last merge commit: ${{ steps.last_merge.outputs.LAST_MERGE }}"
           echo "Last commit: ${{ steps.last_commit.outputs.LAST_COMMIT }}"
-          CHANGED_FILES=CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
-           
+          CHANGED_FILES=$(git diff --name-only ${{ steps.last_commit.outputs.LAST_COMMIT }} main)
           #get changed dirs
           CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
           echo "Directories: $CHANGED_DIRS"
-          
           SKIP_LIST_FILE="${{ github.workspace }}/SkipDeployFolders.txt"
-          echo "SKIP_LIST_FILE: $SKIP_LIST_FILE"
+
+          echo "All changed dirs:"
+          for d in $CHANGED_DIRS; do
+          echo "'$d'"
+          done
           
           for DIR in $CHANGED_DIRS; do
-              echo "Checking DIR: '$DIR'"
-              if grep -Fxq "$DIR" "$SKIP_LIST_FILE"; then
-                echo "Skipping deployment for: $DIR"
-                continue
-              else
-                echo "Not in skip list: $DIR"
-              fi
-              
-              echo " Deploying: $DIR"
-              FUNCTION_NAME=$(basename "$DIR")
-              IFS='_' read -r part1 part2 part3 <<< "$FUNCTION_NAME"
-              ENTRY_POINT="${FUNCTION_NAME}"
-              CHANGED_FUNCTIONS+=("{\"name\": \"$part2\", \"entry_point\": \"$part2\", \"TriggerName\": \"$part1\", \"Trigger\": \"$part3\",\"SrcFolder\": \"$FUNCTION_NAME\"}")
-          done
-          if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
-            echo "changed-functions=[]" >> $GITHUB_OUTPUT
-          else
-            CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
-            echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
+          CLEAN_DIR=$(echo "$DIR" | sed 's|/$||')
+          echo "Checking DIR: '$CLEAN_DIR'"
+          
+          if grep -Fqx "$CLEAN_DIR" "$SKIP_LIST_FILE"; then
+              echo " Skipping $CLEAN_DIR"
+              continue
           fi
+          
+          echo " Including $CLEAN_DIR"
+          FUNCTION_NAME=$(basename "$CLEAN_DIR")
+          IFS='_' read -r part1 part2 part3 <<< "$FUNCTION_NAME"
+          CHANGED_FUNCTIONS+=("{\"name\": \"$part2\", \"entry_point\": \"$part2\", \"TriggerName\": \"$part1\", \"Trigger\": \"$part3\", \"SrcFolder\": \"$FUNCTION_NAME\"}")
+          done
+          
+          # today 03-07-2025
+          #SKIP_LIST_FILE="${{ github.workspace }}/SkipDeployFolders.txt"
+          #for DIR in $CHANGED_DIRS; do
+          #    if grep -Fxq "$DIR" "$SKIP_LIST_FILE"; then
+          #      echo "Skipping deployment for: $DIR"
+          #      continue
+          #    fi
+          #    echo " Deploying: $DIR"
+          #    FUNCTION_NAME=$(basename "$DIR")
+          #    IFS='_' read -r part1 part2 part3 <<< "$FUNCTION_NAME"
+          #    ENTRY_POINT="${FUNCTION_NAME}"
+          #    CHANGED_FUNCTIONS+=("{\"name\": \"$part2\", \"entry_point\": \"$part2\", \"TriggerName\": \"$part1\", \"Trigger\": \"$part3\",\"SrcFolder\": \"$FUNCTION_NAME\"}")
+          #done
+          #if [ ${#CHANGED_FUNCTIONS[@]} -eq 0 ]; then
+          #  echo "changed-functions=[]" >> $GITHUB_OUTPUT
+          #else
+          #  CHANGED_FUNCTIONS_JSON=$(printf '[%s]' "$(IFS=,; echo "${CHANGED_FUNCTIONS[*]}")")
+          #  echo "changed-functions=$CHANGED_FUNCTIONS_JSON" >> $GITHUB_OUTPUT
+          #fi
 
           #for DIR in $CHANGED_DIRS; do
           #    if [ "$DIR" = ".github" ] || [ "$DIR" = ".github/workflows" ]; then
