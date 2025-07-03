@@ -31,7 +31,7 @@ jobs:
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
 
       - name: Debug skip file content
-        id: skip file list
+        id: skip_file_list
         run: |
            echo "Skip file contents:"
            cat "${{ github.workspace }}/SkipDeployFolders.txt"
