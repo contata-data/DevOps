@@ -1,3 +1,5 @@
 src\devops1309_configjsonfile_HTTP - Copy
 src\devops1309_configjsonfile_HTTP - Copy - Copy
 src\devops1309_configjsonfile_HTTP - Copy - Copy (2)
+src\skip_test_folder
+src\skip_test_folder_1
