@@ -30,6 +30,11 @@ jobs:
           echo "Last merge commit : $LAST_MERGE"
           echo "LAST_MERGE=$LAST_MERGE" >> $GITHUB_OUTPUT
 
+       - name: Debug skip file content
+         run: |
+           echo "Skip file contents:"
+           cat "${{ github.workspace }}/SkipDeployFolders.txt"
+
       - name: Get Previous Merge Commit
         id: prev_merge
         run: |
@@ -57,6 +62,7 @@ jobs:
           
           for DIR in $CHANGED_DIRS; do
           CLEAN_DIR=$(echo "$DIR" | sed 's|/$||')
+          CLEAN_DIR=$(echo "$CLEAN_DIR" | sed 's|\\|/|g')
           echo "Checking DIR: '$CLEAN_DIR'"
           
           if grep -Fqx "$CLEAN_DIR" "$SKIP_LIST_FILE"; then
