@@ -29,7 +29,7 @@ def configjsontest_test_json_1(request):
     request_logging_data = json.dumps(
         {
 
-            "cloudfunction": "relevate-ai-decile-report-data-insert1167900",
+            "cloudfunction": "relevate-ai-decile-report-data-insert",
 
 
             "ipaddress": f"{ip_address}",
