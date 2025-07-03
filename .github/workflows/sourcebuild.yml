@@ -34,7 +34,7 @@ jobs:
         id: skip_file_list
         run: |
            echo "Skip file contents:"
-           cat "${{ github.workspace }}/SkipDeployFolders.txt"
+           cat "${{ github.workspace }}/SkipFolderslist.txt"
 
       - name: Get Previous Merge Commit
         id: prev_merge
@@ -54,7 +54,7 @@ jobs:
           #get changed dirs
           CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
           echo "Directories: $CHANGED_DIRS"
-          SKIP_LIST_FILE="${{ github.workspace }}/SkipDeployFolders.txt"
+          SKIP_LIST_FILE="${{ github.workspace }}/SkipFolderslist.txt"
 
           echo "All changed dirs:"
           for d in $CHANGED_DIRS; do
