@@ -49,6 +49,7 @@ jobs:
           CHANGED_DIRS=$(for file in $CHANGED_FILES; do dirname $file; done | grep '^src/' | sort | uniq)
           echo "Directories: $CHANGED_DIRS"
           SKIP_LIST_FILE="${{ github.workspace }}/SkipDeployFolders.txt"
+
           echo "All changed dirs:"
           for d in $CHANGED_DIRS; do
           echo "'$d'"
