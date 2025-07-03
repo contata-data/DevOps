@@ -51,11 +51,16 @@ jobs:
           echo "Directories: $CHANGED_DIRS"
           
           SKIP_LIST_FILE="${{ github.workspace }}/SkipDeployFolders.txt"
+          echo "SKIP_LIST_FILE: $SKIP_LIST_FILE"
+          
           for DIR in $CHANGED_DIRS; do
               if grep -Fxq "$DIR" "$SKIP_LIST_FILE"; then
                 echo "Skipping deployment for: $DIR"
                 continue
+              else
+                echo "Not in skip list: $DIR"
               fi
+              
               echo " Deploying: $DIR"
               FUNCTION_NAME=$(basename "$DIR")
               IFS='_' read -r part1 part2 part3 <<< "$FUNCTION_NAME"
