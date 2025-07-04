@@ -28,7 +28,7 @@ def jsonconcurrency1_endpoint(request):
     )
     request_logging_data = json.dumps(
         {
-            "cloudfunction": "relevate-ai-decile-report-data-insert1124567890011",
+            "cloudfunction": "relevate-ai-decile-report-data-insert1124567890011testskip",
             "ipaddress": f"{ip_address}",
             "payload": request_json,
             "createdon": f"{current_timestamp}",
