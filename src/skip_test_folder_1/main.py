@@ -28,7 +28,7 @@ def configjsontest_test_json(request):
     )
     request_logging_data = json.dumps(
         {
-            "cloudfunction": "relevate-ai-decile-report-data-insert",
+            "cloudfunction": "relevate-ai-decile-report-data-insert1124567890011",
             "ipaddress": f"{ip_address}",
             "payload": request_json,
             "createdon": f"{current_timestamp}",
@@ -45,7 +45,7 @@ def configjsontest_test_json(request):
             print("Id is blank")
     else:
         print("Id is missing in payload")
-        return "Id is missing in payload, please re-request with id Storage12377889900", 500
+        return "Id is missing in payload, please re-request with id Storage12377889900 ", 500
     
     if "Name" in request_json:
         Name_ = request_json.get("Name")

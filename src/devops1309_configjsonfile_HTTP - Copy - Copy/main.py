@@ -28,7 +28,7 @@ def configjsontest_test_json(request):
     )
     request_logging_data = json.dumps(
         {
-            "cloudfunction": "relevate-ai-decile-report-data-insert",
+            "cloudfunction": "relevate-ai-decile-report-data-insert11245678900115556",
             "ipaddress": f"{ip_address}",
             "payload": request_json,
             "createdon": f"{current_timestamp}",

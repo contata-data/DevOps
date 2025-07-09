@@ -7,7 +7,7 @@ from google.cloud import pubsub_v1
 
 
 @functions_framework.http
-def configjsontest_test_json(request):
+def configjsontest_test_json_1(request):
     if request.method == "OPTIONS":
         headers = {
             "Access-Control-Allow-Origin": "*",
@@ -28,7 +28,10 @@ def configjsontest_test_json(request):
     )
     request_logging_data = json.dumps(
         {
-            "cloudfunction": "relevate-ai-decile-report-data-insert",
+
+            "cloudfunction": "relevate-ai-decile-report-data-insert00ooo15",
+
+
             "ipaddress": f"{ip_address}",
             "payload": request_json,
             "createdon": f"{current_timestamp}",
