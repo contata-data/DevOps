@@ -298,32 +298,82 @@ jobs:
       - name: Parse Cloud Function Config (JSON)
         id: parse_cf_storage
         run: |
-            CONFIG_FILE="${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/config.json"
-            # Check if the config file exists
-            if [ ! -f "$CONFIG_FILE" ]; then
-            echo "Config file $CONFIG_FILE not found!"
-            exit 1
-            fi
-            # Parse JSON and assign defaults if keys are missing
-            MEMORY=$(jq -r '.memory // "256Mi"' "$CONFIG_FILE")
-            TIMEOUT=$(jq -r '.timeout // "8m"' "$CONFIG_FILE")
-            RUNTIME=$(jq -r '.runtime // "python312"' "$CONFIG_FILE")
-            ENDPOINT=$(jq -r '.endpoint // "${{ matrix.function.name }}"' "$CONFIG_FILE")
-            CFNAME=$(jq -r '.cfname // "${{ matrix.function.name }}"' "$CONFIG_FILE")
-            MIN_INSTANCE=$(jq -r '.min_instance // 1' "$CONFIG_FILE")
-            MAX_INSTANCE=$(jq -r '.max_instance // 3' "$CONFIG_FILE")
-            CONCURRENCY=$(jq -r '.concurrency // 3' "$CONFIG_FILE")
-            
-            echo "Parsed Config - Memory: $MEMORY, Timeout: $TIMEOUT, Runtime: $RUNTIME, Endpoint: $ENDPOINT, CFName: $CFNAME"
-            # Set outputs
-            echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
-            echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
-            echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
-            echo "ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
-            echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
-            echo "MIN_INSTANCE=$MIN_INSTANCE" >> $GITHUB_OUTPUT
-            echo "MAX_INSTANCE=$MAX_INSTANCE" >> $GITHUB_OUTPUT
-            echo "CONCURRENCY=$CONCURRENCY" >> $GITHUB_OUTPUT
+             CONFIG_JSON="src/${{ matrix.function.SrcFolder }}/config.json"
+             CONFIG_TXT="src/${{ matrix.function.SrcFolder }}/config.txt"
+             
+             if [[ -f "$CONFIG_JSON" ]]; then
+                 echo "Using JSON config"
+                 MEMORY=$(jq -r '.memory // empty' "$CONFIG_JSON")
+                 TIMEOUT=$(jq -r '.timeout // empty' "$CONFIG_JSON")
+                 RUNTIME=$(jq -r '.runtime // empty' "$CONFIG_JSON")
+                 ENDPOINT=$(jq -r '.endpoint // empty' "$CONFIG_JSON")
+                 CFNAME=$(jq -r '.cfname // empty' "$CONFIG_JSON")
+                 MIN_INSTANCE=$(jq -r '.min_instance // empty' "$CONFIG_JSON")
+                 MAX_INSTANCE=$(jq -r '.max_instance // empty' "$CONFIG_JSON")
+                 CONCURRENCY=$(jq -r '.concurrency // empty' "$CONFIG_JSON")
+             
+             elif [[ -f "$CONFIG_TXT" ]]; then
+                 echo "Using TXT config"
+                 MEMORY=$(grep '^memory:' "$CONFIG_TXT" | cut -d':' -f2 | xargs)
+                 TIMEOUT=$(grep '^timeout:' "$CONFIG_TXT" | cut -d':' -f2 | xargs)
+                 RUNTIME=$(grep '^runtime:' "$CONFIG_TXT" | cut -d':' -f2 | xargs)
+                 ENDPOINT=$(grep '^endpoint:' "$CONFIG_TXT" | cut -d':' -f2 | xargs)
+                 CFNAME=$(grep '^cfname:' "$CONFIG_TXT" | cut -d':' -f2 | xargs)
+                 # These are not set in TXT, so use defaults
+                 MIN_INSTANCE=""
+                 MAX_INSTANCE=""
+                 CONCURRENCY=""
+             else
+                 echo "No config file found!"
+                 exit 1
+             fi
+             
+             # Set default values if not defined
+             MEMORY=${MEMORY:-"512MB"}
+             TIMEOUT=${TIMEOUT:-"8m"}
+             RUNTIME=${RUNTIME:-"python312"}
+             ENDPOINT=${ENDPOINT:-"${{ matrix.function.name }}"}
+             CFNAME=${CFNAME:-"${{ matrix.function.name }}"}
+             MIN_INSTANCE=${MIN_INSTANCE:-1}
+             MAX_INSTANCE=${MAX_INSTANCE:-3}
+             CONCURRENCY=${CONCURRENCY:-3}
+             
+             # Output to GitHub Actions
+             echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
+             echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
+             echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
+             echo "ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
+             echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
+             echo "MIN_INSTANCE=$MIN_INSTANCE" >> $GITHUB_OUTPUT
+             echo "MAX_INSTANCE=$MAX_INSTANCE" >> $GITHUB_OUTPUT
+             echo "CONCURRENCY=$CONCURRENCY" >> $GITHUB_OUTPUT
+
+            ##CONFIG_FILE="${{ github.workspace }}/src/${{ matrix.function.SrcFolder }}/config.json"
+            ### Check if the config file exists
+            ##if [ ! -f "$CONFIG_FILE" ]; then
+            ##echo "Config file $CONFIG_FILE not found!"
+            ##exit 1
+            ##fi
+            ### Parse JSON and assign defaults if keys are missing
+            ##MEMORY=$(jq -r '.memory // "256Mi"' "$CONFIG_FILE")
+            ##TIMEOUT=$(jq -r '.timeout // "8m"' "$CONFIG_FILE")
+            ##RUNTIME=$(jq -r '.runtime // "python312"' "$CONFIG_FILE")
+            ##ENDPOINT=$(jq -r '.endpoint // "${{ matrix.function.name }}"' "$CONFIG_FILE")
+            ##CFNAME=$(jq -r '.cfname // "${{ matrix.function.name }}"' "$CONFIG_FILE")
+            ##MIN_INSTANCE=$(jq -r '.min_instance // 1' "$CONFIG_FILE")
+            ##MAX_INSTANCE=$(jq -r '.max_instance // 3' "$CONFIG_FILE")
+            ##CONCURRENCY=$(jq -r '.concurrency // 3' "$CONFIG_FILE")
+            ##
+            ##echo "Parsed Config - Memory: $MEMORY, Timeout: $TIMEOUT, Runtime: $RUNTIME, Endpoint: $ENDPOINT, CFName: $CFNAME"
+            ### Set outputs
+            ##echo "MEMORY=$MEMORY" >> $GITHUB_OUTPUT
+            ##echo "TIMEOUT=$TIMEOUT" >> $GITHUB_OUTPUT
+            ##echo "RUNTIME=$RUNTIME" >> $GITHUB_OUTPUT
+            ##echo "ENDPOINT=$ENDPOINT" >> $GITHUB_OUTPUT
+            ##echo "CFNAME=$CFNAME" >> $GITHUB_OUTPUT
+            ##echo "MIN_INSTANCE=$MIN_INSTANCE" >> $GITHUB_OUTPUT
+            ##echo "MAX_INSTANCE=$MAX_INSTANCE" >> $GITHUB_OUTPUT
+            ##echo "CONCURRENCY=$CONCURRENCY" >> $GITHUB_OUTPUT
       - name: Debug Parsed Outputs
         run: |
                 echo " RUNTIME: ${{ steps.parse_cf_storage.outputs.RUNTIME }}"
