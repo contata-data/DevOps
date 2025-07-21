@@ -329,7 +329,7 @@ jobs:
              fi
              
              # Set default values if not defined
-             MEMORY=${MEMORY:-"512MB"}
+             MEMORY=${MEMORY:-"512Mi"}
              TIMEOUT=${TIMEOUT:-"8m"}
              RUNTIME=${RUNTIME:-"python312"}
              ENDPOINT=${ENDPOINT:-"${{ matrix.function.name }}"}
